@@ -6,25 +6,36 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 
 import com.example.there.flextube.R
+import com.example.there.flextube.event.AuthEvent
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- *
- */
 class SubFeedFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_sub_feed, container, false)
     }
 
+    @Suppress("unused")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun onEvent(event: AuthEvent) {
+        if (event === AuthEvent.Successful) {
+            Toast.makeText(activity, "Auth succ", Toast.LENGTH_SHORT).show()
+        }
+    }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        EventBus.getDefault().unregister(this)
+        super.onStop()
+    }
 }
