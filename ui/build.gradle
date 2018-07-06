@@ -68,6 +68,7 @@ dependencies {
     implementation project(':data')
     implementation project(':cache')
     implementation project(':remote')
+    implementation project(':domain')
 
     implementation uiDependencies.javaxAnnotation
 

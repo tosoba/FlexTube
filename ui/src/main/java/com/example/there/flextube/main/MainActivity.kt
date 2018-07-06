@@ -10,8 +10,10 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -23,28 +25,42 @@ import com.example.there.flextube.event.AuthEvent
 import com.example.there.flextube.util.screenHeight
 import com.example.there.flextube.util.screenOrientation
 import com.example.there.flextube.util.toPx
+import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.AbstractYouTubePlayerListener
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, HasSupportFragmentInjector {
+
+    @Inject
+    lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentDispatchingAndroidInjector
 
     private var credential: GoogleAccountCredential? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidInjection.inject(this)
+//        AndroidInjection.inject(this)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
 
@@ -56,7 +72,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES)
                 .setBackOff(ExponentialBackOff())
-        getResultsFromApi()
+        checkAuthAndLoadData()
     }
 
     private val itemIds: Array<Int> = arrayOf(R.id.action_home, R.id.action_sub_feed, R.id.action_groups)
@@ -204,7 +220,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         addView(closeBtn)
     }
 
-    private fun getResultsFromApi() {
+    private fun checkAuthAndLoadData() {
         if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices()
         } else if (credential!!.selectedAccountName == null) {
@@ -213,8 +229,28 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             //TODO: snackbar to go network settings
             Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT).show()
         } else {
-            EventBus.getDefault().postSticky(AuthEvent.Successful)
+            loadAccessToken()
         }
+    }
+
+    private val disposables = CompositeDisposable()
+
+    override fun onDestroy() {
+        disposables.clear()
+        super.onDestroy()
+    }
+
+    private fun loadAccessToken() {
+        disposables.add(Single.fromCallable { credential!!.token }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ token ->
+                    EventBus.getDefault().postSticky(AuthEvent.Successful(token))
+                }) { e ->
+                    if (e is UserRecoverableAuthException) {
+                        startActivityForResult(e.intent, REQUEST_AUTHORIZATION)
+                    }
+                })
     }
 
     /**
@@ -233,7 +269,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             val accountName = getPreferences(Context.MODE_PRIVATE).getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
                 credential!!.selectedAccountName = accountName
-                getResultsFromApi()
+                checkAuthAndLoadData()
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
@@ -263,12 +299,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
                 Toast.makeText(this,
-                        "This app requires Google Play Services. Please install "
-                                + "Google Play Services on your device and relaunch this app.",
-                        Toast.LENGTH_SHORT
-                ).show()
+                        "This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.",
+                        Toast.LENGTH_SHORT).show()
             } else {
-                getResultsFromApi()
+                checkAuthAndLoadData()
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null && data.extras != null) {
                 val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
@@ -278,11 +312,11 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
                     credential!!.selectedAccountName = accountName
-                    getResultsFromApi()
+                    checkAuthAndLoadData()
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-                getResultsFromApi()
+                checkAuthAndLoadData()
             }
         }
     }
@@ -372,6 +406,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         private const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
 
         private const val PREF_ACCOUNT_NAME = "accountName"
-        private val SCOPES = listOf(YouTubeScopes.YOUTUBE_READONLY)
+        private val SCOPES = listOf(YouTubeScopes.YOUTUBE_FORCE_SSL, YouTubeScopes.YOUTUBEPARTNER)
     }
 }
