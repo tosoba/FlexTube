@@ -1,5 +1,7 @@
 package com.example.there.remote
 
+import com.example.there.remote.model.ChannelsPlaylistIdResponse
+import com.example.there.remote.model.PlaylistItemsResponse
 import com.example.there.remote.model.SubscriptionsResponse
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -16,6 +18,22 @@ interface YoutubeService {
             @Query("maxResults") maxResults: Int = MAX_MAX_RESULTS,
             @Query("order") order: String = DEFAULT_ORDER
     ): Single<SubscriptionsResponse>
+
+    @GET("channels")
+    fun getChannelsPlaylistId(
+            @Query("id") ids: String,
+            @Query("part") part: String = "contentDetails",
+            @Query("maxResults") maxResults: Int = MAX_MAX_RESULTS,
+            @Query("key") key: String = Keys.YOUTUBE
+    ): Single<ChannelsPlaylistIdResponse>
+
+    @GET("playlistItems")
+    fun getPlaylistItems(
+            @Query("playlistId") id: String,
+            @Query("part") part: String = "snippet,contentDetails",
+            @Query("maxResults") maxResults: Int = MAX_MAX_RESULTS,
+            @Query("key") key: String = Keys.YOUTUBE
+    ): Single<PlaylistItemsResponse>
 
     companion object {
         private const val MAX_MAX_RESULTS = 50

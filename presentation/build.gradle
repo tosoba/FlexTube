@@ -60,6 +60,7 @@ dependencies {
     implementation presentationDependencies.kotlin
     implementation presentationDependencies.javaxInject
     implementation presentationDependencies.rxKotlin
+    implementation presentationDependencies.rxAndroid
     implementation presentationDependencies.archRuntime
     implementation presentationDependencies.archExtensions
     kapt presentationDependencies.archCompiler

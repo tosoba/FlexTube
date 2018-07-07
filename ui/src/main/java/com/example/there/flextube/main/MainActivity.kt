@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -29,7 +28,6 @@ import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayer
@@ -60,7 +58,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        AndroidInjection.inject(this)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
 

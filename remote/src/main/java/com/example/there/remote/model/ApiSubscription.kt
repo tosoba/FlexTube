@@ -30,4 +30,3 @@ data class SubscriptionThumbnails(
         val high: Thumbnail
 )
 
-data class Thumbnail(val url: String)

@@ -3,23 +3,23 @@ package com.example.there.data.mapper
 import com.example.there.data.model.SubscriptionData
 import com.example.there.domain.model.Subscription
 
-object SubscriptionMapper{
-     fun map(from: SubscriptionData): Subscription = Subscription(
-            id = from.id,
-            channelId = from.channelId,
-            title = from.title,
-            description = from.description,
-            thumbnailUrl = from.thumbnailUrl,
-            publishedAt = from.publishedAt
+object SubscriptionMapper: DataMapper<SubscriptionData, Subscription> {
+     override fun toDomain(data: SubscriptionData): Subscription = Subscription(
+            id = data.id,
+            channelId = data.channelId,
+            title = data.title,
+            description = data.description,
+            thumbnailUrl = data.thumbnailUrl,
+            publishedAt = data.publishedAt
     )
 
-     fun mapBack(from: Subscription): SubscriptionData = SubscriptionData(
-            id = from.id,
-            channelId = from.channelId,
-            title = from.title,
-            description = from.description,
-            thumbnailUrl = from.thumbnailUrl,
-            publishedAt = from.publishedAt
+     override fun toData(domain: Subscription): SubscriptionData = SubscriptionData(
+            id = domain.id,
+            channelId = domain.channelId,
+            title = domain.title,
+            description = domain.description,
+            thumbnailUrl = domain.thumbnailUrl,
+            publishedAt = domain.publishedAt
     )
 
 }
