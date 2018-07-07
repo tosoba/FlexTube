@@ -10,9 +10,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.there.domain.model.PlaylistItem
 import com.example.there.flextube.R
+import java.util.*
 
-class SubFeedVideosAdapter: RecyclerView.Adapter<SubFeedVideosAdapter.ViewHolder>() {
-    private val videos: ArrayList<PlaylistItem> = ArrayList()
+class SubFeedVideosAdapter : RecyclerView.Adapter<SubFeedVideosAdapter.ViewHolder>() {
+    private val videos: SortedSet<PlaylistItem> = TreeSet(Comparator { i1, i2 -> i2.publishedAt.compareTo(i1.publishedAt) })
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.video_item, parent, false)
@@ -22,7 +23,8 @@ class SubFeedVideosAdapter: RecyclerView.Adapter<SubFeedVideosAdapter.ViewHolder
     override fun getItemCount(): Int = videos.size
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        val thumbnailUrl = videos[position].thumbnailUrl
+        val video = videos.elementAt(position)
+        val thumbnailUrl = video.thumbnailUrl
         val thumbnail = holder?.itemView?.findViewById<ImageView>(R.id.video_thumbnail_image_view)
         Glide.with(holder?.itemView)
                 .load(thumbnailUrl)
@@ -32,7 +34,7 @@ class SubFeedVideosAdapter: RecyclerView.Adapter<SubFeedVideosAdapter.ViewHolder
                         .error(R.mipmap.ic_launcher_round))
                 .into(thumbnail)
 
-        holder?.itemView?.findViewById<TextView>(R.id.video_title_text_view)?.text = videos[position].title
+        holder?.itemView?.findViewById<TextView>(R.id.video_title_text_view)?.text = video.title
     }
 
     fun addVideos(newVideos: List<PlaylistItem>) {
@@ -40,5 +42,5 @@ class SubFeedVideosAdapter: RecyclerView.Adapter<SubFeedVideosAdapter.ViewHolder
         notifyDataSetChanged()
     }
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }

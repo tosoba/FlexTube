@@ -9,8 +9,8 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
-class RemoteYoutubeDataStore @Inject constructor(private val remote: IYoutubeRemote) : IYoutubeDataStore {
-    override fun getUserSubscriptions(accessToken: String): Observable<List<SubscriptionData>> {
+class YoutubeRemoteDataStore @Inject constructor(private val remote: IYoutubeRemote) : IYoutubeDataStore {
+    override fun getUserSubscriptions(accessToken: String, accountName: String): Observable<List<SubscriptionData>> {
         val pageTokenSubject = BehaviorSubject.createDefault("")
         return pageTokenSubject.concatMap { token ->
             remote.getSubscriptions(
@@ -23,10 +23,16 @@ class RemoteYoutubeDataStore @Inject constructor(private val remote: IYoutubeRem
         }.map { (subs, _) -> subs }
     }
 
-    override fun saveUserSubscriptions(subs: List<SubscriptionData>): Completable = throw UnsupportedOperationException()
-
     override fun getVideos(channelIds: List<String>): Observable<List<PlaylistItemData>> = remote.getChannelsPlaylistIds(channelIds)
             .toObservable()
             .flatMapIterable { it }
             .flatMap { remote.getPlaylistItems(it.playlistId).toObservable() }
+
+    override fun saveUserSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable = throw UnsupportedOperationException()
+
+    override fun saveUser(accountName: String): Completable = throw UnsupportedOperationException()
+
+    companion object {
+        const val NAME = "REMOTE_DATA_STORE"
+    }
 }

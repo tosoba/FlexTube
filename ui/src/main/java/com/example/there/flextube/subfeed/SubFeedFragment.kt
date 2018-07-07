@@ -7,12 +7,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.example.there.flextube.R
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.event.AuthEvent
 import com.example.there.presentation.subfeed.SubFeedViewModel
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_sub_feed.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -44,24 +44,25 @@ class SubFeedFragment : Fragment(), Injectable {
         return view
     }
 
+    private val disposables = CompositeDisposable()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.subscriptions.subscribe {
+        disposables.add(viewModel.subscriptions.subscribe {
             subscriptionsAdapter.addSubscriptions(it)
-        }
+        })
 
-        viewModel.videos.subscribe {
+        disposables.add(viewModel.videos.subscribe {
             videosAdapter.addVideos(it)
-        }
+        })
     }
 
     @Suppress("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(event: AuthEvent) {
         if (event is AuthEvent.Successful) {
-            Toast.makeText(activity, "Auth succ", Toast.LENGTH_SHORT).show()
-            viewModel.loadVideos(event.accessToken)
+            viewModel.loadVideos(event.accessToken, event.accountName)
         }
     }
 
@@ -73,5 +74,10 @@ class SubFeedFragment : Fragment(), Injectable {
     override fun onStop() {
         EventBus.getDefault().unregister(this)
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 }

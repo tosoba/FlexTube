@@ -22,7 +22,8 @@ class SubFeedViewModel @Inject constructor(
     val subscriptions: PublishSubject<List<Subscription>> = PublishSubject.create()
     val videos: PublishSubject<List<PlaylistItem>> = PublishSubject.create()
 
-    fun loadVideos(accessToken: String) = disposables.add(getUserSubscriptions.execute(accessToken)
+    fun loadVideos(accessToken: String, accountName: String) = disposables.add(getUserSubscriptions
+            .execute(GetUserSubscriptions.Params(accessToken, accountName))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { subscriptions.onNext(it) }

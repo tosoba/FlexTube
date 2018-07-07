@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
             //TODO: snackbar to go network settings
             Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT).show()
         } else {
-            loadAccessToken()
+            loadAccessTokenAndLoadData()
         }
     }
 
@@ -237,12 +237,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
         super.onDestroy()
     }
 
-    private fun loadAccessToken() {
+    private fun loadAccessTokenAndLoadData() {
         disposables.add(Single.fromCallable { credential!!.token }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ token ->
-                    EventBus.getDefault().postSticky(AuthEvent.Successful(token))
+                    EventBus.getDefault().postSticky(AuthEvent.Successful(
+                            accessToken = token,
+                            accountName = credential!!.selectedAccountName
+                    ))
                 }) { e ->
                     if (e is UserRecoverableAuthException) {
                         startActivityForResult(e.intent, REQUEST_AUTHORIZATION)
