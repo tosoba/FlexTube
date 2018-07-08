@@ -64,7 +64,6 @@ dependencies {
     def uiDependencies = rootProject.ext.uiDependencies
     def mobileUiTestDependencies = rootProject.ext.mobileUiTestDependencies
 
-    implementation project(':presentation')
     implementation project(':data')
     implementation project(':cache')
     implementation project(':remote')
@@ -89,6 +88,11 @@ dependencies {
     implementation uiDependencies.constraintLayout
     implementation 'com.android.support:support-v4:26.1.0'
 
+    implementation uiDependencies.archRuntime
+    implementation uiDependencies.archExtensions
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
+    kapt uiDependencies.archCompiler
+
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:8.0.1'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
@@ -102,11 +106,6 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
 
     compileOnly uiDependencies.mockito
-
-    implementation presentationDependencies.archRuntime
-    implementation presentationDependencies.archExtensions
-    implementation "android.arch.persistence.room:rxjava2:1.1.1"
-    kapt presentationDependencies.archCompiler
 
     testImplementation mobileUiTestDependencies.kotlinJUnit
 

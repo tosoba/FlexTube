@@ -8,7 +8,9 @@ import com.example.there.data.repo.store.impl.YoutubeRemoteDataStore
 import com.example.there.domain.model.PlaylistItem
 import com.example.there.domain.model.Subscription
 import com.example.there.domain.repo.IMainRepository
+import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -20,6 +22,9 @@ class MainRepository @Inject constructor(
         private val youtubeCachedDataStore: IYoutubeDataStore
 ) : IMainRepository {
 
+    override fun getHomeItems(accessToken: String): Single<List<PlaylistItem>> = youtubeRemoteDataStore.getActivities(accessToken)
+            .map { it.map(PlaylistItemMapper::toDomain) }
+
     override fun getSubs(accessToken: String, accountName: String): Observable<List<Subscription>> {
         return youtubeCachedDataStore.saveUser(accountName)
                 .andThen(youtubeRemoteDataStore.getUserSubscriptions(accessToken, accountName)
@@ -29,4 +34,7 @@ class MainRepository @Inject constructor(
 
     override fun getVideos(channelIds: List<String>): Observable<List<PlaylistItem>> = youtubeRemoteDataStore.getVideos(channelIds)
             .map { it.map(PlaylistItemMapper::toDomain) }
+
+    override fun updateSavedSubscriptions(subs: List<Subscription>, accountName: String): Completable =
+            youtubeCachedDataStore.updateSavedSubscriptions(subs.map(SubscriptionMapper::toData), accountName)
 }

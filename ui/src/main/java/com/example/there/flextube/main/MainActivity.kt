@@ -242,15 +242,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ token ->
-                    EventBus.getDefault().postSticky(AuthEvent.Successful(
-                            accessToken = token,
-                            accountName = credential!!.selectedAccountName
-                    ))
-                }) { e ->
+                    EventBus.getDefault().postSticky(AuthEvent.Successful(token))
+                }, { e ->
                     if (e is UserRecoverableAuthException) {
                         startActivityForResult(e.intent, REQUEST_AUTHORIZATION)
                     }
-                })
+                }))
     }
 
     /**
@@ -324,7 +321,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
     /**
      * Respond to requests for permissions at runtime for API 23 and above.
      * @param requestCode The request code passed in
-     * requestPermissions(android.app.Activity, String, int, String[])
+     * requestPermissions(android.app.HomeItem, String, int, String[])
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
      * which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
@@ -405,7 +402,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
         private const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
         private const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
 
-        private const val PREF_ACCOUNT_NAME = "accountName"
+        const val PREF_ACCOUNT_NAME = "accountName"
         private val SCOPES = listOf(YouTubeScopes.YOUTUBE_FORCE_SSL, YouTubeScopes.YOUTUBEPARTNER)
     }
 }

@@ -11,7 +11,7 @@ import com.example.there.domain.model.Subscription
 import com.example.there.flextube.R
 
 class SubFeedSubscriptionsAdapter : RecyclerView.Adapter<SubFeedSubscriptionsAdapter.ViewHolder>() {
-    private val subscriptions: ArrayList<Subscription> = ArrayList()
+    val subscriptions: ArrayList<Subscription> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent?.context).inflate(R.layout.subscription_item, parent, false)
@@ -22,14 +22,13 @@ class SubFeedSubscriptionsAdapter : RecyclerView.Adapter<SubFeedSubscriptionsAda
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val thumbnailUrl = subscriptions[position].thumbnailUrl
-        val thumbnailImageView = holder?.itemView?.findViewById<ImageView>(R.id.sub_image_view)
         Glide.with(holder?.itemView)
                 .load(thumbnailUrl)
                 .apply(RequestOptions()
-                        .centerCrop()
+                        .circleCrop()
                         .placeholder(R.mipmap.ic_launcher_round)
                         .error(R.mipmap.ic_launcher_round))
-                .into(thumbnailImageView)
+                .into(holder?.thumbnailImageView)
     }
 
     fun addSubscriptions(newSubscriptions: List<Subscription>) {
@@ -37,5 +36,7 @@ class SubFeedSubscriptionsAdapter : RecyclerView.Adapter<SubFeedSubscriptionsAda
         notifyDataSetChanged()
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val thumbnailImageView: ImageView = itemView.findViewById(R.id.sub_image_view)
+    }
 }

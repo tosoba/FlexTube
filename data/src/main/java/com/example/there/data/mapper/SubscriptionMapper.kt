@@ -3,7 +3,7 @@ package com.example.there.data.mapper
 import com.example.there.data.model.SubscriptionData
 import com.example.there.domain.model.Subscription
 
-object SubscriptionMapper: DataMapper<SubscriptionData, Subscription> {
+object SubscriptionMapper: TwoWayDataMapper<SubscriptionData, Subscription> {
      override fun toDomain(data: SubscriptionData): Subscription = Subscription(
             id = data.id,
             channelId = data.channelId,

@@ -9,4 +9,5 @@ interface IYoutubeRemote {
     fun getSubscriptions(accessToken: String, pageToken: String? = null): Single<Pair<List<SubscriptionData>, String?>>
     fun getChannelsPlaylistIds(channelIds: List<String>): Single<List<ChannelPlaylistIdData>>
     fun getPlaylistItems(channelId: String): Single<List<PlaylistItemData>>
+    fun getActivities(accessToken: String): Single<List<PlaylistItemData>>
 }

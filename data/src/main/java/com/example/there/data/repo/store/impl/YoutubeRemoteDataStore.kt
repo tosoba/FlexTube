@@ -6,6 +6,7 @@ import com.example.there.data.repo.store.base.IYoutubeDataStore
 import com.example.there.data.repo.store.base.IYoutubeRemote
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
@@ -27,6 +28,10 @@ class YoutubeRemoteDataStore @Inject constructor(private val remote: IYoutubeRem
             .toObservable()
             .flatMapIterable { it }
             .flatMap { remote.getPlaylistItems(it.playlistId).toObservable() }
+
+    override fun getActivities(accessToken: String): Single<List<PlaylistItemData>> = remote.getActivities(accessToken)
+
+    override fun updateSavedSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable = throw UnsupportedOperationException()
 
     override fun saveUserSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable = throw UnsupportedOperationException()
 

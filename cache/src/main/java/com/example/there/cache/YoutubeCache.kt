@@ -12,8 +12,8 @@ import javax.inject.Inject
 
 class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
     private val accountDao = db.accountDao()
-    private val subscriptionDao = db.subscriptionDao()
 
+    private val subscriptionDao = db.subscriptionDao()
     override fun getSubscriptionsForAccount(
             accountName: String
     ): Single<List<SubscriptionData>> = subscriptionDao.getAllByAccountName(accountName)
@@ -27,6 +27,14 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
     override fun saveSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable = Completable.fromAction {
         subscriptionDao.insertMany(*subs.map { it.toCache(accountName) }.toTypedArray())
     }
+
+    override fun updateSavedSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable =
+            subscriptionDao.getAllByAccountName(accountName)
+                    .flatMap { savedSubs ->
+                        Single.just(subscriptionDao.deleteMany(*savedSubs.filter { savedSub ->
+                            !subs.map { it.id }.contains(savedSub.id)
+                        }.toTypedArray()))
+                    }.toCompletable()
 
     override fun saveAccount(accountName: String): Completable = Completable.fromAction {
         accountDao.insert(CachedAccount(accountName))

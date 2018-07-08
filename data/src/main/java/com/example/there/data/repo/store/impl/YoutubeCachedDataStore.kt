@@ -6,6 +6,7 @@ import com.example.there.data.repo.store.base.IYoutubeCache
 import com.example.there.data.repo.store.base.IYoutubeDataStore
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 class YoutubeCachedDataStore @Inject constructor(private val cache: IYoutubeCache): IYoutubeDataStore {
@@ -17,7 +18,12 @@ class YoutubeCachedDataStore @Inject constructor(private val cache: IYoutubeCach
     override fun saveUserSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable =
             cache.saveSubscriptions(subs, accountName)
 
+    override fun updateSavedSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable =
+            cache.updateSavedSubscriptions(subs, accountName)
+
     override fun getVideos(channelIds: List<String>): Observable<List<PlaylistItemData>> = throw UnsupportedOperationException()
+
+    override fun getActivities(accessToken: String): Single<List<PlaylistItemData>> = throw UnsupportedOperationException()
 
     companion object {
         const val NAME = "CACHED_DATA_STORE"
