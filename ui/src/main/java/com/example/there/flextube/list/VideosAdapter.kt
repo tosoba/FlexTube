@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.there.domain.model.PlaylistItem
 import com.example.there.flextube.R
+import io.reactivex.subjects.PublishSubject
 
 class VideosAdapter : RecyclerView.Adapter<VideosAdapter.ViewHolder>() {
 
@@ -30,6 +31,8 @@ class VideosAdapter : RecyclerView.Adapter<VideosAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int = videos.size()
 
+    val videoClicked: PublishSubject<String> = PublishSubject.create()
+
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val video = videos[position]
 
@@ -40,6 +43,10 @@ class VideosAdapter : RecyclerView.Adapter<VideosAdapter.ViewHolder>() {
                         .placeholder(R.mipmap.ic_launcher_round)
                         .error(R.mipmap.ic_launcher_round))
                 .into(holder?.thumbnailImageView)
+
+        holder?.itemView?.setOnClickListener {
+            videoClicked.onNext(video.videoId)
+        }
 
         holder?.titleTextView?.text = video.title
     }

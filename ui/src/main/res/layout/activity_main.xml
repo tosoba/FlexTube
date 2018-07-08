@@ -8,7 +8,7 @@
     android:gravity="bottom"
     app:umanoDragView="@+id/video_layout"
     app:umanoOverlay="false"
-    app:umanoPanelHeight="68dp"
+    app:umanoPanelHeight="100dp"
     app:umanoParallaxOffset="100dp"
     app:umanoScrollableView="@+id/list"
     app:umanoShadowHeight="4dp">
@@ -46,8 +46,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
-            app:itemTextColor="@color/colorAccent"
-            app:itemIconTint="@color/colorAccent"
+            app:itemTextColor="@color/bottom_nav_item_color"
+            app:itemIconTint="@color/bottom_nav_item_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -68,7 +68,7 @@
         <com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
-            android:layout_height="68dp" />
+            android:layout_height="100dp" />
 
         <TextView
             android:layout_width="match_parent"

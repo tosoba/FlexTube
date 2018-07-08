@@ -12,3 +12,4 @@
 /cache/build
 /remote/build
 .externalNativeBuild
+remote/src/main/java/com/example/there/remote/Keys.kt

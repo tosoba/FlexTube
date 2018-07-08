@@ -67,8 +67,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
         initYouTubePlayerView()
         addPlayerViewControls()
 
-        credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES)
-                .setBackOff(ExponentialBackOff())
+        credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES).setBackOff(ExponentialBackOff())
         checkAuthAndLoadData()
     }
 
@@ -113,6 +112,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
         sliding_layout.setFadeOnClickListener {
             sliding_layout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
         }
+        sliding_layout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
     }
 
     private val playerMaxVerticalHeight: Int by lazy(LazyThreadSafetyMode.NONE) { toPx(screenHeight) / 2 }
@@ -162,20 +162,22 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
             this.youTubePlayer = youTubePlayer
             youTubePlayer.addListener(object : AbstractYouTubePlayerListener() {
                 override fun onReady() {
-                    loadVideo(youTubePlayer, "6JYIGclVQdw")
-                }
 
-                private fun loadVideo(youTubePlayer: YouTubePlayer, videoId: String) {
-                    if (lifecycle.currentState == Lifecycle.State.RESUMED)
-                        youTubePlayer.loadVideo(videoId, 0f)
-                    else
-                        youTubePlayer.cueVideo(videoId, 0f)
                 }
             })
 
         }, true)
 
         player_view.playerUIController.showFullscreenButton(false)
+    }
+
+    fun loadVideo(videoId: String) {
+        if (sliding_layout.panelState == SlidingUpPanelLayout.PanelState.HIDDEN)
+            sliding_layout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+        if (lifecycle.currentState == Lifecycle.State.RESUMED)
+            youTubePlayer.loadVideo(videoId, 0f)
+        else
+            youTubePlayer.cueVideo(videoId, 0f)
     }
 
     private val minimizeBtn: ImageButton by lazy(LazyThreadSafetyMode.NONE) {
@@ -395,7 +397,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
             .apply { show() }
 
     companion object {
-        private const val minimumPlayerHeightDp = 68
+        private const val minimumPlayerHeightDp = 100
 
         private const val REQUEST_ACCOUNT_PICKER = 1000
         private const val REQUEST_AUTHORIZATION = 1001

@@ -16,6 +16,7 @@ import com.example.there.flextube.event.AuthEvent
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.lifecycle.EventBusComponent
 import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.main.MainActivity
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -47,9 +48,11 @@ class HomeFragment : Fragment(), Injectable {
         super.onViewCreated(view, savedInstanceState)
 
         disposablesComponent.add(viewModel.homeItems
-                .subscribe {
-                    videosAdapter.addVideos(it)
-                })
+                .subscribe { videosAdapter.addVideos(it) })
+
+        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
+            (activity as MainActivity).loadVideo(it)
+        })
     }
 
     private val eventBusComponent = EventBusComponent(this)

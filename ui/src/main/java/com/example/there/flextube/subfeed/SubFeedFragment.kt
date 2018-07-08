@@ -76,6 +76,10 @@ class SubFeedFragment : Fragment(), Injectable {
         disposablesComponent.add(viewModel.videos.subscribe {
             videosAdapter.addVideos(it)
         })
+
+        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
+            (activity as MainActivity).loadVideo(it)
+        })
     }
 
     private val accountName: String by lazy {
