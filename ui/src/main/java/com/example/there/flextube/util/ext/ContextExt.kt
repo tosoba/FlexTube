@@ -1,4 +1,4 @@
-package com.example.there.flextube.util
+package com.example.there.flextube.util.ext
 
 import android.content.Context
 import android.util.TypedValue

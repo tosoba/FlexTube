@@ -21,9 +21,9 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import com.example.there.flextube.R
 import com.example.there.flextube.event.AuthEvent
-import com.example.there.flextube.util.screenHeight
-import com.example.there.flextube.util.screenOrientation
-import com.example.there.flextube.util.toPx
+import com.example.there.flextube.util.ext.screenHeight
+import com.example.there.flextube.util.ext.screenOrientation
+import com.example.there.flextube.util.ext.toPx
 import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability

@@ -31,6 +31,7 @@ interface YoutubeService {
     @GET("playlistItems")
     fun getPlaylistItems(
             @Query("playlistId") id: String,
+            @Query("pageToken") pageToken: String? = null,
             @Query("part") part: String = "snippet,contentDetails",
             @Query("maxResults") maxResults: Int = MAX_RESULTS,
             @Query("key") key: String = Keys.YOUTUBE
@@ -39,6 +40,7 @@ interface YoutubeService {
     @GET("activities")
     fun getActivities(
             @Header("Authorization") authorization: String,
+            @Query("pageToken") pageToken: String? = null,
             @Query("home") home: Boolean = true,
             @Query("part") part: String = "snippet,contentDetails",
             @Query("maxResults") maxResults: Int = MAX_RESULTS

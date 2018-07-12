@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import com.example.there.flextube.FlexTubeApp
-import com.example.there.flextube.util.registerFragmentLifecycleCallbacks
+import com.example.there.flextube.util.ext.registerFragmentLifecycleCallbacks
 import dagger.android.AndroidInjection
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector

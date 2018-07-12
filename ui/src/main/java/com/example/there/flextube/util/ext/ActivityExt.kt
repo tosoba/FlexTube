@@ -1,4 +1,4 @@
-package com.example.there.flextube.util
+package com.example.there.flextube.util.ext
 
 import android.app.Activity
 import android.support.v4.app.FragmentActivity
