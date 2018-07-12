@@ -3,7 +3,8 @@ package com.example.there.remote.model
 import java.util.*
 
 data class PlaylistItemsResponse(
-        val items: List<ApiPlaylistItem>
+        val items: List<ApiPlaylistItem>,
+        val nextPageToken: String?
 )
 
 data class ApiPlaylistItem(

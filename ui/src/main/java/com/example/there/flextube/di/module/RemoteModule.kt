@@ -1,6 +1,6 @@
 package com.example.there.flextube.di.module
 
-import com.example.there.data.repo.store.base.IYoutubeRemote
+import com.example.there.data.repo.store.IYoutubeRemote
 import com.example.there.flextube.BuildConfig
 import com.example.there.remote.YoutubeRemote
 import com.example.there.remote.YoutubeService

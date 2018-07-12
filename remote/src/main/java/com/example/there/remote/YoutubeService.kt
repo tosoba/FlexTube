@@ -33,7 +33,7 @@ interface YoutubeService {
             @Query("playlistId") id: String,
             @Query("pageToken") pageToken: String? = null,
             @Query("part") part: String = "snippet,contentDetails",
-            @Query("maxResults") maxResults: Int = MAX_RESULTS,
+            @Query("maxResults") maxResults: Int = PLAYLIST_ITEMS_MAX_RESULTS,
             @Query("key") key: String = Keys.YOUTUBE
     ): Single<PlaylistItemsResponse>
 
@@ -47,6 +47,7 @@ interface YoutubeService {
     ): Single<ActivityResponse>
 
     companion object {
+        private const val PLAYLIST_ITEMS_MAX_RESULTS = 10
         private const val MAX_RESULTS = 50
         private const val DEFAULT_ORDER = "alphabetical"
     }

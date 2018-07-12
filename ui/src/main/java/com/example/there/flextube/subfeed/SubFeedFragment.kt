@@ -20,6 +20,7 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.lifecycle.EventBusComponent
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
@@ -47,18 +48,28 @@ class SubFeedFragment : Fragment(), Injectable {
         SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
+        override fun onLoadMore() = viewModel.loadMoreVideos()
+    }
+
     private val videosAdapter: VideosAdapter by lazy {
         VideosAdapter(viewModel.viewState.videos, R.layout.video_item)
     }
 
     private val view: SubFeedView by lazy {
-        SubFeedView(viewModel.viewState, subscriptionsAdapter, videosAdapter, DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-        })
+        SubFeedView(
+                viewModel.viewState,
+                subscriptionsAdapter,
+                videosAdapter,
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
+                },
+                onVideosScrollListener
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentSubFeedBinding>(inflater, R.layout.fragment_sub_feed, container,false)
+        val binding = DataBindingUtil.inflate<FragmentSubFeedBinding>(inflater, R.layout.fragment_sub_feed, container, false)
 
         return binding.apply {
             subFeedView = view

@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.persistence.room.Room
 import com.example.there.cache.YoutubeCache
 import com.example.there.cache.db.FlexTubeDb
-import com.example.there.data.repo.store.base.IYoutubeCache
+import com.example.there.data.repo.store.IYoutubeCache
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

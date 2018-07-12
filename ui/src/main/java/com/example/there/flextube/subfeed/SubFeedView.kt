@@ -7,5 +7,6 @@ data class SubFeedView(
         val state: SubFeedViewState,
         val subscriptionsAdapter: SubFeedSubscriptionsAdapter,
         val videosAdapter: VideosAdapter,
-        val videosItemDecoration: RecyclerView.ItemDecoration
+        val videosItemDecoration: RecyclerView.ItemDecoration,
+        val onVideosScrollListener: RecyclerView.OnScrollListener
 )
