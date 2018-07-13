@@ -39,11 +39,14 @@ class YoutubeRemote @Inject constructor(private val service: YoutubeService) : I
     ): Single<Pair<List<PlaylistItemData>, String?>> = service.getPlaylistItems(id = channelId, pageToken = pageToken)
             .map { it.items.map(ApiPlaylistItemMapper::toData) to it.nextPageToken }
 
-    override fun getActivities(
+    override fun getHomeItems(
             accessToken: String,
             pageToken: String?
-    ): Single<List<PlaylistItemData>> = service.getActivities(authorization = "Bearer $accessToken")
-            .map { it.items.filter { it.contentDetails.upload != null }.map(ApiActivityMapper::toData) }
+    ): Single<Pair<List<PlaylistItemData>, String?>> = service.getHomeItems(authorization = "Bearer $accessToken", pageToken = pageToken)
+            .map {
+                it.items.filter { it.contentDetails.upload != null }
+                        .map(ApiActivityMapper::toData) to it.nextPageToken
+            }
 
     private fun getSubscriptions(
             accessToken: String,
@@ -51,5 +54,5 @@ class YoutubeRemote @Inject constructor(private val service: YoutubeService) : I
     ): Single<Pair<List<SubscriptionData>, String?>> = service.getUserSubscriptions(
             authorization = "Bearer $accessToken",
             pageToken = pageToken
-    ).map { Pair(it.items.map(ApiSubscriptionMapper::toData), it.nextPageToken) }
+    ).map { it.items.map(ApiSubscriptionMapper::toData) to it.nextPageToken }
 }

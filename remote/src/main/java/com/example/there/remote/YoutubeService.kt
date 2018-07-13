@@ -1,7 +1,7 @@
 package com.example.there.remote
 
-import com.example.there.remote.model.ActivityResponse
 import com.example.there.remote.model.ChannelsPlaylistIdResponse
+import com.example.there.remote.model.HomeItemsResponse
 import com.example.there.remote.model.PlaylistItemsResponse
 import com.example.there.remote.model.SubscriptionsResponse
 import io.reactivex.Single
@@ -38,13 +38,13 @@ interface YoutubeService {
     ): Single<PlaylistItemsResponse>
 
     @GET("activities")
-    fun getActivities(
+    fun getHomeItems(
             @Header("Authorization") authorization: String,
             @Query("pageToken") pageToken: String? = null,
             @Query("home") home: Boolean = true,
             @Query("part") part: String = "snippet,contentDetails",
             @Query("maxResults") maxResults: Int = MAX_RESULTS
-    ): Single<ActivityResponse>
+    ): Single<HomeItemsResponse>
 
     companion object {
         private const val PLAYLIST_ITEMS_MAX_RESULTS = 10

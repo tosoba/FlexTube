@@ -2,38 +2,38 @@ package com.example.there.remote.model
 
 import java.util.*
 
-data class ActivityResponse(
+data class HomeItemsResponse(
         val nextPageToken: String?,
-        val items: List<ActivityItem>
+        val items: List<HomeItem>
 )
 
-data class ActivityItem(
-    val id: String,
-    val snippet: ActivitySnippet,
-    val contentDetails: ActivityContentDetails
+data class HomeItem(
+        val id: String,
+        val snippet: HomeItemSnippet,
+        val contentDetails: HomeItemContentDetails
 )
 
-data class ActivitySnippet(
+data class HomeItemSnippet(
         val publishedAt: Date,
         val channelId: String,
         val title: String,
         val description: String,
-        val thumbnails: ActivityThumbnails,
+        val thumbnails: HomeItemThumbnails,
         val channelTitle: String,
         val type: String
 )
 
-data class ActivityThumbnails(
+data class HomeItemThumbnails(
         val default: Thumbnail,
         val medium: Thumbnail,
         val high: Thumbnail,
         val maxres: Thumbnail
 )
 
-data class ActivityContentDetails(
-        val upload: ActivityContentDetailsUpload?
+data class HomeItemContentDetails(
+        val upload: HomeItemContentDetailsUpload?
 )
 
-data class ActivityContentDetailsUpload(
+data class HomeItemContentDetailsUpload(
         val videoId: String
 )

@@ -6,5 +6,6 @@ import com.example.there.flextube.list.VideosAdapter
 data class HomeView(
         val state: HomeViewState,
         val adapter: VideosAdapter,
-        val itemDecoration: RecyclerView.ItemDecoration
+        val itemDecoration: RecyclerView.ItemDecoration,
+        val onScrollListener: RecyclerView.OnScrollListener
 )

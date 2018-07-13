@@ -19,10 +19,18 @@ class MainRepository @Inject constructor(
         private val youtubeCachedDataStore: IYoutubeCache
 ) : IMainRepository {
 
-    override fun getHomeItems(
+    override fun getGeneralHomeItems(
             accessToken: String
-    ): Single<List<PlaylistItem>> = youtubeRemoteDataStore.getActivities(accessToken)
-            .map { it.map(PlaylistItemMapper::toDomain) }
+    ): Single<List<PlaylistItem>> = youtubeCachedDataStore.getSavedHomeItems(IYoutubeCache.CATEGORY_GENERAL)
+            .filter { it.videos.isEmpty() || it.nextPageToken != null }
+            .map { it.nextPageToken ?: "" }
+            .onErrorComplete()
+            .toSingle()
+            .flatMap { youtubeRemoteDataStore.getHomeItems(accessToken, it) }
+            .doOnSuccess { (videos, nextPageToken) ->
+                youtubeCachedDataStore.saveHomeItems(IYoutubeCache.CATEGORY_GENERAL, videos, nextPageToken)
+            }
+            .map { (videos, _) -> videos.map(PlaylistItemMapper::toDomain) }
 
     override fun getSubs(
             accessToken: String,

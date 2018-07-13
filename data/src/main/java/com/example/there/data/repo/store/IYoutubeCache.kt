@@ -1,5 +1,6 @@
 package com.example.there.data.repo.store
 
+import com.example.there.data.model.HomeItemsData
 import com.example.there.data.model.PlaylistItemData
 import com.example.there.data.model.PlaylistItemsData
 import com.example.there.data.model.SubscriptionData
@@ -17,4 +18,11 @@ interface IYoutubeCache {
 
     fun getSavedVideos(playlistId: String): Single<PlaylistItemsData>
     fun saveRetrievedVideos(playlistId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
+
+    fun getSavedHomeItems(categoryId: String): Single<HomeItemsData>
+    fun saveHomeItems(categoryId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
+
+    companion object {
+        const val CATEGORY_GENERAL = "CATEGORY_GENERAL"
+    }
 }

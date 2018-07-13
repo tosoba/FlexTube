@@ -19,6 +19,7 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.lifecycle.EventBusComponent
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
@@ -35,10 +36,19 @@ class HomeFragment : Fragment(), Injectable {
 
     private val videosAdapter: VideosAdapter by lazy { VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item) }
 
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
+        override fun onLoadMore() = accessToken?.let { viewModel.loadHomeItems(it) } ?: Unit
+    }
+
     private val view: HomeView by lazy {
-        HomeView(viewModel.viewState, videosAdapter, DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-        })
+        HomeView(
+                viewModel.viewState,
+                videosAdapter,
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
+                    setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
+                },
+                onVideosScrollListener
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -67,10 +77,13 @@ class HomeFragment : Fragment(), Injectable {
         lifecycle.addObserver(disposablesComponent)
     }
 
+    private var accessToken: String? = null
+
     @Suppress("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(event: AuthEvent) {
         if (event is AuthEvent.Successful) {
+            accessToken = event.accessToken
             viewModel.loadHomeItems(event.accessToken)
         }
     }

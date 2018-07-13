@@ -5,6 +5,7 @@ import com.example.there.cache.model.CachedAccount
 import com.example.there.cache.model.CachedPlaylistItems
 import com.example.there.cache.util.toCache
 import com.example.there.cache.util.toData
+import com.example.there.data.model.HomeItemsData
 import com.example.there.data.model.PlaylistItemData
 import com.example.there.data.model.PlaylistItemsData
 import com.example.there.data.model.SubscriptionData
@@ -75,5 +76,23 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
         val saved = savedPlaylistItems[playlistId]
         return if (saved == null) Single.just(PlaylistItemsData.empty(playlistId))
         else Single.just(PlaylistItemsData(playlistId, saved.videos.toList(), saved.nextPageToken))
+    }
+
+    private val savedHomeItems: ConcurrentHashMap<String, CachedPlaylistItems> = ConcurrentHashMap()
+
+    override fun getSavedHomeItems(categoryId: String): Single<HomeItemsData> {
+        val saved = savedHomeItems[categoryId]
+        return if (saved == null) Single.just(HomeItemsData.empty())
+        else Single.just(HomeItemsData(saved.videos.toList(), saved.nextPageToken))
+    }
+
+    override fun saveHomeItems(categoryId: String, videos: List<PlaylistItemData>, nextPageToken: String?) {
+        val saved = savedHomeItems[categoryId]
+        if (saved != null) {
+            saved.videos.addAll(videos)
+            saved.nextPageToken = nextPageToken
+        } else {
+            savedHomeItems[categoryId] = CachedPlaylistItems(hashSetOf(*videos.toTypedArray()), nextPageToken)
+        }
     }
 }

@@ -1,10 +1,10 @@
 package com.example.there.remote.mapper
 
 import com.example.there.data.model.PlaylistItemData
-import com.example.there.remote.model.ActivityItem
+import com.example.there.remote.model.HomeItem
 
-object ApiActivityMapper : ApiMapper<ActivityItem, PlaylistItemData> {
-    override fun toData(api: ActivityItem): PlaylistItemData = PlaylistItemData(
+object ApiActivityMapper : ApiMapper<HomeItem, PlaylistItemData> {
+    override fun toData(api: HomeItem): PlaylistItemData = PlaylistItemData(
             videoId = api.contentDetails.upload!!.videoId,
             channelId = api.snippet.channelId,
             description = api.snippet.description,

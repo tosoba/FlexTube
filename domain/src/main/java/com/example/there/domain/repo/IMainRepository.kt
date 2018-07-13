@@ -13,5 +13,5 @@ interface IMainRepository {
     fun getVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
     fun getMoreVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
 
-    fun getHomeItems(accessToken: String): Single<List<PlaylistItem>>
+    fun getGeneralHomeItems(accessToken: String): Single<List<PlaylistItem>>
 }

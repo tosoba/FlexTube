@@ -1,11 +1,10 @@
 package com.example.there.data.model
 
-data class PlaylistItemsData(
-        val playlistId: String,
+data class HomeItemsData(
         val videos: List<PlaylistItemData>,
         val nextPageToken: String? = null
 ) {
     companion object {
-        fun empty(playlistId: String) = PlaylistItemsData(playlistId, emptyList())
+        fun empty(): HomeItemsData = HomeItemsData(emptyList())
     }
 }
