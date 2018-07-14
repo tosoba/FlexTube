@@ -54,3 +54,8 @@ fun bindOnScrollListener(recycler: RecyclerView, listener: RecyclerView.OnScroll
 fun bindOnPageChangeListener(viewPager: ViewPager, listener: ViewPager.OnPageChangeListener) {
     viewPager.addOnPageChangeListener(listener)
 }
+
+@BindingAdapter("srcId")
+fun setImageResource(imageView: ImageView, resource: Int) {
+    imageView.setImageResource(resource)
+}

@@ -1,9 +1,6 @@
 package com.example.there.remote
 
-import com.example.there.remote.model.ChannelsPlaylistIdResponse
-import com.example.there.remote.model.HomeItemsResponse
-import com.example.there.remote.model.PlaylistItemsResponse
-import com.example.there.remote.model.SubscriptionsResponse
+import com.example.there.remote.model.*
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -46,9 +43,17 @@ interface YoutubeService {
             @Query("maxResults") maxResults: Int = MAX_RESULTS
     ): Single<HomeItemsResponse>
 
+    @GET("videoCategories")
+    fun getVideoCategories(
+            @Query("regionCode") regionCode: String = DEFAULT_REGION_CODE,
+            @Query("part") part: String = "snippet",
+            @Query("key") key: String = Keys.YOUTUBE
+    ): Single<VideoCategoriesResponse>
+
     companion object {
         private const val PLAYLIST_ITEMS_MAX_RESULTS = 10
         private const val MAX_RESULTS = 50
         private const val DEFAULT_ORDER = "alphabetical"
+        private const val DEFAULT_REGION_CODE = "US"
     }
 }

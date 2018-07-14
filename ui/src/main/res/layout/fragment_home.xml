@@ -17,6 +17,17 @@
         android:layout_height="match_parent"
         tools:context=".home.HomeFragment">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/video_categories_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adapter="@{homeView.videoCategoriesAdapter}"
+            android:visibility="@{(safeUnbox(homeView.state.videoCategories.size()) > 0) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@id/home_items_recycler_view"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,13 +43,13 @@
             onScrollListener="@{homeView.onScrollListener}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:adapter="@{homeView.adapter}"
+            android:adapter="@{homeView.videosAdapter}"
             android:focusable="false"
             android:focusableInTouchMode="true"
             app:layout_constraintBottom_toTopOf="@id/loading_more_progress_bar"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/video_categories_recycler_view"
             app:layout_constraintVertical_chainStyle="spread_inside" />
 
         <ProgressBar

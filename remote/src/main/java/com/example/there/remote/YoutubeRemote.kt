@@ -3,18 +3,15 @@ package com.example.there.remote
 import com.example.there.data.model.ChannelPlaylistIdData
 import com.example.there.data.model.PlaylistItemData
 import com.example.there.data.model.SubscriptionData
+import com.example.there.data.model.VideoCategoryData
 import com.example.there.data.repo.store.IYoutubeRemote
-import com.example.there.remote.mapper.ApiActivityMapper
-import com.example.there.remote.mapper.ApiChannelPlaylistIdMapper
-import com.example.there.remote.mapper.ApiPlaylistItemMapper
-import com.example.there.remote.mapper.ApiSubscriptionMapper
+import com.example.there.remote.mapper.*
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 class YoutubeRemote @Inject constructor(private val service: YoutubeService) : IYoutubeRemote {
-
     override fun getUserSubscriptions(accessToken: String): Observable<List<SubscriptionData>> {
         val pageTokenSubject = BehaviorSubject.createDefault("")
         return pageTokenSubject.concatMap { token ->
@@ -55,4 +52,7 @@ class YoutubeRemote @Inject constructor(private val service: YoutubeService) : I
             authorization = "Bearer $accessToken",
             pageToken = pageToken
     ).map { it.items.map(ApiSubscriptionMapper::toData) to it.nextPageToken }
+
+    override fun getVideoCategories(): Single<List<VideoCategoryData>> = service.getVideoCategories()
+            .map { it.items.map(ApiVideoCategoryMapper::toData) }
 }

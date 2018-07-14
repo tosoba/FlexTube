@@ -17,6 +17,7 @@ import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.event.AuthEvent
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.lifecycle.EventBusComponent
+import com.example.there.flextube.list.VideoCategoriesAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
@@ -37,7 +38,11 @@ class HomeFragment : Fragment(), Injectable {
     private val videosAdapter: VideosAdapter by lazy { VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item) }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
-        override fun onLoadMore() = accessToken?.let { viewModel.loadHomeItems(it) } ?: Unit
+        override fun onLoadMore() = accessToken?.let { viewModel.loadGeneralHomeItems(it) } ?: Unit
+    }
+
+    private val videoCategoriesAdapter: VideoCategoriesAdapter by lazy {
+        VideoCategoriesAdapter(viewModel.viewState.videoCategories, R.layout.video_category_item)
     }
 
     private val view: HomeView by lazy {
@@ -47,7 +52,8 @@ class HomeFragment : Fragment(), Injectable {
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
                 },
-                onVideosScrollListener
+                onVideosScrollListener,
+                videoCategoriesAdapter
         )
     }
 
@@ -57,6 +63,7 @@ class HomeFragment : Fragment(), Injectable {
         return binding.apply {
             homeView = view
             homeItemsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            videoCategoriesRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         }.root
     }
 
@@ -84,7 +91,8 @@ class HomeFragment : Fragment(), Injectable {
     fun onEvent(event: AuthEvent) {
         if (event is AuthEvent.Successful) {
             accessToken = event.accessToken
-            viewModel.loadHomeItems(event.accessToken)
+            viewModel.loadGeneralHomeItems(event.accessToken)
+            viewModel.loadVideoCategories()
         }
     }
 }

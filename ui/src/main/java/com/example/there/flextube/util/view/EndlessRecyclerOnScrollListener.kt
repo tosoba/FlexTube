@@ -4,7 +4,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 
 
-abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener() {
+abstract class EndlessRecyclerOnScrollListener(private val visibleThreshold: Int = 5) : RecyclerView.OnScrollListener() {
     /**
      * The total number of items in the dataset after the last load
      */
@@ -28,7 +28,7 @@ abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener()
                     mPreviousTotal = totalItemCount
                 }
             }
-            val visibleThreshold = 5
+
             if (!mLoading && totalItemCount - visibleItemCount <= firstVisibleItem + visibleThreshold) {
                 onLoadMore()
                 mLoading = true
