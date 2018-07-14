@@ -15,6 +15,7 @@ interface IMainRepository {
     fun getMoreVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
 
     fun getGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
+    fun getHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
 
     fun getVideoCategories(): Single<List<VideoCategory>>
 }

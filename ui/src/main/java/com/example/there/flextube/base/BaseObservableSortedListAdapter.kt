@@ -14,7 +14,11 @@ abstract class BaseObservableSortedListAdapter<I, B>(
         items.addOnListChangedCallback(object : ObservableList.OnListChangedCallback<ObservableArrayList<I>>() {
             override fun onChanged(sender: ObservableArrayList<I>?) = Unit
 
-            override fun onItemRangeRemoved(sender: ObservableArrayList<I>?, positionStart: Int, itemCount: Int) = Unit
+            override fun onItemRangeRemoved(sender: ObservableArrayList<I>?, positionStart: Int, itemCount: Int) {
+                if (itemCount == sortedItems.size()) {
+                    sortedItems.clear()
+                }
+            }
 
             override fun onItemRangeMoved(sender: ObservableArrayList<I>?, fromPosition: Int, toPosition: Int, itemCount: Int) = Unit
 

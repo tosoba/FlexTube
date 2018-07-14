@@ -18,7 +18,7 @@ import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.event.AuthEvent
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.lifecycle.EventBusComponent
-import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import org.greenrobot.eventbus.Subscribe
@@ -52,8 +52,8 @@ class SubFeedFragment : Fragment(), Injectable {
         override fun onLoadMore() = viewModel.loadMoreVideos()
     }
 
-    private val videosAdapter: VideosAdapter by lazy {
-        VideosAdapter(viewModel.viewState.videos, R.layout.video_item)
+    private val videosAdapter: SortedVideosAdapter by lazy {
+        SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
     }
 
     private val view: SubFeedView by lazy {

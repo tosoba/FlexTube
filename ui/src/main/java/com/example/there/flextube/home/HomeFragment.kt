@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.there.data.repo.store.IYoutubeCache
 import com.example.there.flextube.R
 import com.example.there.flextube.databinding.FragmentHomeBinding
 import com.example.there.flextube.di.Injectable
@@ -21,6 +22,7 @@ import com.example.there.flextube.list.VideoCategoriesAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
+import kotlinx.android.synthetic.main.fragment_home.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
@@ -35,10 +37,18 @@ class HomeFragment : Fragment(), Injectable {
         ViewModelProviders.of(this, factory).get(HomeViewModel::class.java)
     }
 
-    private val videosAdapter: VideosAdapter by lazy { VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item) }
+    private val videosAdapter: VideosAdapter by lazy {
+        VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item)
+    }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
-        override fun onLoadMore() = accessToken?.let { viewModel.loadGeneralHomeItems(it) } ?: Unit
+        override fun onLoadMore() {
+            if (viewModel.viewState.currentVideoCategoryId == IYoutubeCache.CATEGORY_GENERAL) {
+                accessToken?.let { viewModel.loadGeneralHomeItems(it) }
+            } else {
+                viewModel.loadHomeItemsByCategory(viewModel.viewState.currentVideoCategoryId, shouldReturnAll = false)
+            }
+        }
     }
 
     private val videoCategoriesAdapter: VideoCategoriesAdapter by lazy {
@@ -72,6 +82,18 @@ class HomeFragment : Fragment(), Injectable {
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
             (activity as MainActivity).loadVideo(it)
+        })
+
+        disposablesComponent.add(videoCategoriesAdapter.categoryClicked.subscribe {
+            video_categories_recycler_view?.smoothScrollToPosition(0)
+            viewModel.viewState.homeItems.clear()
+            viewModel.viewState.currentVideoCategoryId = it
+            onVideosScrollListener.mPreviousTotal = 0
+            if (it == IYoutubeCache.CATEGORY_GENERAL) {
+                accessToken?.let { viewModel.loadGeneralHomeItems(it, shouldReturnAll = true) }
+            } else {
+                viewModel.loadHomeItemsByCategory(it)
+            }
         })
     }
 

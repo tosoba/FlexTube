@@ -43,6 +43,16 @@ interface YoutubeService {
             @Query("maxResults") maxResults: Int = MAX_RESULTS
     ): Single<HomeItemsResponse>
 
+    @GET("search")
+    fun getVideosByCategory(
+            @Query("videoCategoryId") videoCategoryId: String,
+            @Query("pageToken") pageToken: String? = null,
+            @Query("part") part: String = "snippet",
+            @Query("type") type: String = "video",
+            @Query("maxResults") maxResults: Int = MAX_RESULTS,
+            @Query("key") key: String = Keys.YOUTUBE
+    ): Single<SearchVideosByCategoryResponse>
+
     @GET("videoCategories")
     fun getVideoCategories(
             @Query("regionCode") regionCode: String = DEFAULT_REGION_CODE,

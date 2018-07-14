@@ -8,7 +8,7 @@ abstract class EndlessRecyclerOnScrollListener(private val visibleThreshold: Int
     /**
      * The total number of items in the dataset after the last load
      */
-    private var mPreviousTotal = 0
+    var mPreviousTotal = 0
     /**
      * True if we are still waiting for the last set of data to load.
      */
@@ -21,6 +21,9 @@ abstract class EndlessRecyclerOnScrollListener(private val visibleThreshold: Int
             val visibleItemCount = recyclerView.childCount
             val totalItemCount = recyclerView.layoutManager.itemCount
             val firstVisibleItem = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+
+            if (totalItemCount == 0)
+                return
 
             if (mLoading) {
                 if (totalItemCount > mPreviousTotal) {

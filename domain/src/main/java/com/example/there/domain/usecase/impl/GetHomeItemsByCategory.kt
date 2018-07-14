@@ -6,13 +6,13 @@ import com.example.there.domain.usecase.base.UseCase
 import io.reactivex.Single
 import javax.inject.Inject
 
-class GetGeneralHomeItems @Inject constructor(
+class GetHomeItemsByCategory @Inject constructor(
         private val repository: IMainRepository
-): UseCase<GetGeneralHomeItems.Params, Single<List<PlaylistItem>>> {
-    override fun execute(params: Params?): Single<List<PlaylistItem>> = repository.getGeneralHomeItems(
-            accessToken = params!!.accessToken,
+): UseCase<GetHomeItemsByCategory.Params, Single<List<PlaylistItem>>> {
+    override fun execute(params: Params?): Single<List<PlaylistItem>> = repository.getHomeItemsByCategory(
+            categoryId = params!!.categoryId,
             shouldReturnAll = params.shouldReturnAll
     )
 
-    data class Params(val accessToken: String, val shouldReturnAll: Boolean = false)
+    data class Params(val categoryId: String, val shouldReturnAll: Boolean = false)
 }
