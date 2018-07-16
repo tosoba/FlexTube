@@ -4,6 +4,7 @@ import com.example.there.domain.model.PlaylistItem
 import com.example.there.domain.model.Subscription
 import com.example.there.domain.model.VideoCategory
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -13,6 +14,7 @@ interface IMainRepository {
 
     fun getVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
     fun getMoreVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
+    fun getSavedVideos(channelIds: List<String>): Flowable<List<PlaylistItem>>
 
     fun getGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
     fun getHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>

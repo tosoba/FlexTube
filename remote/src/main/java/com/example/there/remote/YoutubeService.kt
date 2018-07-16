@@ -61,7 +61,7 @@ interface YoutubeService {
     ): Single<VideoCategoriesResponse>
 
     companion object {
-        private const val PLAYLIST_ITEMS_MAX_RESULTS = 10
+        private const val PLAYLIST_ITEMS_MAX_RESULTS = 1
         private const val MAX_RESULTS = 50
         private const val DEFAULT_ORDER = "alphabetical"
         private const val DEFAULT_REGION_CODE = "US"

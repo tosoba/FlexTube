@@ -4,8 +4,8 @@ import com.example.there.data.mapper.PlaylistItemMapper
 import com.example.there.data.mapper.SubscriptionMapper
 import com.example.there.data.mapper.VideoCategoryMapper
 import com.example.there.data.model.ChannelPlaylistIdData
+import com.example.there.data.model.PlaylistData
 import com.example.there.data.model.PlaylistItemData
-import com.example.there.data.model.PlaylistItemsData
 import com.example.there.data.repo.store.IYoutubeCache
 import com.example.there.data.repo.store.IYoutubeRemote
 import com.example.there.domain.model.PlaylistItem
@@ -13,6 +13,7 @@ import com.example.there.domain.model.Subscription
 import com.example.there.domain.model.VideoCategory
 import com.example.there.domain.repo.IMainRepository
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
@@ -88,32 +89,12 @@ class MainRepository @Inject constructor(
                     .doOnNext { youtubeCachedDataStore.saveUserSubscriptions(it, accountName) }
                     .map { it.map(SubscriptionMapper::toDomain) })
 
-    override fun getVideos(
-            channelIds: List<String>
-    ): Observable<List<PlaylistItem>> = getSavedVideos(channelIds)
-            .flatMap { saved: PlaylistItemsData ->
-                Observable.just(saved.videos).mergeWith(getRemotePlaylistItems(saved))
-            }
-            .map { it.map(PlaylistItemMapper::toDomain) }
+    override fun updateSavedSubscriptions(
+            subs: List<Subscription>, accountName: String
+    ): Completable = youtubeCachedDataStore.updateSavedSubscriptions(subs.map(SubscriptionMapper::toData), accountName)
 
-    override fun getMoreVideos(channelIds: List<String>): Observable<List<PlaylistItem>> = getSavedVideos(channelIds)
-            .filter { it.nextPageToken != null }
-            .flatMap { saved: PlaylistItemsData -> getRemotePlaylistItems(saved) }
-            .map { it.map(PlaylistItemMapper::toDomain) }
-
-    private fun getRemotePlaylistItems(
-            saved: PlaylistItemsData
-    ) = youtubeRemoteDataStore.getPlaylistItems(saved.playlistId, saved.nextPageToken)
-            .toObservable()
-            .doOnNext { (videos, nextPageToken) ->
-                youtubeCachedDataStore.saveRetrievedVideos(saved.playlistId, videos, nextPageToken)
-            }
-            .map { (videos, _) -> videos }
-
-    private fun getSavedVideos(
-            channelIds: List<String>
-    ): Observable<PlaylistItemsData> = getChannelPlaylistIds(channelIds)
-            .flatMap { youtubeCachedDataStore.getSavedVideos(it.playlistId).toObservable() }
+    override fun getVideoCategories(): Single<List<VideoCategory>> = youtubeRemoteDataStore.getVideoCategories()
+            .map { it.map(VideoCategoryMapper::toDomain) }
 
     private fun getChannelPlaylistIds(
             channelIds: List<String>
@@ -123,10 +104,44 @@ class MainRepository @Inject constructor(
             .flatMap { youtubeRemoteDataStore.getChannelsPlaylistIds(it).toObservable() }
             .flatMapIterable { it }
 
-    override fun updateSavedSubscriptions(
-            subs: List<Subscription>, accountName: String
-    ): Completable = youtubeCachedDataStore.updateSavedSubscriptions(subs.map(SubscriptionMapper::toData), accountName)
+    override fun getVideos(
+            channelIds: List<String>
+    ): Observable<List<PlaylistItem>> = getChannelPlaylistIds(channelIds)
+            .flatMap { cp ->
+                youtubeCachedDataStore.savePlaylist(cp.playlistId, cp.channelId)
+                        .andThen(getAndSaveRemoteVideos(cp.playlistId))
+            }
+            .map { videos -> videos.map(PlaylistItemMapper::toDomain) }
 
-    override fun getVideoCategories(): Single<List<VideoCategory>> = youtubeRemoteDataStore.getVideoCategories()
-            .map { it.map(VideoCategoryMapper::toDomain) }
+    override fun getMoreVideos(
+            channelIds: List<String>
+    ): Observable<List<PlaylistItem>> = getPlaylistData(channelIds)
+            .toObservable()
+            .flatMapIterable { it.toList() }
+            .flatMap { getAndSaveRemoteVideos(it.id, it.nextPageToken) }
+            .map { videos -> videos.map(PlaylistItemMapper::toDomain) }
+
+    private fun getAndSaveRemoteVideos(
+            playlistId: String,
+            pageToken: String? = null
+    ): Observable<List<PlaylistItemData>> = youtubeRemoteDataStore.getPlaylistItems(playlistId, pageToken)
+            .toObservable()
+            .flatMap { (videos, nextPageToken) ->
+                youtubeCachedDataStore.saveRetrievedVideos(playlistId, videos, nextPageToken)
+                        .andThen(Observable.just(videos))
+            }
+
+    private fun getPlaylistData(
+            channelIds: List<String>
+    ): Single<List<PlaylistData>> = Single.zip(channelIds.map { youtubeCachedDataStore.getPlaylistByChannelId(it) }) {
+        it.map { it as PlaylistData }
+    }
+
+    override fun getSavedVideos(
+            channelIds: List<String>
+    ): Flowable<List<PlaylistItem>> = getPlaylistData(channelIds)
+            .toFlowable()
+            .flatMapIterable { it.toList() }
+            .flatMap { youtubeCachedDataStore.getSavedVideos(it.id) }
+            .map { videos -> videos.map(PlaylistItemMapper::toDomain) }
 }
