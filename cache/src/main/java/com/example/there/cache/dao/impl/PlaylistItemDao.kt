@@ -9,7 +9,9 @@ import io.reactivex.Flowable
 
 @Dao
 interface PlaylistItemDao : InsertIgnoreDao<CachedPlaylistItem> {
-    @Query("SELECT * FROM ${Tables.PLAYLIST_ITEMS} " +
-            "WHERE playlist_id = :playlistId")
+    @Query("SELECT * FROM ${Tables.PLAYLIST_ITEMS} WHERE playlist_id = :playlistId")
     fun getAllByPlaylistId(playlistId: String): Flowable<List<CachedPlaylistItem>>
+
+    @Query("SELECT * FROM ${Tables.PLAYLIST_ITEMS} WHERE channel_id = :channelId")
+    fun getAllByChannelId(channelId: String): Flowable<List<CachedPlaylistItem>>
 }

@@ -104,32 +104,38 @@ class MainRepository @Inject constructor(
             .flatMap { youtubeRemoteDataStore.getChannelsPlaylistIds(it).toObservable() }
             .flatMapIterable { it }
 
-    override fun getVideos(
+    override fun loadVideos(
             channelIds: List<String>
     ): Observable<List<PlaylistItem>> = getChannelPlaylistIds(channelIds)
             .flatMap { cp ->
                 youtubeCachedDataStore.savePlaylist(cp.playlistId, cp.channelId)
-                        .andThen(getAndSaveRemoteVideos(cp.playlistId))
+                        .andThen(loadSaveAndReturnRemoteVideos(cp.playlistId))
             }
-            .map { videos -> videos.map(PlaylistItemMapper::toDomain) }
 
-    override fun getMoreVideos(
+    override fun loadMoreVideos(
             channelIds: List<String>
-    ): Observable<List<PlaylistItem>> = getPlaylistData(channelIds)
+    ): Completable = getPlaylistData(channelIds)
             .toObservable()
             .flatMapIterable { it.toList() }
-            .flatMap { getAndSaveRemoteVideos(it.id, it.nextPageToken) }
-            .map { videos -> videos.map(PlaylistItemMapper::toDomain) }
+            .flatMapCompletable { loadAndSaveRemoteVideos(it.id, it.nextPageToken) }
 
-    private fun getAndSaveRemoteVideos(
+    private fun loadAndSaveRemoteVideos(
             playlistId: String,
             pageToken: String? = null
-    ): Observable<List<PlaylistItemData>> = youtubeRemoteDataStore.getPlaylistItems(playlistId, pageToken)
+    ): Completable = youtubeRemoteDataStore.getPlaylistItems(playlistId, pageToken)
+            .flatMapCompletable { (videos, nextPageToken) ->
+                youtubeCachedDataStore.saveRetrievedVideos(playlistId, videos, nextPageToken)
+            }
+
+    private fun loadSaveAndReturnRemoteVideos(
+            playlistId: String,
+            pageToken: String? = null
+    ): Observable<List<PlaylistItem>> = youtubeRemoteDataStore.getPlaylistItems(playlistId, pageToken)
             .toObservable()
             .flatMap { (videos, nextPageToken) ->
-                youtubeCachedDataStore.saveRetrievedVideos(playlistId, videos, nextPageToken)
-                        .andThen(Observable.just(videos))
+                youtubeCachedDataStore.saveRetrievedVideos(playlistId, videos, nextPageToken).andThen(Observable.just(videos))
             }
+            .map { it.map(PlaylistItemMapper::toDomain) }
 
     private fun getPlaylistData(
             channelIds: List<String>
@@ -137,11 +143,12 @@ class MainRepository @Inject constructor(
         it.map { it as PlaylistData }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun getSavedVideos(
             channelIds: List<String>
-    ): Flowable<List<PlaylistItem>> = getPlaylistData(channelIds)
-            .toFlowable()
-            .flatMapIterable { it.toList() }
-            .flatMap { youtubeCachedDataStore.getSavedVideos(it.id) }
-            .map { videos -> videos.map(PlaylistItemMapper::toDomain) }
+    ): Flowable<List<PlaylistItem>> = Flowable.zip(channelIds.map { youtubeCachedDataStore.getSavedVideos(it) }) {
+        (it.map { it as List<PlaylistItemData> }).toList().flatten()
+    }.map {
+        it.map(PlaylistItemMapper::toDomain)
+    }
 }

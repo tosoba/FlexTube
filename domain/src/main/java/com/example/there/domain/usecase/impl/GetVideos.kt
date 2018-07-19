@@ -9,5 +9,5 @@ import javax.inject.Inject
 class GetVideos @Inject constructor(
         private val repository: IMainRepository
 ) : UseCase<List<String>, Observable<List<PlaylistItem>>> {
-    override fun execute(params: List<String>?): Observable<List<PlaylistItem>> = repository.getVideos(params!!)
+    override fun execute(params: List<String>?): Observable<List<PlaylistItem>> = repository.loadVideos(params!!)
 }

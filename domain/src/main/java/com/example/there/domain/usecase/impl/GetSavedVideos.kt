@@ -3,11 +3,11 @@ package com.example.there.domain.usecase.impl
 import com.example.there.domain.model.PlaylistItem
 import com.example.there.domain.repo.IMainRepository
 import com.example.there.domain.usecase.base.UseCase
-import io.reactivex.Observable
+import io.reactivex.Flowable
 import javax.inject.Inject
 
-class GetMoreVideos @Inject constructor(
+class GetSavedVideos @Inject constructor(
         private val repository: IMainRepository
-) : UseCase<List<String>, Observable<List<PlaylistItem>>> {
-    override fun execute(params: List<String>?): Observable<List<PlaylistItem>> = repository.getMoreVideos(params!!)
+) : UseCase<List<String>, Flowable<List<PlaylistItem>>> {
+    override fun execute(params: List<String>?): Flowable<List<PlaylistItem>> = repository.getSavedVideos(channelIds = params!!)
 }

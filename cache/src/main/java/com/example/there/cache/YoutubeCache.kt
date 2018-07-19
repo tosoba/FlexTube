@@ -100,7 +100,7 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
     }
 
     override fun getSavedVideos(
-            playlistId: String
-    ): Flowable<List<PlaylistItemData>> = playlistItemDao.getAllByPlaylistId(playlistId)
+            channelId: String
+    ): Flowable<List<PlaylistItemData>> = playlistItemDao.getAllByChannelId(channelId)
             .map { it.map { it.toData } }
 }
