@@ -6,6 +6,8 @@ import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.addgroup.AddGroupViewModel
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.di.vm.ViewModelKey
+import com.example.there.flextube.groups.group.GroupFragment
+import com.example.there.flextube.groups.group.GroupViewModel
 import com.example.there.flextube.groups.list.GroupsListFragment
 import com.example.there.flextube.groups.list.GroupsListViewModel
 import com.example.there.flextube.home.HomeFragment
@@ -37,6 +39,11 @@ abstract class UiModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(GroupViewModel::class)
+    abstract fun groupViewModel(viewModel: GroupViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(AddGroupViewModel::class)
     abstract fun addGroupViewModel(viewModel: AddGroupViewModel): ViewModel
 
@@ -57,4 +64,7 @@ abstract class UiModule {
 
     @ContributesAndroidInjector
     abstract fun groupsListFragment(): GroupsListFragment
+
+    @ContributesAndroidInjector
+    abstract fun groupFragment(): GroupFragment
 }

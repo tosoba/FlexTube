@@ -13,13 +13,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
+import com.example.there.domain.model.Group
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.databinding.FragmentGroupsListBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
+import com.example.there.flextube.groups.GroupsFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedGroupsAdapter
+import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.util.ext.accountName
 import javax.inject.Inject
 
@@ -44,6 +47,17 @@ class GroupsListFragment : Fragment(), Injectable {
         SortedGroupsAdapter(viewModel.viewState.groups, R.layout.group_item)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
+            showGroupFragment(it)
+        })
+    }
+
+    private fun showGroupFragment(group: Group) {
+        (parentFragment as? GroupsFragment)?.showGroupFragment(UiGroup(group.accountName, group.name))
+    }
+
     private val view: GroupsListView by lazy {
         GroupsListView(
                 viewModel.viewState,
@@ -64,7 +78,7 @@ class GroupsListFragment : Fragment(), Injectable {
                 .title(getString(R.string.new_group))
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input(getString(R.string.group_name), "") { _, input ->
-                    viewModel.checkIfGroupExists(accountName, input.trim().toString(), ifExists =  {
+                    viewModel.checkIfGroupExists(accountName, input.trim().toString(), ifExists = {
                         Toast.makeText(activity!!, "Group named ${input.trim()} already exists.", Toast.LENGTH_SHORT).show()
                     }, ifNotExists = {
                         AddGroupActivity.start(activity!!, accountName, input.trim().toString())

@@ -21,6 +21,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import com.example.there.flextube.R
 import com.example.there.flextube.event.AuthEvent
+import com.example.there.flextube.groups.GroupsFragment
 import com.example.there.flextube.util.ext.screenHeight
 import com.example.there.flextube.util.ext.screenOrientation
 import com.example.there.flextube.util.ext.toPx
@@ -71,6 +72,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
         checkAuthAndLoadData()
     }
 
+    override fun onBackPressed() {
+        val currentFragment = viewPagerAdapter.currentFragment
+        if (currentFragment != null && currentFragment is GroupsFragment && currentFragment.childFragmentManager.backStackEntryCount > 0) {
+            currentFragment.childFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private val itemIds: Array<Int> = arrayOf(R.id.action_home, R.id.action_sub_feed, R.id.action_groups)
 
     private fun initBottomNavigation() {
@@ -94,8 +104,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, H
         }
     }
 
+    private val viewPagerAdapter: MainViewPagerAdapter by lazy { MainViewPagerAdapter(supportFragmentManager) }
+
     private fun initViewPager() {
-        val adapter = MainViewPagerAdapter(supportFragmentManager)
+        val adapter = viewPagerAdapter
         main_view_pager.adapter = adapter
         main_view_pager.addOnPageChangeListener(onPageChangeListener)
     }
