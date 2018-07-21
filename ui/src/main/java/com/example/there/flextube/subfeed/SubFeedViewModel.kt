@@ -1,30 +1,27 @@
 package com.example.there.flextube.subfeed
 
-import android.arch.lifecycle.ViewModel
 import android.util.Log
 import com.example.there.domain.model.Subscription
 import com.example.there.domain.usecase.impl.*
+import com.example.there.flextube.base.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class SubFeedViewModel @Inject constructor(
-        private val getUserSubscriptions: GetUserSubscriptions,
+        private val loadUserSubscriptions: LoadUserSubscriptions,
         private val updateSavedSubscriptions: UpdateSavedSubscriptions,
         private val getVideos: GetVideos,
         private val loadMoreVideos: LoadMoreVideos,
         private val getSavedVideos: GetSavedVideos
-) : ViewModel() {
-
-    private val disposables = CompositeDisposable()
+) : BaseViewModel() {
 
     val viewState = SubFeedViewState()
 
     fun loadVideos(accessToken: String, accountName: String) {
         loadingVideosInProgress = true
-        disposables.add(getUserSubscriptions
-                .execute(GetUserSubscriptions.Params(accessToken, accountName))
+        disposables.add(loadUserSubscriptions
+                .execute(LoadUserSubscriptions.Params(accessToken, accountName))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { viewState.subscriptions.addAll(it) }
@@ -67,9 +64,4 @@ class SubFeedViewModel @Inject constructor(
             .execute(UpdateSavedSubscriptions.Params(accountName, subs))
             .subscribeOn(Schedulers.io())
             .subscribe())
-
-    override fun onCleared() {
-        super.onCleared()
-        disposables.clear()
-    }
 }

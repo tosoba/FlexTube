@@ -2,8 +2,12 @@ package com.example.there.flextube.di.module
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.example.there.flextube.addgroup.AddGroupActivity
+import com.example.there.flextube.addgroup.AddGroupViewModel
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.di.vm.ViewModelKey
+import com.example.there.flextube.groups.list.GroupsListFragment
+import com.example.there.flextube.groups.list.GroupsListViewModel
 import com.example.there.flextube.home.HomeFragment
 import com.example.there.flextube.home.HomeViewModel
 import com.example.there.flextube.main.MainActivity
@@ -27,14 +31,30 @@ abstract class UiModule {
     abstract fun homeViewModel(viewModel: HomeViewModel): ViewModel
 
     @Binds
+    @IntoMap
+    @ViewModelKey(GroupsListViewModel::class)
+    abstract fun groupsListViewModel(viewModel: GroupsListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AddGroupViewModel::class)
+    abstract fun addGroupViewModel(viewModel: AddGroupViewModel): ViewModel
+
+    @Binds
     abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @ContributesAndroidInjector
     abstract fun mainActivity(): MainActivity
 
     @ContributesAndroidInjector
+    abstract fun addGroupActivity(): AddGroupActivity
+
+    @ContributesAndroidInjector
     abstract fun subFeedFragment(): SubFeedFragment
 
     @ContributesAndroidInjector
     abstract fun homeFragment(): HomeFragment
+
+    @ContributesAndroidInjector
+    abstract fun groupsListFragment(): GroupsListFragment
 }

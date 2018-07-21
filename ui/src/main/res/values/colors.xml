@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#010000</color>
     <color name="colorAccent">#9f0000</color>
     <color name="colorMainBackground">#0e0a0a</color>
+
+    <color name="searchViewBackground">#709f0000</color>
 </resources>

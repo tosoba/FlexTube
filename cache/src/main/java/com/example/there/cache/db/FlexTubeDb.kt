@@ -31,4 +31,6 @@ abstract class FlexTubeDb: RoomDatabase() {
     abstract fun playlistItemDao(): PlaylistItemDao
 
     abstract fun playlistDao(): PlaylistDao
+
+    abstract fun subscriptionGroupsJoinDao(): SubscriptionGroupJoinDao
 }

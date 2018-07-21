@@ -1,7 +1,6 @@
 package com.example.there.flextube.subfeed
 
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -20,6 +19,7 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.lifecycle.EventBusComponent
 import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.util.ext.accountName
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -85,10 +85,6 @@ class SubFeedFragment : Fragment(), Injectable {
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
             (activity as MainActivity).loadVideo(it)
         })
-    }
-
-    private val accountName: String by lazy {
-        activity!!.getPreferences(Context.MODE_PRIVATE).getString(MainActivity.PREF_ACCOUNT_NAME, null)
     }
 
     @Suppress("unused")

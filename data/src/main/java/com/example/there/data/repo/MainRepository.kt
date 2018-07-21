@@ -1,5 +1,6 @@
 package com.example.there.data.repo
 
+import com.example.there.data.mapper.GroupMapper
 import com.example.there.data.mapper.PlaylistItemMapper
 import com.example.there.data.mapper.SubscriptionMapper
 import com.example.there.data.mapper.VideoCategoryMapper
@@ -8,6 +9,7 @@ import com.example.there.data.model.PlaylistData
 import com.example.there.data.model.PlaylistItemData
 import com.example.there.data.repo.store.IYoutubeCache
 import com.example.there.data.repo.store.IYoutubeRemote
+import com.example.there.domain.model.Group
 import com.example.there.domain.model.PlaylistItem
 import com.example.there.domain.model.Subscription
 import com.example.there.domain.model.VideoCategory
@@ -22,7 +24,6 @@ class MainRepository @Inject constructor(
         private val youtubeRemoteDataStore: IYoutubeRemote,
         private val youtubeCachedDataStore: IYoutubeCache
 ) : IMainRepository {
-
     private fun concatSavedAndRemoteHomeItems(
             remote: Single<Pair<List<PlaylistItemData>, String?>>,
             savedVideos: List<PlaylistItemData>
@@ -81,17 +82,36 @@ class MainRepository @Inject constructor(
                 youtubeCachedDataStore.saveHomeItems(categoryId, videos, nextPageToken)
             }
 
-    override fun getSubs(
+    override fun getSubscriptions(
             accessToken: String,
             accountName: String
     ): Observable<List<Subscription>> = youtubeCachedDataStore.saveUser(accountName)
             .andThen(youtubeRemoteDataStore.getUserSubscriptions(accessToken)
-                    .doOnNext { youtubeCachedDataStore.saveUserSubscriptions(it, accountName) }
+                    .flatMap {
+                        youtubeCachedDataStore.saveUserSubscriptions(it, accountName)
+                                .andThen(Observable.just(it))
+                    }
                     .map { it.map(SubscriptionMapper::toDomain) })
+
+    override fun getSavedSubsriptions(
+            accountName: String
+    ): Flowable<List<Subscription>> = youtubeCachedDataStore.getUserSubscriptions(accountName)
+            .map { it.map(SubscriptionMapper::toDomain) }
 
     override fun updateSavedSubscriptions(
             subs: List<Subscription>, accountName: String
     ): Completable = youtubeCachedDataStore.updateSavedSubscriptions(subs.map(SubscriptionMapper::toData), accountName)
+
+    override fun getGroups(
+            accountName: String
+    ): Flowable<List<Group>> = youtubeCachedDataStore.getGroupsForAccount(accountName)
+            .map { it.map(GroupMapper::toDomain) }
+
+    override fun getSubscriptionsFromGroup(
+            accountName: String,
+            groupName: String
+    ): Single<List<Subscription>> = youtubeCachedDataStore.getSubscriptionsFromGroup(accountName, groupName)
+            .map { it.map(SubscriptionMapper::toDomain) }
 
     override fun getVideoCategories(): Single<List<VideoCategory>> = youtubeRemoteDataStore.getVideoCategories()
             .map { it.map(VideoCategoryMapper::toDomain) }
@@ -151,4 +171,15 @@ class MainRepository @Inject constructor(
     }.map {
         it.map(PlaylistItemMapper::toDomain)
     }
+
+    override fun getGroup(
+            groupName: String,
+            accountName: String
+    ): Single<Group> = youtubeCachedDataStore.getGroup(groupName, accountName).map(GroupMapper::toDomain)
+
+    override fun insertGroupWithSubscriptions(
+            groupName: String,
+            accountName: String,
+            subscriptionIds: List<String>
+    ): Completable = youtubeCachedDataStore.insertGroupWithSubscriptions(groupName, accountName, subscriptionIds)
 }

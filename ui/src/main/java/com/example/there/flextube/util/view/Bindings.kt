@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -58,4 +59,9 @@ fun bindOnPageChangeListener(viewPager: ViewPager, listener: ViewPager.OnPageCha
 @BindingAdapter("srcId")
 fun setImageResource(imageView: ImageView, resource: Int) {
     imageView.setImageResource(resource)
+}
+
+@BindingAdapter("onQueryTextListener")
+fun setOnQueryTextListener(searchView: SearchView, listener: SearchView.OnQueryTextListener) {
+    searchView.setOnQueryTextListener(listener)
 }

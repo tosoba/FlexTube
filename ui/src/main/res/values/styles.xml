@@ -8,11 +8,19 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowActionBarOverlay">true</item>
-
+        <item name="android:textColorHint">@color/colorAccent</item>
     </style>
 
     <style name="ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:displayOptions">homeAsUp</item>
+    </style>
+
+    <style name="RedCheckbox" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorControlNormal">@color/colorPrimary
+        </item>   <!-- normal border color change as you wish -->
+        <item name="colorControlActivated">@color/colorAccent
+        </item> <!-- activated color change as you wish -->
+        <item name="android:textColor">@color/colorAccent</item> <!-- checkbox text color -->
     </style>
 
 </resources>

@@ -1,19 +1,13 @@
 package com.example.there.cache
 
 import com.example.there.cache.db.FlexTubeDb
-import com.example.there.cache.model.CachedAccount
-import com.example.there.cache.model.CachedPlaylist
-import com.example.there.cache.model.CachedPlaylistItems
+import com.example.there.cache.model.*
 import com.example.there.cache.util.toCache
 import com.example.there.cache.util.toData
-import com.example.there.data.model.HomeItemsData
-import com.example.there.data.model.PlaylistData
-import com.example.there.data.model.PlaylistItemData
-import com.example.there.data.model.SubscriptionData
+import com.example.there.data.model.*
 import com.example.there.data.repo.store.IYoutubeCache
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -29,14 +23,18 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
 
     private val playlistDao = db.playlistDao()
 
+    private val groupDao = db.groupDao()
+
+    private val subscriptionGroupJoinDao = db.subscriptionGroupsJoinDao()
+
     override fun saveUser(accountName: String): Completable = Completable.fromAction {
         accountDao.insert(CachedAccount(accountName))
     }
 
     override fun getUserSubscriptions(
             accountName: String
-    ): Observable<List<SubscriptionData>> = subscriptionDao.getAllByAccountName(accountName)
-            .map { it.map { it.toData } }.toObservable()
+    ): Flowable<List<SubscriptionData>> = subscriptionDao.getAllFlowableByAccountName(accountName)
+            .map { it.map { it.toData } }
 
     override fun saveUserSubscriptions(
             subs: List<SubscriptionData>,
@@ -54,11 +52,6 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
                     !subs.map { it.id }.contains(savedSub.id)
                 }.toTypedArray()))
             }.toCompletable()
-
-    override fun getSubscriptionsFromGroup(
-            groupName: String
-    ): Single<List<SubscriptionData>> = subscriptionDao.getAllByGroupName(groupName)
-            .map { it.map { it.toData } }
 
     private val savedHomeItems: ConcurrentHashMap<String, CachedPlaylistItems> = ConcurrentHashMap()
 
@@ -103,4 +96,29 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
             channelId: String
     ): Flowable<List<PlaylistItemData>> = playlistItemDao.getAllByChannelId(channelId)
             .map { it.map { it.toData } }
+
+    override fun getGroupsForAccount(
+            accountName: String
+    ): Flowable<List<GroupData>> = groupDao.getAllByAccountName(accountName)
+            .map { it.map { it.toData } }
+
+    override fun getSubscriptionsFromGroup(
+            accountName: String,
+            groupName: String
+    ): Single<List<SubscriptionData>> = subscriptionDao.getAllByGroup(accountName, groupName)
+            .map { it.map { it.toData } }
+
+    override fun getGroup(
+            groupName: String,
+            accountName: String
+    ): Single<GroupData> = groupDao.get(groupName, accountName).map { it.toData }
+
+    override fun insertGroupWithSubscriptions(
+            groupName: String,
+            accountName: String,
+            subscriptionIds: List<String>
+    ): Completable = Completable.fromAction {
+        groupDao.insert(CachedGroup(groupName, accountName))
+        subscriptionGroupJoinDao.insertMany(*subscriptionIds.map { SubscriptionGroupJoin(it, groupName, accountName) }.toTypedArray())
+    }
 }

@@ -6,14 +6,14 @@ import com.example.there.cache.dao.base.DeleteDao
 import com.example.there.cache.dao.base.InsertIgnoreDao
 import com.example.there.cache.db.Tables
 import com.example.there.cache.model.CachedGroup
-import io.reactivex.Maybe
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
 interface GroupDao : DeleteDao<CachedGroup>, InsertIgnoreDao<CachedGroup> {
-    @Query("SELECT * FROM ${Tables.GROUPS} WHERE name = :name")
-    fun getByName(name: String): Maybe<CachedGroup>
+    @Query("SELECT * FROM ${Tables.GROUPS} WHERE name = :groupName AND account_name = :accountName")
+    fun get(groupName: String, accountName: String): Single<CachedGroup>
 
     @Query("SELECT * FROM ${Tables.GROUPS} WHERE account_name = :accountName")
-    fun getAllByAccountName(accountName: String): Single<List<CachedGroup>>
+    fun getAllByAccountName(accountName: String): Flowable<List<CachedGroup>>
 }

@@ -95,6 +95,7 @@ dependencies {
     implementation uiDependencies.archRuntime
     implementation uiDependencies.archExtensions
     implementation "android.arch.persistence.room:rxjava2:1.1.1"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     kapt uiDependencies.archCompiler
 
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
@@ -109,6 +110,7 @@ dependencies {
     }
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
 
     compileOnly uiDependencies.mockito
 

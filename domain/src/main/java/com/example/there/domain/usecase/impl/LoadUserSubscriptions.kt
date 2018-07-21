@@ -6,11 +6,11 @@ import com.example.there.domain.usecase.base.UseCase
 import io.reactivex.Observable
 import javax.inject.Inject
 
-class GetUserSubscriptions @Inject constructor(
+class LoadUserSubscriptions @Inject constructor(
         private val repository: IMainRepository
-) : UseCase<GetUserSubscriptions.Params, Observable<List<Subscription>>> {
+) : UseCase<LoadUserSubscriptions.Params, Observable<List<Subscription>>> {
 
-    override fun execute(params: Params?): Observable<List<Subscription>> = repository.getSubs(
+    override fun execute(params: Params?): Observable<List<Subscription>> = repository.getSubscriptions(
             accessToken = params!!.accessToken,
             accountName = params.accountName
     )
