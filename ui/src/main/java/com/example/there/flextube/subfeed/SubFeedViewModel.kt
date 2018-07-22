@@ -13,10 +13,13 @@ class SubFeedViewModel @Inject constructor(
         private val updateSavedSubscriptions: UpdateSavedSubscriptions,
         private val getVideos: GetVideos,
         private val loadMoreVideos: LoadMoreVideos,
+        private val getSavedVideosWithUpdates: GetSavedVideosWithUpdates,
         private val getSavedVideos: GetSavedVideos
 ) : BaseViewModel() {
 
     val viewState = SubFeedViewState()
+
+    private var loadingVideosInProgress = false
 
     fun loadVideos(accessToken: String, accountName: String) {
         loadingVideosInProgress = true
@@ -25,7 +28,10 @@ class SubFeedViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { viewState.subscriptions.addAll(it) }
-                .doOnComplete { updateDbSubscriptions(viewState.subscriptions, accountName) }
+                .doOnComplete {
+                    updateDbSubscriptions(viewState.subscriptions, accountName)
+                    loadDbVideos()
+                }
                 .observeOn(Schedulers.io())
                 .flatMap { subs -> getVideos.execute(subs.map { it.channelId }) }
                 .doOnComplete {
@@ -33,13 +39,20 @@ class SubFeedViewModel @Inject constructor(
                     bindDbVideos()
                 }
                 .observeOn(AndroidSchedulers.mainThread())
+                .map { it.filter { !viewState.videos.contains(it) } }
                 .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message) }))
     }
 
-    private var loadingVideosInProgress = false
+    private fun loadDbVideos() {
+        disposables.add(getSavedVideos.execute(viewState.subscriptions.map { it.channelId })
+                .subscribeOn(Schedulers.io())
+                .map { it.filter { !viewState.videos.contains(it) } }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message) }))
+    }
 
     private fun bindDbVideos() {
-        disposables.add(getSavedVideos.execute(viewState.subscriptions.map { it.channelId })
+        disposables.add(getSavedVideosWithUpdates.execute(viewState.subscriptions.map { it.channelId })
                 .subscribeOn(Schedulers.io())
                 .map { it.filter { !viewState.videos.contains(it) } }
                 .observeOn(AndroidSchedulers.mainThread())

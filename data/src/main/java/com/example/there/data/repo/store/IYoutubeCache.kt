@@ -18,7 +18,8 @@ interface IYoutubeCache {
     fun getPlaylistById(id: String): Single<PlaylistData>
     fun updatePlaylistNextPageToken(id: String, nextPageToken: String?): Completable
 
-    fun getSavedVideos(channelId: String): Flowable<List<PlaylistItemData>>
+    fun getSavedVideosFlowable(channelId: String): Flowable<List<PlaylistItemData>>
+    fun getSavedVideos(channelId: String): Single<List<PlaylistItemData>>
     fun saveRetrievedVideos(playlistId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null): Completable
 
     fun getSavedHomeItems(categoryId: String): Single<HomeItemsData>

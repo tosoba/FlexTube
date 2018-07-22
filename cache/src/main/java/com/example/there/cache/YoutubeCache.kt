@@ -92,9 +92,14 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
         playlistItemDao.insertMany(*videos.map { it.toCache(playlistId) }.toTypedArray())
     }
 
+    override fun getSavedVideosFlowable(
+            channelId: String
+    ): Flowable<List<PlaylistItemData>> = playlistItemDao.getAllFlowableByChannelId(channelId)
+            .map { it.map { it.toData } }
+
     override fun getSavedVideos(
             channelId: String
-    ): Flowable<List<PlaylistItemData>> = playlistItemDao.getAllByChannelId(channelId)
+    ): Single<List<PlaylistItemData>> = playlistItemDao.getAllByChannelId(channelId)
             .map { it.map { it.toData } }
 
     override fun getGroupsForAccount(

@@ -17,6 +17,7 @@ import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
+import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import javax.inject.Inject
 
 
@@ -44,13 +45,18 @@ class GroupFragment : Fragment(), Injectable {
         SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
     }
 
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
+        override fun onLoadMore() = viewModel.loadMoreVideos()
+    }
+
     private val view: GroupView by lazy {
         GroupView(
                 subscriptionsAdapter,
                 videosAdapter,
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-                }
+                },
+                onVideosScrollListener
         )
     }
 

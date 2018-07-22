@@ -6,6 +6,7 @@ import com.example.there.cache.dao.base.InsertIgnoreDao
 import com.example.there.cache.db.Tables
 import com.example.there.cache.model.CachedPlaylistItem
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface PlaylistItemDao : InsertIgnoreDao<CachedPlaylistItem> {
@@ -13,5 +14,8 @@ interface PlaylistItemDao : InsertIgnoreDao<CachedPlaylistItem> {
     fun getAllByPlaylistId(playlistId: String): Flowable<List<CachedPlaylistItem>>
 
     @Query("SELECT * FROM ${Tables.PLAYLIST_ITEMS} WHERE channel_id = :channelId")
-    fun getAllByChannelId(channelId: String): Flowable<List<CachedPlaylistItem>>
+    fun getAllFlowableByChannelId(channelId: String): Flowable<List<CachedPlaylistItem>>
+
+    @Query("SELECT * FROM ${Tables.PLAYLIST_ITEMS} WHERE channel_id = :channelId")
+    fun getAllByChannelId(channelId: String): Single<List<CachedPlaylistItem>>
 }

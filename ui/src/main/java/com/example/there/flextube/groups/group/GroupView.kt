@@ -7,5 +7,6 @@ import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
 data class GroupView(
         val subscriptionsAdapter: SubFeedSubscriptionsAdapter,
         val videosAdapter: SortedVideosAdapter,
-        val itemDecoration: RecyclerView.ItemDecoration
+        val itemDecoration: RecyclerView.ItemDecoration,
+        val onVideosScrollListener: RecyclerView.OnScrollListener
 )

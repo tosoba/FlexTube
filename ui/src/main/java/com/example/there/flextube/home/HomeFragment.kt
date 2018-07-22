@@ -77,8 +77,13 @@ class HomeFragment : Fragment(), Injectable {
         }.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    private val eventBusComponent = EventBusComponent(this)
+    private val disposablesComponent = DisposablesComponent()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycle.addObserver(eventBusComponent)
+        lifecycle.addObserver(disposablesComponent)
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
             (activity as MainActivity).loadVideo(it)
@@ -97,21 +102,15 @@ class HomeFragment : Fragment(), Injectable {
         })
     }
 
-    private val eventBusComponent = EventBusComponent(this)
-    private val disposablesComponent = DisposablesComponent()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycle.addObserver(eventBusComponent)
-        lifecycle.addObserver(disposablesComponent)
-    }
-
     private var accessToken: String? = null
+
+    private var authEventReceived = false
 
     @Suppress("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(event: AuthEvent) {
-        if (event is AuthEvent.Successful) {
+        if (event is AuthEvent.Successful && !authEventReceived) {
+            authEventReceived = true
             accessToken = event.accessToken
             viewModel.loadGeneralHomeItems(event.accessToken)
             viewModel.loadVideoCategories()

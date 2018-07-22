@@ -9,6 +9,7 @@
 
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:textColorHint">@color/colorAccent</item>
+        <item name="android:editTextColor">@color/colorAccent</item>
     </style>
 
     <style name="ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
@@ -16,10 +17,10 @@
     </style>
 
     <style name="RedCheckbox" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorControlNormal">@color/colorPrimary
-        </item>   <!-- normal border color change as you wish -->
+        <item name="colorControlNormal">@color/colorAccent
+        </item>
         <item name="colorControlActivated">@color/colorAccent
-        </item> <!-- activated color change as you wish -->
+        </item>
         <item name="android:textColor">@color/colorAccent</item> <!-- checkbox text color -->
     </style>
 

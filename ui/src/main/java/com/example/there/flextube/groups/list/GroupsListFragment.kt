@@ -41,17 +41,14 @@ class GroupsListFragment : Fragment(), Injectable {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(disposablesComponent)
         viewModel.loadGroups(accountName)
+
+        disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
+            showGroupFragment(it)
+        })
     }
 
     private val groupsAdapter: SortedGroupsAdapter by lazy {
         SortedGroupsAdapter(viewModel.viewState.groups, R.layout.group_item)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
-            showGroupFragment(it)
-        })
     }
 
     private fun showGroupFragment(group: Group) {
@@ -94,7 +91,7 @@ class GroupsListFragment : Fragment(), Injectable {
 
         return binding.apply {
             groupsListView = view
-            groupsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+            groupsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
     }
 }

@@ -18,7 +18,8 @@ interface IMainRepository {
 
     fun loadVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
     fun loadMoreVideos(channelIds: List<String>): Completable
-    fun getSavedVideos(channelIds: List<String>): Flowable<List<PlaylistItem>>
+    fun getSavedVideosWithUpdates(channelIds: List<String>): Flowable<List<PlaylistItem>>
+    fun getSavedVideos(channelIds: List<String>): Single<List<PlaylistItem>>
 
     fun getGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
     fun getHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>

@@ -42,6 +42,10 @@ class SubFeedFragment : Fragment(), Injectable {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(eventBusComponent)
         lifecycle.addObserver(disposablesComponent)
+
+        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
+            (activity as MainActivity).loadVideo(it)
+        })
     }
 
     private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy {
@@ -77,14 +81,6 @@ class SubFeedFragment : Fragment(), Injectable {
             subButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
-            (activity as MainActivity).loadVideo(it)
-        })
     }
 
     @Suppress("unused")
