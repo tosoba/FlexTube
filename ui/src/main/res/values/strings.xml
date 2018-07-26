@@ -12,4 +12,9 @@
     <string name="confirm">confirm</string>
     <string name="group_name">Group name</string>
     <string name="new_group">New group</string>
+    <string name="choose_account">Choose account</string>
+    <string name="click_choose_account_to_login">Click choose account to login.</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="want_to_logout">Do you want to logout?</string>
 </resources>

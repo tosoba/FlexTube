@@ -15,16 +15,12 @@ import com.example.there.flextube.R
 import com.example.there.flextube.databinding.FragmentHomeBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
-import com.example.there.flextube.event.AuthEvent
 import com.example.there.flextube.lifecycle.DisposablesComponent
-import com.example.there.flextube.lifecycle.EventBusComponent
 import com.example.there.flextube.list.VideoCategoriesAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_home.*
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 
@@ -77,12 +73,10 @@ class HomeFragment : Fragment(), Injectable {
         }.root
     }
 
-    private val eventBusComponent = EventBusComponent(this)
     private val disposablesComponent = DisposablesComponent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(eventBusComponent)
         lifecycle.addObserver(disposablesComponent)
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
@@ -102,18 +96,16 @@ class HomeFragment : Fragment(), Injectable {
         })
     }
 
-    private var accessToken: String? = null
-
-    private var authEventReceived = false
-
-    @Suppress("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun onEvent(event: AuthEvent) {
-        if (event is AuthEvent.Successful && !authEventReceived) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (!authEventReceived) {
             authEventReceived = true
-            accessToken = event.accessToken
-            viewModel.loadGeneralHomeItems(event.accessToken)
+            viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
             viewModel.loadVideoCategories()
         }
     }
+
+    private var accessToken: String? = null
+
+    private var authEventReceived = false
 }

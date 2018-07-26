@@ -1,8 +1,10 @@
 package com.example.there.flextube.util.ext
 
-import android.content.Context
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
-import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.start.StartActivity
 
 val Fragment.accountName: String
-    get() = activity!!.getPreferences(Context.MODE_PRIVATE).getString(MainActivity.PREF_ACCOUNT_NAME, null)
+    get() = PreferenceManager.getDefaultSharedPreferences(activity)
+            .getString(StartActivity.PREF_ACCOUNT_NAME, null)
+

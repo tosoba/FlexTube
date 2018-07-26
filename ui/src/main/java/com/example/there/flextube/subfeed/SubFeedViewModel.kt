@@ -48,7 +48,7 @@ class SubFeedViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .map { it.filter { !viewState.videos.contains(it) } }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message) }))
+                .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message ?: "No saved videos.") }))
     }
 
     private fun bindDbVideos() {
@@ -56,7 +56,7 @@ class SubFeedViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .map { it.filter { !viewState.videos.contains(it) } }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message) }))
+                .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message ?: "No saved videos.") }))
     }
 
     fun loadMoreVideos() {

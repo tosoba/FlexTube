@@ -17,16 +17,21 @@
         <activity
             android:name=".main.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-            android:hardwareAccelerated="true">
+            android:hardwareAccelerated="true" />
+
+        <activity
+            android:name=".addgroup.AddGroupActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" />
+        <activity
+            android:name=".start.StartActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".addgroup.AddGroupActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" />
     </application>
 
 </manifest>

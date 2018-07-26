@@ -14,15 +14,11 @@ import com.example.there.flextube.R
 import com.example.there.flextube.databinding.FragmentSubFeedBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
-import com.example.there.flextube.event.AuthEvent
 import com.example.there.flextube.lifecycle.DisposablesComponent
-import com.example.there.flextube.lifecycle.EventBusComponent
 import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.accountName
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 
@@ -35,17 +31,20 @@ class SubFeedFragment : Fragment(), Injectable {
         ViewModelProviders.of(this, viewModelFactory).get(SubFeedViewModel::class.java)
     }
 
-    private val eventBusComponent = EventBusComponent(this)
     private val disposablesComponent = DisposablesComponent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(eventBusComponent)
         lifecycle.addObserver(disposablesComponent)
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
             (activity as MainActivity).loadVideo(it)
         })
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.loadVideos((activity as MainActivity).accessToken, accountName)
     }
 
     private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy {
@@ -81,13 +80,5 @@ class SubFeedFragment : Fragment(), Injectable {
             subButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
-    }
-
-    @Suppress("unused")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun onEvent(event: AuthEvent) {
-        if (event is AuthEvent.Successful) {
-            viewModel.loadVideos(event.accessToken, accountName)
-        }
     }
 }
