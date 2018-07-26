@@ -18,20 +18,11 @@
         android:background="@drawable/main_background"
         tools:context=".start.StartActivity">
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="@{safeUnbox(startView.state.authInProgress) ? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"
-            android:visibility="@{(safeUnbox(startView.state.splashOnly) &amp;&amp; !safeUnbox(startView.state.authInProgress)) ? View.VISIBLE : View.GONE }"
+            android:src="@drawable/logo"
+            android:visibility="@{safeUnbox(startView.state.authInProgress) ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -56,10 +47,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
+            android:onClick="@{startView.onChooseAccountClickListener}"
             android:text="@string/choose_account"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:onClick="@{startView.onChooseAccountClickListener}"
             android:visibility="@{(safeUnbox(startView.state.splashOnly) || safeUnbox(startView.state.authInProgress)) ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
