@@ -40,8 +40,11 @@ class HomeViewModel @Inject constructor(
     fun loadHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = true) {
         fun load() {
             previousCategoryId = categoryId
+
+            //TODO: maybe clear when previousCategoryId != categoryId here instead of in clearing in fragment?
             if (shouldReturnAll) viewState.homeItems.clear()
             viewState.isLoadingInProgress.set(true)
+
             disposables.add(getHomeItemsByCategory.execute(params = GetHomeItemsByCategory.Params(categoryId, shouldReturnAll))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

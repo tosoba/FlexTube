@@ -27,7 +27,7 @@ class SubFeedFragment : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: SubFeedViewModel by lazy {
+    private val viewModel: SubFeedViewModel by lazy(LazyThreadSafetyMode.NONE)  {
         ViewModelProviders.of(this, viewModelFactory).get(SubFeedViewModel::class.java)
     }
 
@@ -47,7 +47,7 @@ class SubFeedFragment : Fragment(), Injectable {
         viewModel.loadVideos((activity as MainActivity).accessToken, accountName)
     }
 
-    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy {
+    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE)  {
         SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
@@ -55,11 +55,11 @@ class SubFeedFragment : Fragment(), Injectable {
         override fun onLoadMore() = viewModel.loadMoreVideos()
     }
 
-    private val videosAdapter: SortedVideosAdapter by lazy {
+    private val videosAdapter: SortedVideosAdapter by lazy(LazyThreadSafetyMode.NONE)  {
         SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
     }
 
-    private val view: SubFeedView by lazy {
+    private val view: SubFeedView by lazy(LazyThreadSafetyMode.NONE)  {
         SubFeedView(
                 viewModel.viewState,
                 subscriptionsAdapter,

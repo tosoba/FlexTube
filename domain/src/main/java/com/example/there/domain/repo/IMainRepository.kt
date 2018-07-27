@@ -21,11 +21,13 @@ interface IMainRepository {
     fun getSavedVideosWithUpdates(channelIds: List<String>): Flowable<List<PlaylistItem>>
     fun getSavedVideos(channelIds: List<String>): Single<List<PlaylistItem>>
 
+    fun loadRelatedVideos(videoId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
+
     fun getGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
     fun getHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
 
     fun getVideoCategories(): Single<List<VideoCategory>>
-
     fun getGroup(groupName: String, accountName: String): Single<Group>
+
     fun insertGroupWithSubscriptions(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
 }

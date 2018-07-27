@@ -33,15 +33,15 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: AddGroupViewModel by lazy {
+    private val viewModel: AddGroupViewModel by lazy(LazyThreadSafetyMode.NONE)  {
         ViewModelProviders.of(this, viewModelFactory).get(AddGroupViewModel::class.java)
     }
 
-    private val adapter: AddGroupSubscriptionsAdapter by lazy {
+    private val adapter: AddGroupSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE)  {
         AddGroupSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_to_choose_item)
     }
 
-    private val view: AddGroupView by lazy {
+    private val view: AddGroupView by lazy(LazyThreadSafetyMode.NONE)  {
         AddGroupView(
                 viewModel.viewState,
                 adapter,
@@ -68,8 +68,8 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     }
 
-    private val accountName: String by lazy { intent.getStringExtra(EXTRA_ACCOUNT_NAME) }
-    private val groupName: String by lazy { intent.getStringExtra(EXTRA_GROUP_NAME) }
+    private val accountName: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_ACCOUNT_NAME) }
+    private val groupName: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_GROUP_NAME) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

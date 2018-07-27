@@ -2,13 +2,16 @@ package com.example.there.flextube.util.view
 
 import android.databinding.BindingAdapter
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
+import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.there.flextube.R
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 
 @BindingAdapter("onNavigationItemSelectedListener")
 fun bindOnNavigationItemSelectedListener(bottomNavigationView: BottomNavigationView, listener: BottomNavigationView.OnNavigationItemSelectedListener) {
@@ -56,6 +59,11 @@ fun bindOnPageChangeListener(viewPager: ViewPager, listener: ViewPager.OnPageCha
     viewPager.addOnPageChangeListener(listener)
 }
 
+@BindingAdapter("fragmentStatePagerAdapter")
+fun bindFragmentStatePagerAdapter(viewPager: ViewPager, adapter: FragmentStatePagerAdapter) {
+    viewPager.adapter = adapter
+}
+
 @BindingAdapter("srcId")
 fun setImageResource(imageView: ImageView, resource: Int) {
     imageView.setImageResource(resource)
@@ -64,4 +72,19 @@ fun setImageResource(imageView: ImageView, resource: Int) {
 @BindingAdapter("onQueryTextListener")
 fun setOnQueryTextListener(searchView: SearchView, listener: SearchView.OnQueryTextListener) {
     searchView.setOnQueryTextListener(listener)
+}
+
+@BindingAdapter("panelSlideListener")
+fun bindPanelSlideListener(slidingUpPanelLayout: SlidingUpPanelLayout, listener: SlidingUpPanelLayout.PanelSlideListener) {
+    slidingUpPanelLayout.addPanelSlideListener(listener)
+}
+
+@BindingAdapter("fadeOnClickListener")
+fun setFadeOnClickListener(slidingUpPanelLayout: SlidingUpPanelLayout, listener: View.OnClickListener) {
+    slidingUpPanelLayout.setFadeOnClickListener(listener)
+}
+
+@BindingAdapter("initialSlideState")
+fun setInitialPanelSlideState(slidingUpPanelLayout: SlidingUpPanelLayout, state: SlidingUpPanelLayout.PanelState) {
+    slidingUpPanelLayout.panelState = state
 }

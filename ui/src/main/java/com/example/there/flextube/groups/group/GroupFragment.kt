@@ -26,22 +26,22 @@ class GroupFragment : Fragment(), Injectable {
     @Inject
     lateinit var factory: ViewModelFactory
 
-    private val viewModel: GroupViewModel by lazy {
+    private val viewModel: GroupViewModel by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProviders.of(this, factory).get(GroupViewModel::class.java)
     }
 
-    private val group: UiGroup by lazy { arguments!!.getParcelable<UiGroup>(ARG_GROUP) }
+    private val group: UiGroup by lazy(LazyThreadSafetyMode.NONE) { arguments!!.getParcelable<UiGroup>(ARG_GROUP) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.loadData(group)
     }
 
-    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy {
+    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
-    private val videosAdapter: SortedVideosAdapter by lazy {
+    private val videosAdapter: SortedVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
     }
 
@@ -49,7 +49,7 @@ class GroupFragment : Fragment(), Injectable {
         override fun onLoadMore() = viewModel.loadMoreVideos()
     }
 
-    private val view: GroupView by lazy {
+    private val view: GroupView by lazy(LazyThreadSafetyMode.NONE) {
         GroupView(
                 subscriptionsAdapter,
                 videosAdapter,

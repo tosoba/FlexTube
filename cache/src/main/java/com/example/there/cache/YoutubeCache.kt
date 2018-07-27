@@ -55,12 +55,6 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
 
     private val savedHomeItems: ConcurrentHashMap<String, CachedPlaylistItems> = ConcurrentHashMap()
 
-    override fun getSavedHomeItems(categoryId: String): Single<HomeItemsData> {
-        val saved = savedHomeItems[categoryId]
-        return if (saved == null) Single.just(HomeItemsData.empty())
-        else Single.just(HomeItemsData(saved.videos.toList(), saved.nextPageToken))
-    }
-
     override fun saveHomeItems(categoryId: String, videos: List<PlaylistItemData>, nextPageToken: String?) {
         val saved = savedHomeItems[categoryId]
         if (saved != null) {
@@ -69,6 +63,31 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
         } else {
             savedHomeItems[categoryId] = CachedPlaylistItems(hashSetOf(*videos.toTypedArray()), nextPageToken)
         }
+    }
+
+    override fun getSavedHomeItems(categoryId: String): Single<SavedPlaylistItemsData> {
+        val saved = savedHomeItems[categoryId]
+        return if (saved == null) Single.just(SavedPlaylistItemsData.empty())
+        else Single.just(SavedPlaylistItemsData(saved.videos.toList(), saved.nextPageToken))
+    }
+
+    private val savedRelatedVideos: ConcurrentHashMap<String, CachedPlaylistItems> = ConcurrentHashMap()
+
+    override fun saveRelatedVideos(videoId: String, videos: List<PlaylistItemData>, nextPageToken: String?) {
+        val saved = savedRelatedVideos[videoId]
+        if (saved != null) {
+            saved.videos.addAll(videos)
+            saved.nextPageToken = nextPageToken
+        } else {
+            savedRelatedVideos[videoId] = CachedPlaylistItems(hashSetOf(*videos.toTypedArray()), nextPageToken)
+        }
+    }
+
+    //TODO: since save/get methods are the same for home and related make private method that takes collection as parameter
+    override fun getSavedRelatedVideos(videoId: String): Single<SavedPlaylistItemsData> {
+        val saved = savedRelatedVideos[videoId]
+        return if (saved == null) Single.just(SavedPlaylistItemsData.empty())
+        else Single.just(SavedPlaylistItemsData(saved.videos.toList(), saved.nextPageToken))
     }
 
     override fun getPlaylistByChannelId(channelId: String): Single<PlaylistData> = playlistDao.getByChannelId(channelId).map { it.toData }

@@ -31,7 +31,7 @@ class GroupsListFragment : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: GroupsListViewModel by lazy {
+    private val viewModel: GroupsListViewModel by lazy(LazyThreadSafetyMode.NONE)  {
         ViewModelProviders.of(this, viewModelFactory).get(GroupsListViewModel::class.java)
     }
 
@@ -47,7 +47,7 @@ class GroupsListFragment : Fragment(), Injectable {
         })
     }
 
-    private val groupsAdapter: SortedGroupsAdapter by lazy {
+    private val groupsAdapter: SortedGroupsAdapter by lazy(LazyThreadSafetyMode.NONE)  {
         SortedGroupsAdapter(viewModel.viewState.groups, R.layout.group_item)
     }
 
@@ -55,7 +55,7 @@ class GroupsListFragment : Fragment(), Injectable {
         (parentFragment as? GroupsFragment)?.showGroupFragment(UiGroup(group.accountName, group.name))
     }
 
-    private val view: GroupsListView by lazy {
+    private val view: GroupsListView by lazy(LazyThreadSafetyMode.NONE)  {
         GroupsListView(
                 viewModel.viewState,
                 groupsAdapter,

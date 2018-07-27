@@ -13,6 +13,7 @@ import com.example.there.flextube.groups.list.GroupsListViewModel
 import com.example.there.flextube.home.HomeFragment
 import com.example.there.flextube.home.HomeViewModel
 import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.main.MainViewModel
 import com.example.there.flextube.subfeed.SubFeedFragment
 import com.example.there.flextube.subfeed.SubFeedViewModel
 import dagger.Binds
@@ -22,6 +23,11 @@ import dagger.multibindings.IntoMap
 
 @Module
 abstract class UiModule {
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    abstract fun mainViewModel(viewModel: MainViewModel): ViewModel
+
     @Binds
     @IntoMap
     @ViewModelKey(SubFeedViewModel::class)

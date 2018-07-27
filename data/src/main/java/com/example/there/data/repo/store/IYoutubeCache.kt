@@ -22,13 +22,16 @@ interface IYoutubeCache {
     fun getSavedVideos(channelId: String): Single<List<PlaylistItemData>>
     fun saveRetrievedVideos(playlistId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null): Completable
 
-    fun getSavedHomeItems(categoryId: String): Single<HomeItemsData>
+    fun getSavedHomeItems(categoryId: String): Single<SavedPlaylistItemsData>
     fun saveHomeItems(categoryId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
 
     fun getGroupsForAccount(accountName: String): Flowable<List<GroupData>>
     fun getGroup(groupName: String, accountName: String): Single<GroupData>
 
     fun insertGroupWithSubscriptions(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
+
+    fun saveRelatedVideos(videoId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
+    fun getSavedRelatedVideos(videoId: String): Single<SavedPlaylistItemsData>
 
     companion object {
         const val CATEGORY_GENERAL = "CATEGORY_GENERAL"

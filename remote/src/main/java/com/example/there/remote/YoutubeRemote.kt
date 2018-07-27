@@ -61,4 +61,10 @@ class YoutubeRemote @Inject constructor(private val service: YoutubeService) : I
 
     override fun getVideoCategories(): Single<List<VideoCategoryData>> = service.getVideoCategories()
             .map { it.items.map(ApiVideoCategoryMapper::toData) }
+
+    override fun getRelatedVideos(
+            videoId: String,
+            pageToken: String?
+    ): Single<Pair<List<PlaylistItemData>, String?>> = service.getRelatedVideos(videoId, pageToken)
+            .map { it.items.map(ApiRelatedVideoMapper::toData) to it.nextPageToken }
 }

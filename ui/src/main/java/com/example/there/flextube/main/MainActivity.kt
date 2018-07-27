@@ -2,13 +2,19 @@ package com.example.there.flextube.main
 
 import android.app.Activity
 import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
+import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -16,13 +22,17 @@ import android.widget.ImageButton
 import android.widget.RelativeLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
+import com.example.there.flextube.databinding.ActivityMainBinding
+import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.groups.GroupsFragment
+import com.example.there.flextube.lifecycle.DisposablesComponent
+import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.start.StartActivity
 import com.example.there.flextube.util.ext.screenHeight
 import com.example.there.flextube.util.ext.screenOrientation
 import com.example.there.flextube.util.ext.toPx
+import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.AbstractYouTubePlayerListener
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -38,16 +48,101 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentDispatchingAndroidInjector
 
-    val accessToken: String by lazy { intent.getStringExtra(EXTRA_TOKEN) }
+    val accessToken: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_TOKEN) }
+
+    @Inject
+    lateinit var factory: ViewModelFactory
+
+    private val viewModel: MainViewModel by lazy(LazyThreadSafetyMode.NONE) {
+        ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
+    }
+
+    //region relatedVideosRecyclerView
+    private val relatedVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) { VideosAdapter(viewModel.viewState.relatedVideos, R.layout.video_item) }
+
+    private val onRelatedVideosScrollListener: EndlessRecyclerOnScrollListener by lazy(LazyThreadSafetyMode.NONE) {
+        object : EndlessRecyclerOnScrollListener() {
+            override fun onLoadMore() = viewModel.loadRelatedVideos(lastPlayedVideoId!!, false)
+        }
+    }
+
+    private val relatedVideosItemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
+        DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
+            setDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.video_separator)!!)
+        }
+    }
+    //endregion
+
+    //region bottomNavigationView
+    private val itemIds: Array<Int> = arrayOf(R.id.action_home, R.id.action_sub_feed, R.id.action_groups)
+
+    private val onNavigationItemSelectedListener: BottomNavigationView.OnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        if (item.itemId == main_bottom_navigation_view.selectedItemId) {
+            return@OnNavigationItemSelectedListener false
+        }
+
+        main_view_pager.currentItem = itemIds.indexOf(item.itemId)
+        return@OnNavigationItemSelectedListener true
+    }
+    //endregion
+
+    //region viewPager
+    private val viewPagerAdapter: MainViewPagerAdapter by lazy(LazyThreadSafetyMode.NONE)  { MainViewPagerAdapter(supportFragmentManager) }
+
+    private val onPageChangeListener = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) = Unit
+
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) = Unit
+
+        override fun onPageSelected(position: Int) {
+            main_bottom_navigation_view?.menu?.findItem(itemIds[position])?.isChecked = true
+        }
+    }
+    //endregion
+
+    //region slidingUpPanelLayout listeners
+    private val fadeOnClickListener = View.OnClickListener {
+        sliding_layout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+    }
+
+    private val slideListener = object : SlidingUpPanelLayout.PanelSlideListener {
+        override fun onPanelSlide(panel: View?, slideOffset: Float) = updatePlayerDimensions(slideOffset)
+
+        override fun onPanelStateChanged(panel: View?,
+                                         previousState: SlidingUpPanelLayout.PanelState?,
+                                         newState: SlidingUpPanelLayout.PanelState?) = Unit
+    }
+    //endregion
+
+    private val view: MainActivityView by lazy(LazyThreadSafetyMode.NONE)  {
+        MainActivityView(
+                state = viewModel.viewState,
+                relatedVideosAdapter = relatedVideosAdapter,
+                onRelatedVideosScroll = onRelatedVideosScrollListener,
+                itemDecoration = relatedVideosItemDecoration,
+                onNavigationItemSelectedListener = onNavigationItemSelectedListener,
+                viewPagerAdapter = viewPagerAdapter,
+                onPageChangeListener = onPageChangeListener,
+                fadeOnClickListener = fadeOnClickListener,
+                slideListener = slideListener,
+                initialSlidePanelState = SlidingUpPanelLayout.PanelState.HIDDEN
+        )
+    }
+
+    private val disposablesComponent = DisposablesComponent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        binding.mainView = view
+        binding.relatedVideosRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
         setSupportActionBar(main_toolbar)
 
-        initBottomNavigation()
-        initViewPager()
-        initSlidingLayout()
+        lifecycle.addObserver(disposablesComponent)
+        disposablesComponent.add(relatedVideosAdapter.videoClicked.subscribe { loadVideo(it) })
+
         initYouTubePlayerView()
         addPlayerViewControls()
     }
@@ -68,52 +163,6 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             .negativeText(getString(R.string.no))
             .build()
             .apply { show() }
-
-    private val itemIds: Array<Int> = arrayOf(R.id.action_home, R.id.action_sub_feed, R.id.action_groups)
-
-    private fun initBottomNavigation() {
-        main_bottom_navigation_view.setOnNavigationItemSelectedListener { item ->
-            if (item.itemId == main_bottom_navigation_view.selectedItemId) {
-                return@setOnNavigationItemSelectedListener false
-            }
-
-            main_view_pager.currentItem = itemIds.indexOf(item.itemId)
-            true
-        }
-    }
-
-    private val onPageChangeListener = object : ViewPager.OnPageChangeListener {
-        override fun onPageScrollStateChanged(state: Int) = Unit
-
-        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) = Unit
-
-        override fun onPageSelected(position: Int) {
-            main_bottom_navigation_view?.menu?.findItem(itemIds[position])?.isChecked = true
-        }
-    }
-
-    private val viewPagerAdapter: MainViewPagerAdapter by lazy { MainViewPagerAdapter(supportFragmentManager) }
-
-    private fun initViewPager() {
-        val adapter = viewPagerAdapter
-        main_view_pager.adapter = adapter
-        main_view_pager.addOnPageChangeListener(onPageChangeListener)
-    }
-
-    private fun initSlidingLayout() {
-        sliding_layout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
-            override fun onPanelSlide(panel: View?, slideOffset: Float) = updatePlayerDimensions(slideOffset)
-
-            override fun onPanelStateChanged(panel: View?,
-                                             previousState: SlidingUpPanelLayout.PanelState?,
-                                             newState: SlidingUpPanelLayout.PanelState?) = Unit
-        })
-
-        sliding_layout.setFadeOnClickListener {
-            sliding_layout.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-        }
-        sliding_layout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
-    }
 
     private val playerMaxVerticalHeight: Int by lazy(LazyThreadSafetyMode.NONE) { toPx(screenHeight) / 2 }
     private val playerMaxHorizontalHeight: Int by lazy(LazyThreadSafetyMode.NONE) { toPx(screenHeight) }
@@ -154,32 +203,31 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         })
     }
 
-    private lateinit var youTubePlayer: YouTubePlayer
+    private var youTubePlayer: YouTubePlayer? = null
 
     private fun initYouTubePlayerView() {
         lifecycle.addObserver(player_view)
-        player_view.initialize({ youTubePlayer ->
-            this.youTubePlayer = youTubePlayer
-            youTubePlayer.addListener(object : AbstractYouTubePlayerListener() {
-                override fun onReady() {
-
-                }
-            })
-
-        }, true)
-
+        player_view.initialize({ this.youTubePlayer = it }, true)
         player_view.playerUIController.showFullscreenButton(false)
     }
 
+    private var lastPlayedVideoId: String? = null
+
     fun loadVideo(videoId: String) {
+        if (videoId == lastPlayedVideoId) return
+        lastPlayedVideoId = videoId
+
         if (sliding_layout.panelState == SlidingUpPanelLayout.PanelState.HIDDEN)
             sliding_layout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
         if (lifecycle.currentState == Lifecycle.State.RESUMED)
-            youTubePlayer.loadVideo(videoId, 0f)
+            youTubePlayer?.loadVideo(videoId, 0f)
         else
-            youTubePlayer.cueVideo(videoId, 0f)
+            youTubePlayer?.cueVideo(videoId, 0f)
+
+        viewModel.loadRelatedVideos(videoId, true)
     }
 
+    //region player controls
     private val minimizeBtn: ImageButton by lazy(LazyThreadSafetyMode.NONE) {
         ImageButton(this).apply {
             setImageResource(R.drawable.maximize)
@@ -208,7 +256,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             }
             setOnClickListener {
                 sliding_layout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
-                youTubePlayer.pause()
+                youTubePlayer?.pause()
             }
             setBackgroundColor(Color.TRANSPARENT)
         }
@@ -218,6 +266,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         addView(minimizeBtn)
         addView(closeBtn)
     }
+    //endregion
 
     companion object {
         private const val minimumPlayerHeightDp = 100

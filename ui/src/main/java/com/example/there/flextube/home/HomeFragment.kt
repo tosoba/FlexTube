@@ -29,11 +29,11 @@ class HomeFragment : Fragment(), Injectable {
     @Inject
     lateinit var factory: ViewModelFactory
 
-    private val viewModel: HomeViewModel by lazy {
+    private val viewModel: HomeViewModel by lazy(LazyThreadSafetyMode.NONE)  {
         ViewModelProviders.of(this, factory).get(HomeViewModel::class.java)
     }
 
-    private val videosAdapter: VideosAdapter by lazy {
+    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE)  {
         VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item)
     }
 
@@ -47,11 +47,11 @@ class HomeFragment : Fragment(), Injectable {
         }
     }
 
-    private val videoCategoriesAdapter: VideoCategoriesAdapter by lazy {
+    private val videoCategoriesAdapter: VideoCategoriesAdapter by lazy(LazyThreadSafetyMode.NONE)  {
         VideoCategoriesAdapter(viewModel.viewState.videoCategories, R.layout.video_category_item)
     }
 
-    private val view: HomeView by lazy {
+    private val view: HomeView by lazy(LazyThreadSafetyMode.NONE)  {
         HomeView(
                 viewModel.viewState,
                 videosAdapter,

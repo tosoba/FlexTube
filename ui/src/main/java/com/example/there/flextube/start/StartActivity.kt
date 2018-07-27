@@ -36,7 +36,9 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private val startViewState = StartViewState()
 
-    private val startView: StartView by lazy { StartView(startViewState, View.OnClickListener { chooseAccount() }) }
+    private val startView: StartView by lazy(LazyThreadSafetyMode.NONE) {
+        StartView(startViewState, View.OnClickListener { chooseAccount() })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
