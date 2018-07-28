@@ -14,6 +14,8 @@ import android.support.v7.widget.SearchView
 import android.view.View
 import android.widget.Toast
 import com.example.there.flextube.R
+import com.example.there.flextube.addgroup.AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING
+import com.example.there.flextube.addgroup.AddGroupActivity.Mode.NEW_GROUP
 import com.example.there.flextube.databinding.ActivityAddGroupBinding
 import com.example.there.flextube.di.vm.ViewModelFactory
 import dagger.android.AndroidInjector
@@ -33,15 +35,15 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: AddGroupViewModel by lazy(LazyThreadSafetyMode.NONE)  {
+    private val viewModel: AddGroupViewModel by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProviders.of(this, viewModelFactory).get(AddGroupViewModel::class.java)
     }
 
-    private val adapter: AddGroupSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE)  {
+    private val adapter: AddGroupSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
         AddGroupSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_to_choose_item)
     }
 
-    private val view: AddGroupView by lazy(LazyThreadSafetyMode.NONE)  {
+    private val view: AddGroupView by lazy(LazyThreadSafetyMode.NONE) {
         AddGroupView(
                 viewModel.viewState,
                 adapter,
@@ -61,7 +63,10 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private fun insertGroup() {
         if (viewModel.viewState.subscriptions.any { it.isChosen.get() == true }) {
-            viewModel.insertSubscriptionGroup(groupName, accountName)
+            when (mode) {
+                NEW_GROUP -> viewModel.insertSubscriptionGroup(groupName, accountName)
+                ADD_SUBS_TO_EXISTING -> viewModel.addSubscriptionsToGroup(groupName, accountName)
+            }
             finish()
         } else {
             Toast.makeText(this@AddGroupActivity, "No subscriptions chosen.", Toast.LENGTH_SHORT).show()
@@ -70,6 +75,7 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private val accountName: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_ACCOUNT_NAME) }
     private val groupName: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_GROUP_NAME) }
+    private val mode: AddGroupActivity.Mode by lazy(LazyThreadSafetyMode.NONE) { intent.getSerializableExtra(EXTRA_MODE) as Mode }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +84,9 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
         binding.addGroupView = view
         binding.subscriptionsToChooseRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        if (savedInstanceState == null) {
-            viewModel.loadSubscriptions(accountName)
+        when (mode) {
+            NEW_GROUP -> viewModel.loadSubscriptions(accountName)
+            ADD_SUBS_TO_EXISTING -> viewModel.loadNotAddedSubscriptions(accountName, groupName)
         }
     }
 
@@ -89,14 +96,20 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
         subscriptions_search_view?.clearFocus()
     }
 
+    enum class Mode {
+        NEW_GROUP, ADD_SUBS_TO_EXISTING
+    }
+
     companion object {
         private const val EXTRA_ACCOUNT_NAME = "EXTRA_ACCOUNT_NAME"
         private const val EXTRA_GROUP_NAME = "EXTRA_GROUP_NAME"
+        private const val EXTRA_MODE = "EXTRA_MODE"
 
-        fun start(activity: Activity, accountName: String, groupName: String) {
+        fun start(activity: Activity, accountName: String, groupName: String, mode: Mode = NEW_GROUP) {
             val intent = Intent(activity, AddGroupActivity::class.java).apply {
                 putExtra(EXTRA_ACCOUNT_NAME, accountName)
                 putExtra(EXTRA_GROUP_NAME, groupName)
+                putExtra(EXTRA_MODE, mode)
             }
             activity.startActivity(intent)
         }

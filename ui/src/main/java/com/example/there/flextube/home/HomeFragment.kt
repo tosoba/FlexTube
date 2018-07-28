@@ -29,29 +29,29 @@ class HomeFragment : Fragment(), Injectable {
     @Inject
     lateinit var factory: ViewModelFactory
 
-    private val viewModel: HomeViewModel by lazy(LazyThreadSafetyMode.NONE)  {
+    private val viewModel: HomeViewModel by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProviders.of(this, factory).get(HomeViewModel::class.java)
     }
 
-    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE)  {
+    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
         VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item)
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
         override fun onLoadMore() {
             if (viewModel.viewState.currentVideoCategoryId == IYoutubeCache.CATEGORY_GENERAL) {
-                accessToken?.let { viewModel.loadGeneralHomeItems(it) }
+                viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
             } else {
                 viewModel.loadHomeItemsByCategory(viewModel.viewState.currentVideoCategoryId, shouldReturnAll = false)
             }
         }
     }
 
-    private val videoCategoriesAdapter: VideoCategoriesAdapter by lazy(LazyThreadSafetyMode.NONE)  {
+    private val videoCategoriesAdapter: VideoCategoriesAdapter by lazy(LazyThreadSafetyMode.NONE) {
         VideoCategoriesAdapter(viewModel.viewState.videoCategories, R.layout.video_category_item)
     }
 
-    private val view: HomeView by lazy(LazyThreadSafetyMode.NONE)  {
+    private val view: HomeView by lazy(LazyThreadSafetyMode.NONE) {
         HomeView(
                 viewModel.viewState,
                 videosAdapter,
@@ -89,7 +89,7 @@ class HomeFragment : Fragment(), Injectable {
             viewModel.viewState.currentVideoCategoryId = it
             onVideosScrollListener.mPreviousTotal = 0
             if (it == IYoutubeCache.CATEGORY_GENERAL) {
-                accessToken?.let { viewModel.loadGeneralHomeItems(it, shouldReturnAll = true) }
+                viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, shouldReturnAll = true)
             } else {
                 viewModel.loadHomeItemsByCategory(it)
             }
@@ -104,8 +104,6 @@ class HomeFragment : Fragment(), Injectable {
             viewModel.loadVideoCategories()
         }
     }
-
-    private var accessToken: String? = null
 
     private var authEventReceived = false
 }

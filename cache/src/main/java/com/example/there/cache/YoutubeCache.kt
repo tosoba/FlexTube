@@ -83,7 +83,6 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
         }
     }
 
-    //TODO: since save/get methods are the same for home and related make private method that takes collection as parameter
     override fun getSavedRelatedVideos(videoId: String): Single<SavedPlaylistItemsData> {
         val saved = savedRelatedVideos[videoId]
         return if (saved == null) Single.just(SavedPlaylistItemsData.empty())
@@ -129,7 +128,7 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
     override fun getSubscriptionsFromGroup(
             accountName: String,
             groupName: String
-    ): Single<List<SubscriptionData>> = subscriptionDao.getAllByGroup(accountName, groupName)
+    ): Flowable<List<SubscriptionData>> = subscriptionDao.getAllByGroup(accountName, groupName)
             .map { it.map { it.toData } }
 
     override fun getGroup(
@@ -145,4 +144,18 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
         groupDao.insert(CachedGroup(groupName, accountName))
         subscriptionGroupJoinDao.insertMany(*subscriptionIds.map { SubscriptionGroupJoin(it, groupName, accountName) }.toTypedArray())
     }
+
+    override fun addSubscriptionsToGroup(
+            groupName: String,
+            accountName: String,
+            subscriptionIds: List<String>
+    ): Completable = Completable.fromAction {
+        subscriptionGroupJoinDao.insertMany(*subscriptionIds.map { SubscriptionGroupJoin(it, groupName, accountName) }.toTypedArray())
+    }
+
+    override fun getSubscriptionsNotAddedToGroup(
+            accountName: String,
+            groupName: String
+    ): Flowable<List<SubscriptionData>> = subscriptionDao.getAllNotFromGroup(accountName, groupName)
+            .map { it.map { it.toData } }
 }

@@ -25,12 +25,12 @@ class GroupViewModel @Inject constructor(
         disposables.add(getSubscriptionsFromGroup.execute(GetSubscriptionsFromGroup.Params(group.accountName, group.name))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doAfterSuccess {
+                .map { it.filter { !viewState.subscriptions.map { it.id }.contains(it.id) } }
+                .doAfterNext {
                     loadingInProgress = false
                     viewState.subscriptions.addAll(it)
                 }
                 .observeOn(Schedulers.io())
-                .toFlowable()
                 .flatMap { getSavedVideosWithUpdates.execute(viewState.subscriptions.map { it.channelId }) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ viewState.videos.addAll(it) }, { Log.e(javaClass.name, it.message) }))

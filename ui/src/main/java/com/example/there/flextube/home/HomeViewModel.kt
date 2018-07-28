@@ -41,7 +41,6 @@ class HomeViewModel @Inject constructor(
         fun load() {
             previousCategoryId = categoryId
 
-            //TODO: maybe clear when previousCategoryId != categoryId here instead of in clearing in fragment?
             if (shouldReturnAll) viewState.homeItems.clear()
             viewState.isLoadingInProgress.set(true)
 

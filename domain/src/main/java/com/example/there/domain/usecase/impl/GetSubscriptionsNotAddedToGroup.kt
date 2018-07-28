@@ -6,13 +6,16 @@ import com.example.there.domain.usecase.base.UseCase
 import io.reactivex.Flowable
 import javax.inject.Inject
 
-class GetSubscriptionsFromGroup @Inject constructor(
+class GetSubscriptionsNotAddedToGroup @Inject constructor(
         private val repository: IMainRepository
-): UseCase<GetSubscriptionsFromGroup.Params, Flowable<List<Subscription>>> {
-    override fun execute(params: Params?): Flowable<List<Subscription>> = repository.getSubscriptionsFromGroup(
+) : UseCase<GetSubscriptionsNotAddedToGroup.Params, Flowable<List<Subscription>>> {
+    override fun execute(params: Params?): Flowable<List<Subscription>> = repository.getSubscriptionsNotFromGroup(
             accountName = params!!.accountName,
             groupName = params.groupName
     )
 
-    data class Params(val accountName: String, val groupName: String)
+    class Params(
+            val accountName: String,
+            val groupName: String
+    )
 }

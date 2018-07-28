@@ -11,12 +11,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
+import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.databinding.FragmentGroupBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
+import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedVideosAdapter
+import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
+import com.example.there.flextube.util.ext.accountName
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import javax.inject.Inject
 
@@ -32,9 +36,14 @@ class GroupFragment : Fragment(), Injectable {
 
     private val group: UiGroup by lazy(LazyThreadSafetyMode.NONE) { arguments!!.getParcelable<UiGroup>(ARG_GROUP) }
 
+    private val disposablesComponent = DisposablesComponent()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycle.addObserver(disposablesComponent)
+
         viewModel.loadData(group)
+        disposablesComponent.add(videosAdapter.videoClicked.subscribe { (activity as MainActivity).loadVideo(it) })
     }
 
     private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
@@ -49,6 +58,10 @@ class GroupFragment : Fragment(), Injectable {
         override fun onLoadMore() = viewModel.loadMoreVideos()
     }
 
+    private val onAddMoreSubsClickListener = View.OnClickListener {
+        AddGroupActivity.start(activity!!, accountName, group.name, AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING)
+    }
+
     private val view: GroupView by lazy(LazyThreadSafetyMode.NONE) {
         GroupView(
                 subscriptionsAdapter,
@@ -56,7 +69,8 @@ class GroupFragment : Fragment(), Injectable {
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
                 },
-                onVideosScrollListener
+                onVideosScrollListener,
+                onAddMoreSubsClickListener
         )
     }
 

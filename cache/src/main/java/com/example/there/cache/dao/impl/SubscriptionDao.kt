@@ -21,6 +21,13 @@ interface SubscriptionDao : DeleteDao<CachedSubscription>, InsertIgnoreDao<Cache
             "FROM ${Tables.SUBSCRIPTIONS} JOIN ${Tables.SUBSCRIPTIONS_GROUPS} " +
             "ON ${Tables.SUBSCRIPTIONS}.id=${Tables.SUBSCRIPTIONS_GROUPS}.subscription_id " +
             "WHERE group_name = :groupName AND ${Tables.SUBSCRIPTIONS_GROUPS}.account_name = :accountName " +
-            "ORDER BY title")
-    fun getAllByGroup(accountName: String, groupName: String): Single<List<CachedSubscription>>
+            "ORDER BY LOWER(title)")
+    fun getAllByGroup(accountName: String, groupName: String): Flowable<List<CachedSubscription>>
+
+    @Query("SELECT ${Tables.SUBSCRIPTIONS}.* " +
+            "FROM ${Tables.SUBSCRIPTIONS} LEFT JOIN ${Tables.SUBSCRIPTIONS_GROUPS} " +
+            "ON ${Tables.SUBSCRIPTIONS}.id=${Tables.SUBSCRIPTIONS_GROUPS}.subscription_id " +
+            "WHERE (group_name != :groupName OR group_name IS NULL) AND ${Tables.SUBSCRIPTIONS}.account_name = :accountName " +
+            "ORDER BY LOWER(title)")
+    fun getAllNotFromGroup(accountName: String, groupName: String): Flowable<List<CachedSubscription>>
 }

@@ -13,21 +13,23 @@ interface IMainRepository {
     fun getSubscriptions(accessToken: String, accountName: String): Observable<List<Subscription>>
     fun getSavedSubsriptions(accountName: String): Flowable<List<Subscription>>
     fun updateSavedSubscriptions(subs: List<Subscription>, accountName: String): Completable
-    fun getSubscriptionsFromGroup(accountName: String, groupName: String): Single<List<Subscription>>
+    fun getSubscriptionsFromGroup(accountName: String, groupName: String): Flowable<List<Subscription>>
+    fun getSubscriptionsNotFromGroup(accountName: String, groupName: String): Flowable<List<Subscription>>
     fun getGroups(accountName: String): Flowable<List<Group>>
+    fun insertGroupWithSubscriptions(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
+    fun addSubscriptionsToGroup(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
 
     fun loadVideos(channelIds: List<String>): Observable<List<PlaylistItem>>
     fun loadMoreVideos(channelIds: List<String>): Completable
     fun getSavedVideosWithUpdates(channelIds: List<String>): Flowable<List<PlaylistItem>>
+
     fun getSavedVideos(channelIds: List<String>): Single<List<PlaylistItem>>
 
     fun loadRelatedVideos(videoId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
-
     fun getGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
+
     fun getHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = false): Single<List<PlaylistItem>>
-
     fun getVideoCategories(): Single<List<VideoCategory>>
-    fun getGroup(groupName: String, accountName: String): Single<Group>
 
-    fun insertGroupWithSubscriptions(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
+    fun getGroup(groupName: String, accountName: String): Single<Group>
 }

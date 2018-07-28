@@ -9,7 +9,8 @@ interface IYoutubeCache {
     fun getUserSubscriptions(accountName: String): Flowable<List<SubscriptionData>>
     fun saveUserSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable
     fun updateSavedSubscriptions(subs: List<SubscriptionData>, accountName: String): Completable
-    fun getSubscriptionsFromGroup(accountName: String, groupName: String): Single<List<SubscriptionData>>
+    fun getSubscriptionsFromGroup(accountName: String, groupName: String): Flowable<List<SubscriptionData>>
+    fun getSubscriptionsNotAddedToGroup(accountName: String, groupName: String): Flowable<List<SubscriptionData>>
 
     fun saveUser(accountName: String): Completable
 
@@ -27,8 +28,8 @@ interface IYoutubeCache {
 
     fun getGroupsForAccount(accountName: String): Flowable<List<GroupData>>
     fun getGroup(groupName: String, accountName: String): Single<GroupData>
-
     fun insertGroupWithSubscriptions(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
+    fun addSubscriptionsToGroup(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
 
     fun saveRelatedVideos(videoId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
     fun getSavedRelatedVideos(videoId: String): Single<SavedPlaylistItemsData>

@@ -142,7 +142,13 @@ class MainRepository @Inject constructor(
     override fun getSubscriptionsFromGroup(
             accountName: String,
             groupName: String
-    ): Single<List<Subscription>> = youtubeCachedDataStore.getSubscriptionsFromGroup(accountName, groupName)
+    ): Flowable<List<Subscription>> = youtubeCachedDataStore.getSubscriptionsFromGroup(accountName, groupName)
+            .map { it.map(SubscriptionMapper::toDomain) }
+
+    override fun getSubscriptionsNotFromGroup(
+            accountName: String,
+            groupName: String
+    ): Flowable<List<Subscription>> = youtubeCachedDataStore.getSubscriptionsNotAddedToGroup(accountName, groupName)
             .map { it.map(SubscriptionMapper::toDomain) }
 
     override fun getVideoCategories(): Single<List<VideoCategory>> = youtubeRemoteDataStore.getVideoCategories()
@@ -223,4 +229,10 @@ class MainRepository @Inject constructor(
             accountName: String,
             subscriptionIds: List<String>
     ): Completable = youtubeCachedDataStore.insertGroupWithSubscriptions(groupName, accountName, subscriptionIds)
+
+    override fun addSubscriptionsToGroup(
+            groupName: String,
+            accountName: String,
+            subscriptionIds: List<String>
+    ): Completable = youtubeCachedDataStore.addSubscriptionsToGroup(groupName, accountName, subscriptionIds)
 }
