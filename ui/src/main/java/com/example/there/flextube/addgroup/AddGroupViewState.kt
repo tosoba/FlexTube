@@ -1,6 +1,11 @@
 package com.example.there.flextube.addgroup
 
-import android.databinding.ObservableArrayList
 import com.example.there.flextube.model.UiSubscriptionToChoose
+import com.example.there.flextube.util.view.ObservableSortedList
 
-data class AddGroupViewState(val subscriptions: ObservableArrayList<UiSubscriptionToChoose> = ObservableArrayList())
+data class AddGroupViewState(
+        val subscriptions: ObservableSortedList<UiSubscriptionToChoose> = ObservableSortedList(
+                UiSubscriptionToChoose::class.java,
+                UiSubscriptionToChoose.observableSortedListCallback
+        )
+)

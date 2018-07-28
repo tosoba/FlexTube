@@ -7,9 +7,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.example.there.flextube.R
 import com.example.there.flextube.databinding.FragmentSubFeedBinding
 import com.example.there.flextube.di.Injectable
@@ -19,6 +17,7 @@ import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.accountName
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
+import kotlinx.android.synthetic.main.fragment_sub_feed.*
 import javax.inject.Inject
 
 
@@ -27,7 +26,7 @@ class SubFeedFragment : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: SubFeedViewModel by lazy(LazyThreadSafetyMode.NONE)  {
+    private val viewModel: SubFeedViewModel by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProviders.of(this, viewModelFactory).get(SubFeedViewModel::class.java)
     }
 
@@ -35,6 +34,8 @@ class SubFeedFragment : Fragment(), Injectable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
         lifecycle.addObserver(disposablesComponent)
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
@@ -47,7 +48,7 @@ class SubFeedFragment : Fragment(), Injectable {
         viewModel.loadVideos((activity as MainActivity).accessToken, accountName)
     }
 
-    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE)  {
+    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
@@ -55,11 +56,11 @@ class SubFeedFragment : Fragment(), Injectable {
         override fun onLoadMore() = viewModel.loadMoreVideos()
     }
 
-    private val videosAdapter: SortedVideosAdapter by lazy(LazyThreadSafetyMode.NONE)  {
+    private val videosAdapter: SortedVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
     }
 
-    private val view: SubFeedView by lazy(LazyThreadSafetyMode.NONE)  {
+    private val view: SubFeedView by lazy(LazyThreadSafetyMode.NONE) {
         SubFeedView(
                 viewModel.viewState,
                 subscriptionsAdapter,
@@ -80,5 +81,18 @@ class SubFeedFragment : Fragment(), Injectable {
             subButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        menu?.clear()
+        inflater?.inflate(R.menu.sub_feed_fragment_options_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
+        R.id.action_scroll_to_top -> {
+            videos_recycler_view?.smoothScrollToPosition(0)
+            true
+        }
+        else -> false
     }
 }

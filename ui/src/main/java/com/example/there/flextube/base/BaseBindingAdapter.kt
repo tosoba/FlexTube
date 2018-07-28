@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 
 abstract class BaseBindingAdapter<I, B>(
-        protected val items: ArrayList<I>,
+        protected val items: List<I>,
         private val itemLayoutId: Int
 ) : RecyclerView.Adapter<BaseBindingViewHolder<B>>() where B : ViewDataBinding {
 

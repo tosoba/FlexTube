@@ -1,16 +1,16 @@
 package com.example.there.flextube.addgroup
 
-import android.databinding.ObservableArrayList
 import android.widget.Filter
 import android.widget.Filterable
 import com.example.there.flextube.base.BaseBindingViewHolder
 import com.example.there.flextube.base.BaseObservableListAdapter
 import com.example.there.flextube.databinding.SubscriptionToChooseItemBinding
 import com.example.there.flextube.model.UiSubscriptionToChoose
+import com.example.there.flextube.util.view.ObservableSortedList
 
 
 class AddGroupSubscriptionsAdapter(
-        items: ObservableArrayList<UiSubscriptionToChoose>,
+        items: ObservableSortedList<UiSubscriptionToChoose>,
         layoutId: Int
 ) : BaseObservableListAdapter<UiSubscriptionToChoose, SubscriptionToChooseItemBinding>(items, layoutId), Filterable {
 
@@ -37,7 +37,10 @@ class AddGroupSubscriptionsAdapter(
             }
             val filteredItems = items.filter { it.subscription.title.contains(filterString, ignoreCase = true) }
             return FilterResults().apply {
-                values = ObservableArrayList<UiSubscriptionToChoose>().apply { addAll(filteredItems) }
+                values = ObservableSortedList<UiSubscriptionToChoose>(
+                        UiSubscriptionToChoose::class.java,
+                        UiSubscriptionToChoose.observableSortedListCallback
+                ).apply { addAll(filteredItems) }
                 count = filteredItems.size
             }
         }
@@ -45,7 +48,7 @@ class AddGroupSubscriptionsAdapter(
         @Suppress("UNCHECKED_CAST")
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             results?.values?.let {
-                filteredItems = it as ObservableArrayList<UiSubscriptionToChoose>
+                filteredItems = it as ObservableSortedList<UiSubscriptionToChoose>
                 notifyDataSetChanged()
             }
         }

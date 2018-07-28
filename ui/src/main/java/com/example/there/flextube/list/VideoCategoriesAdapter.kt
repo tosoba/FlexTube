@@ -20,9 +20,9 @@ class VideoCategoriesAdapter(
         holder?.binding?.root?.setOnClickListener {
             if (position != 0) {
                 items[0].isSelected.set(false)
-                items.removeAt(position)
+                observableItems.removeAt(position)
                 category.isSelected.set(true)
-                items.add(0, category)
+                observableItems.add(0, category)
                 notifyItemRangeChanged(0, position + 1)
                 categoryClicked.onNext(category.id)
             }

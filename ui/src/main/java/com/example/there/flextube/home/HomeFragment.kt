@@ -98,12 +98,9 @@ class HomeFragment : Fragment(), Injectable {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if (!authEventReceived) {
-            authEventReceived = true
-            viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
-            viewModel.loadVideoCategories()
-        }
+
+        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
+        viewModel.loadVideoCategories()
     }
 
-    private var authEventReceived = false
 }
