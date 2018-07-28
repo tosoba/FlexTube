@@ -1,6 +1,7 @@
 package com.example.there.flextube.groups.group
 
 import android.util.Log
+import com.example.there.domain.usecase.impl.DeleteGroup
 import com.example.there.domain.usecase.impl.GetSavedVideosWithUpdates
 import com.example.there.domain.usecase.impl.GetSubscriptionsFromGroup
 import com.example.there.domain.usecase.impl.LoadMoreVideos
@@ -13,7 +14,8 @@ import javax.inject.Inject
 class GroupViewModel @Inject constructor(
         private val getSubscriptionsFromGroup: GetSubscriptionsFromGroup,
         private val getSavedVideosWithUpdates: GetSavedVideosWithUpdates,
-        private val loadMoreVideos: LoadMoreVideos
+        private val loadMoreVideos: LoadMoreVideos,
+        private val deleteGroup: DeleteGroup
 ) : BaseViewModel() {
 
     val viewState = GroupViewState()
@@ -45,5 +47,13 @@ class GroupViewModel @Inject constructor(
                     .doOnComplete { loadingInProgress = false }
                     .subscribe({}, { Log.e(javaClass.name, it.message) }))
         }
+    }
+
+    fun deleteGroup(group: UiGroup, onComplete: () -> Unit) {
+        disposables.clear()
+        disposables.add(deleteGroup.execute((DeleteGroup.Params(groupName = group.name, accountName = group.accountName)))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onComplete() }, { Log.e(javaClass.name, it.message) }))
     }
 }

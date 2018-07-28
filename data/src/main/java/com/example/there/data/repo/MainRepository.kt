@@ -134,6 +134,11 @@ class MainRepository @Inject constructor(
             subs: List<Subscription>, accountName: String
     ): Completable = youtubeCachedDataStore.updateSavedSubscriptions(subs.map(SubscriptionMapper::toData), accountName)
 
+    override fun deleteGroup(
+            groupName: String,
+            accountName: String
+    ): Completable = youtubeCachedDataStore.deleteGroup(groupName, accountName)
+
     override fun getGroups(
             accountName: String
     ): Flowable<List<Group>> = youtubeCachedDataStore.getGroupsForAccount(accountName)

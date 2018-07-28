@@ -136,6 +136,13 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
             accountName: String
     ): Single<GroupData> = groupDao.get(groupName, accountName).map { it.toData }
 
+    override fun deleteGroup(
+            groupName: String,
+            accountName: String
+    ): Completable = Completable.fromAction {
+        groupDao.delete(CachedGroup(groupName, accountName))
+    }
+
     override fun insertGroupWithSubscriptions(
             groupName: String,
             accountName: String,

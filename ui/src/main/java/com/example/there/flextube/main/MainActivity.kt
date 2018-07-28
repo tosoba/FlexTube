@@ -15,6 +15,8 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -87,7 +89,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     //endregion
 
     //region viewPager
-    private val viewPagerAdapter: MainViewPagerAdapter by lazy(LazyThreadSafetyMode.NONE)  { MainViewPagerAdapter(supportFragmentManager) }
+    private val viewPagerAdapter: MainViewPagerAdapter by lazy(LazyThreadSafetyMode.NONE) { MainViewPagerAdapter(supportFragmentManager) }
 
     private val onPageChangeListener = object : ViewPager.OnPageChangeListener {
         override fun onPageScrollStateChanged(state: Int) = Unit
@@ -114,7 +116,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     //endregion
 
-    private val view: MainActivityView by lazy(LazyThreadSafetyMode.NONE)  {
+    private val view: MainActivityView by lazy(LazyThreadSafetyMode.NONE) {
         MainActivityView(
                 state = viewModel.viewState,
                 relatedVideosAdapter = relatedVideosAdapter,
@@ -154,6 +156,20 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         } else {
             showLogoutDialog()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_activity_options_menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
+        R.id.action_logout -> {
+            showLogoutDialog()
+            true
+        }
+        else -> false
     }
 
     private fun showLogoutDialog() = MaterialDialog.Builder(this)

@@ -10,6 +10,8 @@
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:textColorHint">@color/colorAccent</item>
         <item name="android:editTextColor">@color/colorAccent</item>
+
+        <item name="android:actionOverflowButtonStyle">@style/MenuOverFlow</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme">
@@ -26,6 +28,10 @@
         <item name="colorControlActivated">@color/colorAccent
         </item>
         <item name="android:textColor">@color/colorAccent</item> <!-- checkbox text color -->
+    </style>
+
+    <style name="MenuOverFlow">
+        <item name="android:src">@drawable/more_overflow</item>
     </style>
 
 </resources>

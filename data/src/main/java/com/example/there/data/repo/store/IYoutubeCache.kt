@@ -28,6 +28,7 @@ interface IYoutubeCache {
 
     fun getGroupsForAccount(accountName: String): Flowable<List<GroupData>>
     fun getGroup(groupName: String, accountName: String): Single<GroupData>
+    fun deleteGroup(groupName: String, accountName: String): Completable
     fun insertGroupWithSubscriptions(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
     fun addSubscriptionsToGroup(groupName: String, accountName: String, subscriptionIds: List<String>): Completable
 

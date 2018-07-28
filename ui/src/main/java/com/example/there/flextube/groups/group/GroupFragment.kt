@@ -7,14 +7,14 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.databinding.FragmentGroupBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
+import com.example.there.flextube.groups.GroupsFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.main.MainActivity
@@ -40,6 +40,7 @@ class GroupFragment : Fragment(), Injectable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         lifecycle.addObserver(disposablesComponent)
 
         viewModel.loadData(group)
@@ -83,6 +84,31 @@ class GroupFragment : Fragment(), Injectable {
             groupVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        menu?.clear()
+        inflater?.inflate(R.menu.group_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
+        R.id.action_delete_group -> {
+            showDeleteGroupDialog()
+            true
+        }
+        else -> false
+    }
+
+    private fun showDeleteGroupDialog() = MaterialDialog.Builder(activity!!)
+            .title(getString(R.string.want_to_delete_group, group.name))
+            .onPositive { _, _ ->
+                viewModel.deleteGroup(group) {
+                    (parentFragment as? GroupsFragment)?.childFragmentManager?.popBackStack()
+                }
+            }
+            .positiveText(getString(R.string.yes))
+            .negativeText(getString(R.string.no))
+            .build()
+            .apply { show() }
 
     companion object {
         private const val ARG_GROUP = "ARG_GROUP"
