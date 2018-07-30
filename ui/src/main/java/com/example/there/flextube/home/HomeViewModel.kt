@@ -22,6 +22,9 @@ class HomeViewModel @Inject constructor(
 
     val viewState = HomeViewState()
 
+    var loadingGeneralHomeItemsComplete = false
+        private set
+
     fun loadGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false) {
         if (viewState.isLoadingInProgress.get() == false) {
             previousCategoryId = IYoutubeCache.CATEGORY_GENERAL
@@ -30,8 +33,9 @@ class HomeViewModel @Inject constructor(
             disposables.add(getGeneralHomeItems.execute(params = GetGeneralHomeItems.Params(accessToken, shouldReturnAll))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess { loadingGeneralHomeItemsComplete = true }
                     .doFinally { viewState.isLoadingInProgress.set(false) }
-                    .subscribe({ viewState.homeItems.addAll(it) }, {}))
+                    .subscribe({ viewState.homeItems.addAll(it) }, { Log.e("ERR", it.message) }))
         }
     }
 

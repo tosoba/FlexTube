@@ -1,5 +1,6 @@
 package com.example.there.flextube.home
 
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -15,6 +16,7 @@ import com.example.there.flextube.R
 import com.example.there.flextube.databinding.FragmentHomeBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
+import com.example.there.flextube.lifecycle.ConnectivityComponent
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.VideoCategoriesAdapter
 import com.example.there.flextube.list.VideosAdapter
@@ -75,9 +77,27 @@ class HomeFragment : Fragment(), Injectable {
 
     private val disposablesComponent = DisposablesComponent()
 
+    private val connectivityComponent: ConnectivityComponent by lazy(LazyThreadSafetyMode.NONE) {
+        ConnectivityComponent(
+                activity as Activity,
+                viewModel.loadingGeneralHomeItemsComplete,
+                {
+                    viewModel.clearDisposables()
+                    viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
+                    viewModel.loadVideoCategories()
+                },
+                R.id.main_view_pager
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         lifecycle.addObserver(disposablesComponent)
+        lifecycle.addObserver(connectivityComponent)
+
+        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
+        viewModel.loadVideoCategories()
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
             (activity as MainActivity).loadVideo(it)
@@ -95,12 +115,4 @@ class HomeFragment : Fragment(), Injectable {
             }
         })
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
-        viewModel.loadVideoCategories()
-    }
-
 }

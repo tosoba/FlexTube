@@ -35,17 +35,25 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/videos_recycler_view"
-            itemDecoration="@{subFeedView.videosItemDecoration}"
-            onScrollListener="@{subFeedView.onVideosScrollListener}"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/sub_feed_swipe_refresh_layout"
+            onRefreshListener="@{subFeedView.onSubFeedRefreshListener}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:adapter="@{subFeedView.videosAdapter}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sub_buttons_recycler_view" />
+            app:layout_constraintTop_toBottomOf="@id/sub_buttons_recycler_view">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/videos_recycler_view"
+                itemDecoration="@{subFeedView.videosItemDecoration}"
+                onScrollListener="@{subFeedView.onVideosScrollListener}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adapter="@{subFeedView.videosAdapter}" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

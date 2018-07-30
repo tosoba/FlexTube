@@ -19,7 +19,10 @@ class GroupsListViewModel @Inject constructor(
         disposables.add(getUserGroups.execute(accountName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewState.groups.addAll(it) }, { Log.e(this.javaClass.name, it.message) }))
+                .subscribe({ newGroups ->
+                    viewState.groups.removeAll { !newGroups.contains(it) }
+                    viewState.groups.addAll(newGroups)
+                }, { Log.e(this.javaClass.name, it.message) }))
     }
 
     fun checkIfGroupExists(accountName: String, groupName: String, ifExists: () -> Unit, ifNotExists: () -> Unit) {

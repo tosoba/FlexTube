@@ -149,6 +149,10 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         addPlayerViewControls()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     override fun onBackPressed() {
         val currentFragment = viewPagerAdapter.currentFragment
         if (currentFragment != null && currentFragment is GroupsFragment && currentFragment.childFragmentManager.backStackEntryCount > 0) {

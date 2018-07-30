@@ -4,6 +4,7 @@ import android.databinding.BindingAdapter
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.View
@@ -87,4 +88,9 @@ fun setFadeOnClickListener(slidingUpPanelLayout: SlidingUpPanelLayout, listener:
 @BindingAdapter("initialSlideState")
 fun setInitialPanelSlideState(slidingUpPanelLayout: SlidingUpPanelLayout, state: SlidingUpPanelLayout.PanelState) {
     slidingUpPanelLayout.panelState = state
+}
+
+@BindingAdapter("onRefreshListener")
+fun setOnRefreshListener(swipeRefreshLayout: SwipeRefreshLayout, listener: SwipeRefreshLayout.OnRefreshListener) {
+    swipeRefreshLayout.setOnRefreshListener(listener)
 }

@@ -18,4 +18,5 @@
     <string name="delete_group">Delete group</string>
     <string name="want_to_delete_group">Do you want to delete group %1$s?</string>
     <string name="scroll_to_top">Scroll to top</string>
+    <string name="cancel">Cancel</string>
 </resources>

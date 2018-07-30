@@ -9,6 +9,10 @@ open class BaseViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
+        clearDisposables()
+    }
+
+    fun clearDisposables() {
         disposables.clear()
     }
 }

@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.Toast
 import com.example.there.flextube.R
 import com.example.there.flextube.databinding.ActivityStartBinding
+import com.example.there.flextube.lifecycle.ConnectivityComponent
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.main.MainActivity
 import com.google.android.gms.auth.UserRecoverableAuthException
@@ -33,6 +34,18 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private var credential: GoogleAccountCredential? = null
 
     private val disposablesComponent = DisposablesComponent()
+    private val connectivityComponent: ConnectivityComponent by lazy(LazyThreadSafetyMode.NONE) {
+        ConnectivityComponent(
+                this,
+                false,
+                {
+                    if (credential == null)
+                        credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES).setBackOff(ExponentialBackOff())
+                    checkAuthAndLoadData()
+                },
+                R.id.start_activity_root_layout
+        )
+    }
 
     private val startViewState = StartViewState()
 
@@ -46,6 +59,7 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         binding.startView = startView
 
         lifecycle.addObserver(disposablesComponent)
+        lifecycle.addObserver(connectivityComponent)
 
         credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES).setBackOff(ExponentialBackOff())
 
@@ -63,7 +77,6 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         } else if (credential!!.selectedAccountName == null) {
             chooseAccount()
         } else if (!isDeviceOnline()) {
-            //TODO: snackbar to go network settings
             Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT).show()
         } else {
             loadAccessTokenAndLoadData()
