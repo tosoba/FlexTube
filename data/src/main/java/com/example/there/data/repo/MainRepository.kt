@@ -35,18 +35,19 @@ class MainRepository @Inject constructor(
         } to nextPageToken
     }
 
-    private fun handleHomeItems(
+    private fun handlePlaylistItems(
             shouldReturnAll: Boolean,
             savedVideos: List<PlaylistItemData>,
             nextPageToken: String?,
-            remote: Single<Pair<List<PlaylistItemData>, String?>>
+            remote: Single<Pair<List<PlaylistItemData>, String?>>,
+            errorMessage: String
     ): Single<out Pair<List<PlaylistItemData>, String?>> = if (savedVideos.isEmpty() || nextPageToken != null) {
         if (shouldReturnAll) concatSavedAndRemotePlaylistItems(remote, savedVideos)
         else remote
     } else if (shouldReturnAll) {
         Single.just(savedVideos to nextPageToken)
     } else {
-        Single.error { IllegalStateException("No more home items to retrieve.") }
+        Single.error { IllegalStateException(errorMessage) }
     }
 
     override fun getGeneralHomeItems(
@@ -54,7 +55,13 @@ class MainRepository @Inject constructor(
             shouldReturnAll: Boolean
     ): Single<List<PlaylistItem>> = youtubeCachedDataStore.getSavedHomeItems(IYoutubeCache.CATEGORY_GENERAL)
             .flatMap { (savedVideos, nextPageToken) ->
-                handleHomeItems(shouldReturnAll, savedVideos, nextPageToken, retrieveAndSaveGeneralHomeItems(accessToken, nextPageToken))
+                handlePlaylistItems(
+                        shouldReturnAll,
+                        savedVideos,
+                        nextPageToken,
+                        retrieveAndSaveGeneralHomeItems(accessToken, nextPageToken),
+                        "No more home items to retrieve."
+                )
             }
             .map { (videos, _) -> videos.map(PlaylistItemMapper::toDomain) }
 
@@ -71,7 +78,13 @@ class MainRepository @Inject constructor(
             shouldReturnAll: Boolean
     ): Single<List<PlaylistItem>> = youtubeCachedDataStore.getSavedHomeItems(categoryId)
             .flatMap { (savedVideos, nextPageToken) ->
-                handleHomeItems(shouldReturnAll, savedVideos, nextPageToken, retrieveAndSaveHomeItemsFromCategory(categoryId, nextPageToken))
+                handlePlaylistItems(
+                        shouldReturnAll,
+                        savedVideos,
+                        nextPageToken,
+                        retrieveAndSaveHomeItemsFromCategory(categoryId, nextPageToken),
+                        "No more home items to retrieve."
+                )
             }
             .map { (videos, _) -> videos.map(PlaylistItemMapper::toDomain) }
 
@@ -88,7 +101,13 @@ class MainRepository @Inject constructor(
             shouldReturnAll: Boolean
     ): Single<List<PlaylistItem>> = youtubeCachedDataStore.getSavedRelatedVideos(videoId)
             .flatMap { (savedVideos, nextPageToken) ->
-                handleRelatedVideos(shouldReturnAll, savedVideos, nextPageToken, retrieveAndSaveRelatedVideos(videoId, nextPageToken))
+                handlePlaylistItems(
+                        shouldReturnAll,
+                        savedVideos,
+                        nextPageToken,
+                        retrieveAndSaveRelatedVideos(videoId, nextPageToken),
+                        "No more related videos to retrieve."
+                )
             }
             .map { (videos, _) -> videos.map(PlaylistItemMapper::toDomain) }
 
@@ -100,19 +119,28 @@ class MainRepository @Inject constructor(
                 youtubeCachedDataStore.saveRelatedVideos(videoId, videos, nextPageToken)
             }
 
-    private fun handleRelatedVideos(
-            shouldReturnAll: Boolean,
-            savedVideos: List<PlaylistItemData>,
-            nextPageToken: String?,
-            remote: Single<Pair<List<PlaylistItemData>, String?>>
-    ): Single<out Pair<List<PlaylistItemData>, String?>> = if (savedVideos.isEmpty() || nextPageToken != null) {
-        if (shouldReturnAll) concatSavedAndRemotePlaylistItems(remote, savedVideos)
-        else remote
-    } else if (shouldReturnAll) {
-        Single.just(savedVideos to nextPageToken)
-    } else {
-        Single.error { IllegalStateException("No more related videos to retrieve.") }
-    }
+    override fun searchForVideos(
+            query: String,
+            shouldReturnAll: Boolean
+    ): Single<List<PlaylistItem>> = youtubeCachedDataStore.getSavedFoundVideos(query)
+            .flatMap { (savedVideos, nextPageToken) ->
+                handlePlaylistItems(
+                        shouldReturnAll,
+                        savedVideos,
+                        nextPageToken,
+                        retrieveAndSaveSearchedVideos(query, nextPageToken),
+                        "No more related videos to retrieve."
+                )
+            }
+            .map { (videos, _) -> videos.map(PlaylistItemMapper::toDomain) }
+
+    private fun retrieveAndSaveSearchedVideos(
+            query: String,
+            pageToken: String?
+    ): Single<Pair<List<PlaylistItemData>, String?>> = youtubeRemoteDataStore.searchForVideos(query, pageToken)
+            .doOnSuccess { (videos, nextPageToken) ->
+                youtubeCachedDataStore.saveFoundVideos(query, videos, nextPageToken)
+            }
 
     override fun getSubscriptions(
             accessToken: String,

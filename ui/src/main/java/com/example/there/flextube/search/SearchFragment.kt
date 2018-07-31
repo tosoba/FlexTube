@@ -1,27 +1,70 @@
 package com.example.there.flextube.search
 
-
+import android.arch.lifecycle.ViewModelProviders
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.example.there.flextube.R
+import com.example.there.flextube.databinding.FragmentSearchBinding
+import com.example.there.flextube.di.Injectable
+import com.example.there.flextube.di.vm.ViewModelFactory
+import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
+import javax.inject.Inject
 
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), Injectable {
 
-    private val query: String by lazy { arguments!!.getString(ARG_QUERY) }
+    @Inject
+    lateinit var factory: ViewModelFactory
+
+    private val viewModel: SearchViewModel by lazy {
+        ViewModelProviders.of(this, factory).get(SearchViewModel::class.java)
+    }
+
+    private val query: String by lazy { arguments!!.getString(ARG_QUERY).trim() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e("QUERY_REC", query)
+        viewModel.searchVideos(query, true)
+    }
+
+    private val foundVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) { VideosAdapter(viewModel.viewState.foundVideos, R.layout.video_item) }
+
+    private val onFoundVideosScrollListener: EndlessRecyclerOnScrollListener by lazy(LazyThreadSafetyMode.NONE) {
+        object : EndlessRecyclerOnScrollListener() {
+            override fun onLoadMore() = viewModel.searchVideos(query, false)
+        }
+    }
+
+    private val foundVideosItemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
+        DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL).apply {
+            setDrawable(ContextCompat.getDrawable(activity!!, R.drawable.video_separator)!!)
+        }
+    }
+
+    private val view: SearchView by lazy(LazyThreadSafetyMode.NONE) {
+        SearchView(
+                state = viewModel.viewState,
+                foundVideosAdapter = foundVideosAdapter,
+                onFoundVideosScroll = onFoundVideosScrollListener,
+                itemDecoration = foundVideosItemDecoration
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        val binding = DataBindingUtil.inflate<FragmentSearchBinding>(inflater, R.layout.fragment_search, container, false)
+
+        return binding.apply {
+            searchView = view
+            foundVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        }.root
     }
 
     companion object {

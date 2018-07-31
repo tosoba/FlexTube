@@ -14,6 +14,8 @@ import com.example.there.flextube.home.HomeFragment
 import com.example.there.flextube.home.HomeViewModel
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.main.MainViewModel
+import com.example.there.flextube.search.SearchFragment
+import com.example.there.flextube.search.SearchViewModel
 import com.example.there.flextube.subfeed.SubFeedFragment
 import com.example.there.flextube.subfeed.SubFeedViewModel
 import dagger.Binds
@@ -54,6 +56,11 @@ abstract class UiModule {
     abstract fun addGroupViewModel(viewModel: AddGroupViewModel): ViewModel
 
     @Binds
+    @IntoMap
+    @ViewModelKey(SearchViewModel::class)
+    abstract fun searchViewModel(viewModel: SearchViewModel): ViewModel
+
+    @Binds
     abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @ContributesAndroidInjector
@@ -73,4 +80,7 @@ abstract class UiModule {
 
     @ContributesAndroidInjector
     abstract fun groupFragment(): GroupFragment
+
+    @ContributesAndroidInjector
+    abstract fun searchFragment(): SearchFragment
 }

@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".search.SearchFragment">
+<layout>
 
-    <TextView
+    <data>
+
+        <variable
+            name="searchView"
+            type="com.example.there.flextube.search.SearchView" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".search.SearchFragment">
 
-</FrameLayout>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{safeUnbox(searchView.state.loadingInProgress) ? View.VISIBLE : View.GONE}" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/found_videos_recycler_view"
+            itemDecoration="@{searchView.itemDecoration}"
+            onScrollListener="@{searchView.onFoundVideosScroll}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adapter="@{searchView.foundVideosAdapter}" />
+
+    </FrameLayout>
+</layout>

@@ -68,7 +68,17 @@ interface YoutubeService {
             @Query("type") type: String = "video",
             @Query("maxResults") maxResults: Int = MAX_RESULTS,
             @Query("key") key: String = Keys.YOUTUBE
-    ): Single<RelatedVideosSearchResponse>
+    ): Single<VideosSearchResponse>
+
+    @GET("search")
+    fun searchForVideos(
+            @Query("q") query: String,
+            @Query("pageToken") pageToken: String? = null,
+            @Query("part") part: String = "snippet",
+            @Query("type") type: String = "video",
+            @Query("maxResults") maxResults: Int = MAX_RESULTS,
+            @Query("key") key: String = Keys.YOUTUBE
+    ): Single<VideosSearchResponse>
 
     companion object {
         private const val PLAYLIST_ITEMS_MAX_RESULTS = 10

@@ -89,6 +89,24 @@ class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
         else Single.just(SavedPlaylistItemsData(saved.videos.toList(), saved.nextPageToken))
     }
 
+    private val savedFoundVideos: ConcurrentHashMap<String, CachedPlaylistItems> = ConcurrentHashMap()
+
+    override fun saveFoundVideos(query: String, videos: List<PlaylistItemData>, nextPageToken: String?) {
+        val saved = savedFoundVideos[query]
+        if (saved != null) {
+            saved.videos.addAll(videos)
+            saved.nextPageToken = nextPageToken
+        } else {
+            savedFoundVideos[query] = CachedPlaylistItems(hashSetOf(*videos.toTypedArray()), nextPageToken)
+        }
+    }
+
+    override fun getSavedFoundVideos(query: String): Single<SavedPlaylistItemsData> {
+        val saved = savedFoundVideos[query]
+        return if (saved == null) Single.just(SavedPlaylistItemsData.empty())
+        else Single.just(SavedPlaylistItemsData(saved.videos.toList(), saved.nextPageToken))
+    }
+
     override fun getPlaylistByChannelId(channelId: String): Single<PlaylistData> = playlistDao.getByChannelId(channelId).map { it.toData }
 
     override fun getPlaylistById(id: String): Single<PlaylistData> = playlistDao.getById(id).map { it.toData }

@@ -2,30 +2,30 @@ package com.example.there.remote.model
 
 import java.util.*
 
-data class RelatedVideosSearchResponse(
+data class VideosSearchResponse(
         val nextPageToken: String?,
-        val items: List<RelatedVideoSearchItem>
+        val items: List<VideoSearchItem>
 )
 
-data class RelatedVideoSearchItem(
-        val id: RelatedVideoSearchItemId,
-        val snippet: RelatedVideoSearchItemSnippet
+data class VideoSearchItem(
+        val id: VideoSearchItemId,
+        val snippet: VideoSearchItemSnippet
 )
 
-data class RelatedVideoSearchItemId(
+data class VideoSearchItemId(
         val videoId: String
 )
 
-data class RelatedVideoSearchItemSnippet(
+data class VideoSearchItemSnippet(
         val publishedAt: Date,
         val channelId: String,
         val title: String,
         val description: String,
-        val thumbnails: RelatedVideoSearchItemThumbnails,
+        val thumbnails: VideoSearchItemThumbnails,
         val channelTitle: String
 )
 
-data class RelatedVideoSearchItemThumbnails(
+data class VideoSearchItemThumbnails(
         val default: Thumbnail,
         val medium: Thumbnail,
         val high: Thumbnail

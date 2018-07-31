@@ -35,6 +35,9 @@ interface IYoutubeCache {
     fun saveRelatedVideos(videoId: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
     fun getSavedRelatedVideos(videoId: String): Single<SavedPlaylistItemsData>
 
+    fun saveFoundVideos(query: String, videos: List<PlaylistItemData>, nextPageToken: String? = null)
+    fun getSavedFoundVideos(query: String): Single<SavedPlaylistItemsData>
+
     companion object {
         const val CATEGORY_GENERAL = "CATEGORY_GENERAL"
     }

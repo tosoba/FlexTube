@@ -15,4 +15,5 @@ interface IYoutubeRemote {
     fun getUserSubscriptions(accessToken: String): Observable<List<SubscriptionData>>
     fun getVideoCategories(): Single<List<VideoCategoryData>>
     fun getRelatedVideos(videoId: String, pageToken: String? = null): Single<Pair<List<PlaylistItemData>, String?>>
+    fun searchForVideos(query: String, pageToken: String? = null): Single<Pair<List<PlaylistItemData>, String?>>
 }
