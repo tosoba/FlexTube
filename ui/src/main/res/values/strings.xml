@@ -23,4 +23,5 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_hint">Search youtube</string>
+    <string name="no_subscriptions">Currently, you are not subscribed to any youtube channels.</string>
 </resources>

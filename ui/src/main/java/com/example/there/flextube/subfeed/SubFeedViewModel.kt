@@ -33,15 +33,21 @@ class SubFeedViewModel @Inject constructor(
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext { viewState.subscriptions.addAll(it) }
                     .doOnComplete {
-                        updateDbSubscriptions(viewState.subscriptions, accountName)
-                        loadDbVideos()
+                        if (viewState.subscriptions.isNotEmpty()) {
+                            updateDbSubscriptions(viewState.subscriptions, accountName)
+                            loadDbVideos()
+                        } else {
+                            viewState.noSubscriptions.set(true)
+                        }
                     }
                     .observeOn(Schedulers.io())
                     .flatMap { subs -> loadVideos.execute(subs.map { it.channelId }) }
                     .doOnComplete {
                         loadingRemoteVideosComplete = true
                         loadingVideosInProgress = false
-                        bindDbVideos()
+                        if (viewState.subscriptions.isNotEmpty()) {
+                            bindDbVideos()
+                        }
                     }
                     .observeOn(AndroidSchedulers.mainThread())
                     .map { it.filter { !viewState.videos.contains(it) } }

@@ -25,7 +25,13 @@ class AddGroupViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .map { it.filter { !viewState.subscriptions.map { it.subscription }.contains(it) } }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewState.subscriptions.addAll(it.map { UiSubscriptionToChoose(it) }) }, { Log.e(javaClass.name, it.message) }))
+                .subscribe({
+                    if (it.isNotEmpty()) {
+                        viewState.subscriptions.addAll(it.map { UiSubscriptionToChoose(it) })
+                    } else {
+                        viewState.noSubscriptions.set(true)
+                    }
+                }, { Log.e(javaClass.name, it.message) }))
     }
 
     fun loadNotAddedSubscriptions(accountName: String, groupName: String) {
