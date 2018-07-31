@@ -16,6 +16,7 @@ class MainActivityView(
         val onNavigationItemSelectedListener: BottomNavigationView.OnNavigationItemSelectedListener,
         val viewPagerAdapter: FragmentStatePagerAdapter,
         val onPageChangeListener: ViewPager.OnPageChangeListener,
+        val offScreenPageLimit: Int,
         val fadeOnClickListener: View.OnClickListener,
         val slideListener: SlidingUpPanelLayout.PanelSlideListener,
         val initialSlidePanelState: SlidingUpPanelLayout.PanelState

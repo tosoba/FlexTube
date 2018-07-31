@@ -14,7 +14,7 @@ import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.databinding.FragmentGroupBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
-import com.example.there.flextube.groups.GroupsFragment
+import com.example.there.flextube.groups.GroupsHostFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedVideosAdapter
 import com.example.there.flextube.main.MainActivity
@@ -85,9 +85,10 @@ class GroupFragment : Fragment(), Injectable {
         }.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        menu?.clear()
-        inflater?.inflate(R.menu.group_fragment_menu, menu)
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        menu?.findItem(R.id.action_scroll_to_top)?.isVisible = false
+        menu?.findItem(R.id.action_delete_group)?.isVisible = true
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
@@ -102,7 +103,7 @@ class GroupFragment : Fragment(), Injectable {
             .title(getString(R.string.want_to_delete_group, group.name))
             .onPositive { _, _ ->
                 viewModel.deleteGroup(group) {
-                    (parentFragment as? GroupsFragment)?.childFragmentManager?.popBackStack()
+                    (parentFragment as? GroupsHostFragment)?.childFragmentManager?.popBackStack()
                 }
             }
             .positiveText(getString(R.string.yes))

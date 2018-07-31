@@ -65,6 +65,11 @@ fun bindFragmentStatePagerAdapter(viewPager: ViewPager, adapter: FragmentStatePa
     viewPager.adapter = adapter
 }
 
+@BindingAdapter("offScreenPageLimit")
+fun bindOffScreenPageLimit(viewPager: ViewPager, limit: Int) {
+    viewPager.offscreenPageLimit = limit
+}
+
 @BindingAdapter("srcId")
 fun setImageResource(imageView: ImageView, resource: Int) {
     imageView.setImageResource(resource)

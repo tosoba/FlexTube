@@ -9,7 +9,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.View
+import android.view.ViewGroup
 import com.example.there.flextube.R
 import com.example.there.flextube.databinding.FragmentSubFeedBinding
 import com.example.there.flextube.di.Injectable
@@ -103,16 +106,9 @@ class SubFeedFragment : Fragment(), Injectable {
         }.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        menu?.clear()
-        inflater?.inflate(R.menu.sub_feed_fragment_options_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
-        R.id.action_scroll_to_top -> {
-            videos_recycler_view?.smoothScrollToPosition(0)
-            true
-        }
-        else -> false
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        menu?.findItem(R.id.action_scroll_to_top)?.isVisible = true
+        menu?.findItem(R.id.action_delete_group)?.isVisible = false
+        super.onPrepareOptionsMenu(menu)
     }
 }

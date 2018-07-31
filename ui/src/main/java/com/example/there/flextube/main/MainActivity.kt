@@ -1,13 +1,16 @@
 package com.example.there.flextube.main
 
 import android.app.Activity
+import android.app.SearchManager
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.os.Bundle
+import android.provider.SearchRecentSuggestions
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -15,6 +18,7 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -24,9 +28,9 @@ import android.widget.ImageButton
 import android.widget.RelativeLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
+import com.example.there.flextube.base.BaseHostFragment
 import com.example.there.flextube.databinding.ActivityMainBinding
 import com.example.there.flextube.di.vm.ViewModelFactory
-import com.example.there.flextube.groups.GroupsFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.start.StartActivity
@@ -40,6 +44,8 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_sub_feed.*
 import javax.inject.Inject
 
 
@@ -110,9 +116,17 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     private val slideListener = object : SlidingUpPanelLayout.PanelSlideListener {
         override fun onPanelSlide(panel: View?, slideOffset: Float) = updatePlayerDimensions(slideOffset)
 
-        override fun onPanelStateChanged(panel: View?,
-                                         previousState: SlidingUpPanelLayout.PanelState?,
-                                         newState: SlidingUpPanelLayout.PanelState?) = Unit
+        override fun onPanelStateChanged(
+                panel: View?,
+                previousState: SlidingUpPanelLayout.PanelState?,
+                newState: SlidingUpPanelLayout.PanelState?
+        ) {
+            if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                minimizeBtn.setImageResource(R.drawable.minimize)
+            } else if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                minimizeBtn.setImageResource(R.drawable.maximize)
+            }
+        }
     }
     //endregion
 
@@ -125,6 +139,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 onNavigationItemSelectedListener = onNavigationItemSelectedListener,
                 viewPagerAdapter = viewPagerAdapter,
                 onPageChangeListener = onPageChangeListener,
+                offScreenPageLimit = 2,
                 fadeOnClickListener = fadeOnClickListener,
                 slideListener = slideListener,
                 initialSlidePanelState = SlidingUpPanelLayout.PanelState.HIDDEN
@@ -149,13 +164,29 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         addPlayerViewControls()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleSearchIntent(intent)
+    }
+
+    private fun handleSearchIntent(intent: Intent?) {
+        fun saveQuery(query: String) {
+            val suggestions = SearchRecentSuggestions(this, SearchSuggestionProvider.AUTHORITY, SearchSuggestionProvider.MODE)
+            suggestions.saveRecentQuery(query, null)
+        }
+
+        if (Intent.ACTION_SEARCH == intent?.action) {
+            val query = intent.getStringExtra(SearchManager.QUERY)
+            saveQuery(query)
+
+            val currentFragment = viewPagerAdapter.currentFragment as? BaseHostFragment
+            currentFragment?.showSearchFragment(query)
+        }
     }
 
     override fun onBackPressed() {
         val currentFragment = viewPagerAdapter.currentFragment
-        if (currentFragment != null && currentFragment is GroupsFragment && currentFragment.childFragmentManager.backStackEntryCount > 0) {
+        if (currentFragment != null && currentFragment.childFragmentManager.backStackEntryCount > 0) {
             currentFragment.childFragmentManager.popBackStack()
         } else {
             showLogoutDialog()
@@ -164,15 +195,27 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_activity_options_menu, menu)
+        initVideoSearch(menu)
         return true
     }
 
+    private fun initVideoSearch(menu: Menu?) {
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchView = menu?.findItem(R.id.action_search)?.actionView as? SearchView
+        searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+    }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
         R.id.action_logout -> {
             showLogoutDialog()
             true
         }
+        R.id.action_scroll_to_top -> {
+            home_items_recycler_view?.smoothScrollToPosition(0)
+            videos_recycler_view?.smoothScrollToPosition(0)
+            true
+        }
+        R.id.action_search -> true
         else -> false
     }
 

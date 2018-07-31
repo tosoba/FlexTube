@@ -4,13 +4,13 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.view.ViewGroup
-import com.example.there.flextube.groups.GroupsFragment
-import com.example.there.flextube.home.HomeFragment
-import com.example.there.flextube.subfeed.SubFeedFragment
+import com.example.there.flextube.groups.GroupsHostFragment
+import com.example.there.flextube.home.HomeHostFragment
+import com.example.there.flextube.subfeed.SubFeedHostFragment
 
 
 class MainViewPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-    private val fragments = arrayOf(HomeFragment(), SubFeedFragment(), GroupsFragment())
+    private val fragments = arrayOf(HomeHostFragment(), SubFeedHostFragment(), GroupsHostFragment())
 
     override fun getItem(position: Int): Fragment = fragments[position]
 

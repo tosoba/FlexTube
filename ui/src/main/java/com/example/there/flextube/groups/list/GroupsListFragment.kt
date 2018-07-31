@@ -19,7 +19,7 @@ import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.databinding.FragmentGroupsListBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
-import com.example.there.flextube.groups.GroupsFragment
+import com.example.there.flextube.groups.GroupsHostFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedGroupsAdapter
 import com.example.there.flextube.model.UiGroup
@@ -39,7 +39,9 @@ class GroupsListFragment : Fragment(), Injectable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         lifecycle.addObserver(disposablesComponent)
+
         viewModel.loadGroups(accountName)
 
         disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
@@ -52,7 +54,7 @@ class GroupsListFragment : Fragment(), Injectable {
     }
 
     private fun showGroupFragment(group: Group) {
-        (parentFragment as? GroupsFragment)?.showGroupFragment(UiGroup(group.accountName, group.name))
+        (parentFragment as? GroupsHostFragment)?.showGroupFragment(UiGroup(group.accountName, group.name))
     }
 
     private val view: GroupsListView by lazy(LazyThreadSafetyMode.NONE)  {
