@@ -9,6 +9,7 @@ import com.example.there.flextube.base.BaseHostFragment
 import com.example.there.flextube.groups.group.GroupFragment
 import com.example.there.flextube.groups.list.GroupsListFragment
 import com.example.there.flextube.model.UiGroup
+import com.example.there.flextube.util.ext.mainActivity
 import com.example.there.flextube.util.ext.mainToolbar
 import com.example.there.flextube.util.ext.resetTitle
 
@@ -38,6 +39,9 @@ class GroupsHostFragment : BaseHostFragment() {
     fun showGroupFragment(group: UiGroup) {
         val groupFragment = GroupFragment.newInstance(group)
         mainToolbar?.resetTitle(groupFragment.title)
+
+        mainActivity?.addBackNavigationToToolbar()
+
         childFragmentManager.beginTransaction()
                 .replace(R.id.groups_back_stack_layout, groupFragment)
                 .addToBackStack(null)

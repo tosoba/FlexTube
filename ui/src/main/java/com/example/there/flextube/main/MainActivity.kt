@@ -14,6 +14,7 @@ import android.provider.SearchRecentSuggestions
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
@@ -29,6 +30,7 @@ import android.widget.RelativeLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.base.BaseHostFragment
+import com.example.there.flextube.base.HasBackNavigation
 import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.ActivityMainBinding
@@ -198,7 +200,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     }
 
-    fun updateTitle(currentFragment: Fragment) {
+    fun updateToolbarTitle(currentFragment: Fragment) {
         val baseHostFragment = currentFragment as? BaseHostFragment
         baseHostFragment?.let {
             val title = (it.childFragmentManager.findFragmentById(it.backStackLayoutId) as? HasTitle)?.title
@@ -206,11 +208,28 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
     }
 
+    fun addBackNavigationToToolbar() {
+        main_toolbar?.navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.navigate_back, null)
+        main_toolbar?.setNavigationOnClickListener { onBackPressed() }
+    }
+
+    fun updateToolbarBackNavigation(currentFragment: Fragment) {
+        val baseHostFragment = currentFragment as? BaseHostFragment
+        baseHostFragment?.let {
+            if (it.childFragmentManager.findFragmentById(it.backStackLayoutId) is HasBackNavigation) {
+                addBackNavigationToToolbar()
+            } else {
+                main_toolbar?.navigationIcon = null
+            }
+        }
+    }
+
     override fun onBackPressed() {
         val currentFragment = viewPagerAdapter.currentFragment
         if (currentFragment != null && currentFragment.childFragmentManager.backStackEntryCount > 0) {
             currentFragment.childFragmentManager.popBackStackImmediate()
-            updateTitle(currentFragment)
+            updateToolbarTitle(currentFragment)
+            updateToolbarBackNavigation(currentFragment)
         } else {
             showLogoutDialog()
         }

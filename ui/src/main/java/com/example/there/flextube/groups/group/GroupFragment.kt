@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
+import com.example.there.flextube.base.HasBackNavigation
 import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentGroupBinding
@@ -31,7 +32,7 @@ import kotlinx.android.synthetic.main.fragment_group.*
 import javax.inject.Inject
 
 
-class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle {
+class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavigation {
 
     override val title: String
         get() = group.name

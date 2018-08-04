@@ -25,7 +25,12 @@ class MainViewPagerAdapter(
     override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
         currentFragment = `object` as? Fragment
 
-        currentFragment?.let { it.mainActivity?.updateTitle(it) }
+        currentFragment?.let {
+            with(it.mainActivity) {
+                this?.updateToolbarTitle(it)
+                this?.updateToolbarBackNavigation(it)
+            }
+        }
 
         super.setPrimaryItem(container, position, `object`)
     }
