@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.there.data.repo.store.IYoutubeCache
 import com.example.there.flextube.R
+import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentHomeBinding
 import com.example.there.flextube.di.Injectable
@@ -27,7 +28,10 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
 
-class HomeFragment : Fragment(), Injectable, Scrollable {
+class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
+
+    override val title: String
+        get() = getString(R.string.app_name)
 
     @Inject
     lateinit var factory: ViewModelFactory

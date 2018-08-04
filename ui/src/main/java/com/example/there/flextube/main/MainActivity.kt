@@ -29,12 +29,14 @@ import android.widget.RelativeLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.base.BaseHostFragment
+import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.ActivityMainBinding
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.start.StartActivity
+import com.example.there.flextube.util.ext.resetTitle
 import com.example.there.flextube.util.ext.screenHeight
 import com.example.there.flextube.util.ext.screenOrientation
 import com.example.there.flextube.util.ext.toPx
@@ -191,13 +193,24 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
             val currentFragment = viewPagerAdapter.currentFragment as? BaseHostFragment
             currentFragment?.showSearchFragment(query)
+
+            searchViewMenuItem?.collapseActionView()
+        }
+    }
+
+    fun updateTitle(currentFragment: Fragment) {
+        val baseHostFragment = currentFragment as? BaseHostFragment
+        baseHostFragment?.let {
+            val title = (it.childFragmentManager.findFragmentById(it.backStackLayoutId) as? HasTitle)?.title
+            title?.let { main_toolbar?.resetTitle(it) }
         }
     }
 
     override fun onBackPressed() {
         val currentFragment = viewPagerAdapter.currentFragment
         if (currentFragment != null && currentFragment.childFragmentManager.backStackEntryCount > 0) {
-            currentFragment.childFragmentManager.popBackStack()
+            currentFragment.childFragmentManager.popBackStackImmediate()
+            updateTitle(currentFragment)
         } else {
             showLogoutDialog()
         }
@@ -209,9 +222,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         return true
     }
 
+    private var searchViewMenuItem: MenuItem? = null
+
     private fun initVideoSearch(menu: Menu?) {
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        val searchView = menu?.findItem(R.id.action_search)?.actionView as? SearchView
+        searchViewMenuItem = menu?.findItem(R.id.action_search)
+        val searchView = searchViewMenuItem?.actionView as? SearchView
         searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
     }
 

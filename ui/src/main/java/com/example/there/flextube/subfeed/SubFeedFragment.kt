@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
+import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentSubFeedBinding
 import com.example.there.flextube.di.Injectable
@@ -27,7 +28,10 @@ import kotlinx.android.synthetic.main.fragment_sub_feed.*
 import javax.inject.Inject
 
 
-class SubFeedFragment : Fragment(), Injectable, Scrollable {
+class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
+
+    override val title: String
+        get() = getString(R.string.app_name)
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory

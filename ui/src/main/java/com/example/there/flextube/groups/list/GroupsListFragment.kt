@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.domain.model.Group
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
+import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentGroupsListBinding
 import com.example.there.flextube.di.Injectable
@@ -28,7 +29,10 @@ import com.example.there.flextube.util.ext.accountName
 import kotlinx.android.synthetic.main.fragment_groups_list.*
 import javax.inject.Inject
 
-class GroupsListFragment : Fragment(), Injectable, Scrollable {
+class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
+
+    override val title: String
+        get() = "Your groups"
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory

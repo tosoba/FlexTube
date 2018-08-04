@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
+import com.example.there.flextube.base.HasTitle
 import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentSearchBinding
 import com.example.there.flextube.di.Injectable
@@ -21,7 +22,10 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import javax.inject.Inject
 
 
-class SearchFragment : Fragment(), Injectable, Scrollable {
+class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle {
+
+    override val title: String
+        get() = query
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -67,6 +71,11 @@ class SearchFragment : Fragment(), Injectable, Scrollable {
             searchView = view
             foundVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     override fun scrollToTop() {
