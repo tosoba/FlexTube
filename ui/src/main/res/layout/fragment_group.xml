@@ -15,21 +15,74 @@
         android:layout_height="match_parent"
         tools:context=".groups.group.GroupFragment">
 
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/group_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:menu_animationDelayPerItem="50"
+            app:menu_backgroundColor="@android:color/transparent"
+            app:menu_buttonSpacing="0dp"
+            app:menu_colorNormal="@color/colorAccent"
+            app:menu_colorPressed="@color/colorPrimary"
+            app:menu_colorRipple="@color/colorAccent"
+            app:menu_fab_label="Group actions"
+            app:menu_fab_size="mini"
+            app:menu_icon="@drawable/more_overflow"
+            app:menu_labels_colorNormal="#333333"
+            app:menu_labels_colorPressed="#444444"
+            app:menu_labels_colorRipple="#66FFFFFF"
+            app:menu_labels_cornerRadius="3dp"
+            app:menu_labels_ellipsize="none"
+            app:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+            app:menu_labels_margin="0dp"
+            app:menu_labels_maxLines="-1"
+            app:menu_labels_padding="8dp"
+            app:menu_labels_paddingBottom="4dp"
+            app:menu_labels_paddingLeft="8dp"
+            app:menu_labels_paddingRight="8dp"
+            app:menu_labels_paddingTop="4dp"
+            app:menu_labels_position="left"
+            app:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+            app:menu_labels_showShadow="true"
+            app:menu_labels_singleLine="false"
+            app:menu_labels_textColor="#FFFFFF"
+            app:menu_labels_textSize="14sp"
+            app:menu_openDirection="down"
+            app:menu_shadowColor="#66000000"
+            app:menu_shadowRadius="4dp"
+            app:menu_shadowXOffset="1dp"
+            app:menu_shadowYOffset="3dp"
+            app:menu_showShadow="true">
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_menu_item_add_subs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{groupView.onAddMoreSubsClickListener}"
+                android:src="@drawable/add"
+                app:fab_label="Add subscriptions to group"
+                app:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_menu_item_delete_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{groupView.onDeleteGroupClickListener}"
+                android:src="@drawable/delete_group"
+                app:fab_label="Delete group"
+                app:fab_size="mini" />
+
+        </com.github.clans.fab.FloatingActionMenu>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/group_sub_buttons_recycler_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:adapter="@{groupView.subscriptionsAdapter}"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:onClick="@{groupView.onAddMoreSubsClickListener}"
-            android:src="@drawable/add"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

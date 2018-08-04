@@ -10,20 +10,6 @@
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
-        android:id="@+id/action_scroll_to_top"
-        android:icon="@drawable/scroll_to_top"
-        android:title="@string/scroll_to_top"
-        android:visible="false"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_delete_group"
-        android:icon="@drawable/delete_group"
-        android:title="@string/delete_group"
-        android:visible="false"
-        app:showAsAction="ifRoom"/>
-
-    <item
         android:id="@+id/action_logout"
         android:icon="@drawable/logout"
         android:title="@string/logout"

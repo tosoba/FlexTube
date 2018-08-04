@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.domain.model.Group
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
+import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentGroupsListBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
@@ -24,14 +25,15 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedGroupsAdapter
 import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.util.ext.accountName
+import kotlinx.android.synthetic.main.fragment_groups_list.*
 import javax.inject.Inject
 
-class GroupsListFragment : Fragment(), Injectable {
+class GroupsListFragment : Fragment(), Injectable, Scrollable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: GroupsListViewModel by lazy(LazyThreadSafetyMode.NONE)  {
+    private val viewModel: GroupsListViewModel by lazy(LazyThreadSafetyMode.NONE) {
         ViewModelProviders.of(this, viewModelFactory).get(GroupsListViewModel::class.java)
     }
 
@@ -49,7 +51,7 @@ class GroupsListFragment : Fragment(), Injectable {
         })
     }
 
-    private val groupsAdapter: SortedGroupsAdapter by lazy(LazyThreadSafetyMode.NONE)  {
+    private val groupsAdapter: SortedGroupsAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SortedGroupsAdapter(viewModel.viewState.groups, R.layout.group_item)
     }
 
@@ -57,7 +59,7 @@ class GroupsListFragment : Fragment(), Injectable {
         (parentFragment as? GroupsHostFragment)?.showGroupFragment(UiGroup(group.accountName, group.name))
     }
 
-    private val view: GroupsListView by lazy(LazyThreadSafetyMode.NONE)  {
+    private val view: GroupsListView by lazy(LazyThreadSafetyMode.NONE) {
         GroupsListView(
                 viewModel.viewState,
                 groupsAdapter,
@@ -95,5 +97,9 @@ class GroupsListFragment : Fragment(), Injectable {
             groupsListView = view
             groupsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
+    }
+
+    override fun scrollToTop() {
+        groups_recycler_view?.smoothScrollToPosition(0)
     }
 }

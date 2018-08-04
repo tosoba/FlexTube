@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.there.data.repo.store.IYoutubeCache
 import com.example.there.flextube.R
+import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentHomeBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
@@ -26,7 +27,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
 
-class HomeFragment : Fragment(), Injectable {
+class HomeFragment : Fragment(), Injectable, Scrollable {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -73,6 +74,10 @@ class HomeFragment : Fragment(), Injectable {
             homeItemsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             videoCategoriesRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         }.root
+    }
+
+    override fun scrollToTop() {
+        home_items_recycler_view?.smoothScrollToPosition(0)
     }
 
     private val disposablesComponent = DisposablesComponent()

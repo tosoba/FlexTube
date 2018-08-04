@@ -10,5 +10,6 @@ data class GroupView(
         val videosAdapter: SortedVideosAdapter,
         val itemDecoration: RecyclerView.ItemDecoration,
         val onVideosScrollListener: RecyclerView.OnScrollListener,
-        val onAddMoreSubsClickListener: View.OnClickListener
+        val onAddMoreSubsClickListener: View.OnClickListener,
+        val onDeleteGroupClickListener: View.OnClickListener
 )

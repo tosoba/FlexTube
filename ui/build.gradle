@@ -112,6 +112,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
     implementation 'com.github.pwittchen:reactivenetwork-rx2:2.0.0'
+    implementation 'com.github.clans:fab:1.6.4'
 
     compileOnly uiDependencies.mockito
 

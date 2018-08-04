@@ -2,7 +2,6 @@ package com.example.there.flextube.groups
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
@@ -13,6 +12,7 @@ import com.example.there.flextube.model.UiGroup
 
 
 class GroupsHostFragment : BaseHostFragment() {
+
     override val backStackLayoutId: Int
         get() = R.id.groups_back_stack_layout
 
@@ -23,17 +23,6 @@ class GroupsHostFragment : BaseHostFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showGroupListFragment()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        menu?.findItem(R.id.action_scroll_to_top)?.isVisible = false
-        menu?.findItem(R.id.action_delete_group)?.isVisible = false
-        super.onPrepareOptionsMenu(menu)
     }
 
     private fun showGroupListFragment() {

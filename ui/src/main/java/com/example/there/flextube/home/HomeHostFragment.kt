@@ -2,7 +2,6 @@ package com.example.there.flextube.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
@@ -20,16 +19,6 @@ class HomeHostFragment : BaseHostFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showHomeFragment()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        menu?.findItem(R.id.action_delete_group)?.isVisible = false
-        super.onPrepareOptionsMenu(menu)
     }
 
     private fun showHomeFragment() {

@@ -10,10 +10,10 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
+import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentSubFeedBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.fragment_sub_feed.*
 import javax.inject.Inject
 
 
-class SubFeedFragment : Fragment(), Injectable {
+class SubFeedFragment : Fragment(), Injectable, Scrollable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -49,9 +49,12 @@ class SubFeedFragment : Fragment(), Injectable {
         )
     }
 
+    override fun scrollToTop() {
+        videos_recycler_view?.smoothScrollToPosition(0)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
         lifecycle.addObserver(disposablesComponent)
         lifecycle.addObserver(connectivityComponent)
@@ -104,11 +107,5 @@ class SubFeedFragment : Fragment(), Injectable {
             subButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        menu?.findItem(R.id.action_scroll_to_top)?.isVisible = true
-        menu?.findItem(R.id.action_delete_group)?.isVisible = false
-        super.onPrepareOptionsMenu(menu)
     }
 }

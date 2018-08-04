@@ -5,12 +5,16 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
+import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentGroupBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
@@ -22,10 +26,11 @@ import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
 import com.example.there.flextube.util.ext.accountName
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
+import kotlinx.android.synthetic.main.fragment_group.*
 import javax.inject.Inject
 
 
-class GroupFragment : Fragment(), Injectable {
+class GroupFragment : Fragment(), Injectable, Scrollable {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -38,9 +43,12 @@ class GroupFragment : Fragment(), Injectable {
 
     private val disposablesComponent = DisposablesComponent()
 
+    override fun scrollToTop() {
+        group_videos_recycler_view?.smoothScrollToPosition(0)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         lifecycle.addObserver(disposablesComponent)
 
         viewModel.loadData(group)
@@ -63,6 +71,10 @@ class GroupFragment : Fragment(), Injectable {
         AddGroupActivity.start(activity!!, accountName, group.name, AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING)
     }
 
+    private val onDeleteGroupClickListener = View.OnClickListener {
+        showDeleteGroupDialog()
+    }
+
     private val view: GroupView by lazy(LazyThreadSafetyMode.NONE) {
         GroupView(
                 subscriptionsAdapter,
@@ -71,7 +83,8 @@ class GroupFragment : Fragment(), Injectable {
                     setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
                 },
                 onVideosScrollListener,
-                onAddMoreSubsClickListener
+                onAddMoreSubsClickListener,
+                onDeleteGroupClickListener
         )
     }
 
@@ -85,18 +98,9 @@ class GroupFragment : Fragment(), Injectable {
         }.root
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        menu?.findItem(R.id.action_scroll_to_top)?.isVisible = false
-        menu?.findItem(R.id.action_delete_group)?.isVisible = true
-        super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
-        R.id.action_delete_group -> {
-            showDeleteGroupDialog()
-            true
-        }
-        else -> false
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setTranslationZ(group_menu, 1000f)
     }
 
     private fun showDeleteGroupDialog() = MaterialDialog.Builder(activity!!)

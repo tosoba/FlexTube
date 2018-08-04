@@ -86,7 +86,10 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
         when (mode) {
             NEW_GROUP -> viewModel.loadSubscriptions(accountName)
-            ADD_SUBS_TO_EXISTING -> viewModel.loadNotAddedSubscriptions(accountName, groupName)
+            ADD_SUBS_TO_EXISTING -> {
+                viewModel.loadNotAddedSubscriptions(accountName, groupName)
+                binding.addGroupButton.text = getString(R.string.add_subscriptions)
+            }
         }
     }
 

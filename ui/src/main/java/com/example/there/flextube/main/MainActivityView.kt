@@ -19,5 +19,6 @@ class MainActivityView(
         val offScreenPageLimit: Int,
         val fadeOnClickListener: View.OnClickListener,
         val slideListener: SlidingUpPanelLayout.PanelSlideListener,
-        val initialSlidePanelState: SlidingUpPanelLayout.PanelState
+        val initialSlidePanelState: SlidingUpPanelLayout.PanelState,
+        val onScrollToTopClicked: View.OnClickListener
 )

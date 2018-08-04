@@ -29,6 +29,7 @@ import android.widget.RelativeLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.base.BaseHostFragment
+import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.ActivityMainBinding
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.DisposablesComponent
@@ -44,8 +45,6 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_sub_feed.*
 import javax.inject.Inject
 
 
@@ -130,6 +129,16 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
     //endregion
 
+    private val onScrollToTopClicked by lazy(LazyThreadSafetyMode.NONE) {
+        View.OnClickListener {
+            val currentFragment = viewPagerAdapter.currentFragment as? BaseHostFragment
+            currentFragment?.let {
+                val scrollableFragment = it.childFragmentManager.findFragmentById(it.backStackLayoutId) as? Scrollable
+                scrollableFragment?.scrollToTop()
+            }
+        }
+    }
+
     private val view: MainActivityView by lazy(LazyThreadSafetyMode.NONE) {
         MainActivityView(
                 state = viewModel.viewState,
@@ -142,7 +151,8 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 offScreenPageLimit = 2,
                 fadeOnClickListener = fadeOnClickListener,
                 slideListener = slideListener,
-                initialSlidePanelState = SlidingUpPanelLayout.PanelState.HIDDEN
+                initialSlidePanelState = SlidingUpPanelLayout.PanelState.HIDDEN,
+                onScrollToTopClicked = onScrollToTopClicked
         )
     }
 
@@ -210,13 +220,8 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             showLogoutDialog()
             true
         }
-        R.id.action_scroll_to_top -> {
-            home_items_recycler_view?.smoothScrollToPosition(0)
-            videos_recycler_view?.smoothScrollToPosition(0)
-            true
-        }
         R.id.action_search -> true
-        else -> false
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun showLogoutDialog() = MaterialDialog.Builder(this)

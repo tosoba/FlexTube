@@ -11,15 +11,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
+import com.example.there.flextube.base.Scrollable
 import com.example.there.flextube.databinding.FragmentSearchBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
+import kotlinx.android.synthetic.main.fragment_search.*
 import javax.inject.Inject
 
 
-class SearchFragment : Fragment(), Injectable {
+class SearchFragment : Fragment(), Injectable, Scrollable {
 
     @Inject
     lateinit var factory: ViewModelFactory
@@ -65,6 +67,10 @@ class SearchFragment : Fragment(), Injectable {
             searchView = view
             foundVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         }.root
+    }
+
+    override fun scrollToTop() {
+        found_videos_recycler_view?.smoothScrollToPosition(0)
     }
 
     companion object {
