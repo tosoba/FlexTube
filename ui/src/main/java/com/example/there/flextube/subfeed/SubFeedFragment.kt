@@ -22,6 +22,8 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.accountName
+import com.example.there.flextube.util.ext.addOnInitialUserScrollListener
+import com.example.there.flextube.util.ext.expandMainAppBar
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_sub_feed.*
@@ -47,14 +49,21 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 viewModel.loadingRemoteVideosComplete,
                 {
                     viewModel.clearDisposables()
-                    viewModel.loadData((activity as MainActivity).accessToken, accountName, true)
+                    loadData(true)
                 },
                 R.id.main_view_pager
         )
     }
 
+    private fun loadData(reloadAfterConnectionLoss: Boolean) {
+        viewModel.loadData((activity as MainActivity).accessToken, accountName, reloadAfterConnectionLoss) {
+            if (!videosAdapter.userHasScrolled) scrollToTop()
+        }
+    }
+
     override fun scrollToTop() {
-        videos_recycler_view?.smoothScrollToPosition(0)
+        videos_recycler_view?.scrollToPosition(0)
+        expandMainAppBar()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +72,7 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         lifecycle.addObserver(disposablesComponent)
         lifecycle.addObserver(connectivityComponent)
 
-        viewModel.loadData((activity as MainActivity).accessToken, accountName)
+        loadData(false)
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
             (activity as MainActivity).loadVideo(it)
@@ -111,6 +120,7 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
             subFeedView = view
             subButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            videosRecyclerView.addOnInitialUserScrollListener()
         }.root
     }
 }

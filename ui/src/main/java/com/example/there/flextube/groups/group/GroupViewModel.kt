@@ -22,7 +22,7 @@ class GroupViewModel @Inject constructor(
 
     private var loadingInProgress = false
 
-    fun loadData(group: UiGroup) {
+    fun loadData(group: UiGroup, onAfterAdd: (() -> Unit)? = null) {
         loadingInProgress = true
         disposables.add(getSubscriptionsFromGroup.execute(GetSubscriptionsFromGroup.Params(group.accountName, group.name))
                 .subscribeOn(Schedulers.io())
@@ -35,7 +35,10 @@ class GroupViewModel @Inject constructor(
                 .observeOn(Schedulers.io())
                 .flatMap { getSavedVideosWithUpdates.execute(viewState.subscriptions.map { it.channelId }) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewState.videos.addAll(it) }, { Log.e(javaClass.name, it.message) }))
+                .subscribe({
+                    viewState.videos.addAll(it)
+                    onAfterAdd?.invoke()
+                }, { Log.e(javaClass.name, it.message) }))
     }
 
     fun loadMoreVideos(onFinally: () -> Unit) {

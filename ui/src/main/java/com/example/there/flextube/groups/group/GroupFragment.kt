@@ -26,6 +26,8 @@ import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
 import com.example.there.flextube.util.ext.accountName
+import com.example.there.flextube.util.ext.addOnInitialUserScrollListener
+import com.example.there.flextube.util.ext.expandMainAppBar
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_group.*
@@ -49,14 +51,15 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
     private val disposablesComponent = DisposablesComponent()
 
     override fun scrollToTop() {
-        group_videos_recycler_view?.smoothScrollToPosition(0)
+        group_videos_recycler_view?.scrollToPosition(0)
+        expandMainAppBar()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(disposablesComponent)
 
-        viewModel.loadData(group)
+        viewModel.loadData(group) { if (!videosAdapter.userHasScrolled) scrollToTop() }
         disposablesComponent.add(videosAdapter.videoClicked.subscribe { (activity as MainActivity).loadVideo(it) })
     }
 
@@ -101,6 +104,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
 
             groupSubButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             groupVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            groupVideosRecyclerView.addOnInitialUserScrollListener()
         }.root
     }
 

@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 
 
-class DividerItemDecorator(private val mDivider: Drawable) : RecyclerView.ItemDecoration() {
+class DividerItemDecorator(private val divider: Drawable) : RecyclerView.ItemDecoration() {
 
     override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val dividerLeft = parent.paddingLeft
@@ -18,10 +18,10 @@ class DividerItemDecorator(private val mDivider: Drawable) : RecyclerView.ItemDe
             val params = child.layoutParams as RecyclerView.LayoutParams
 
             val dividerTop = child.bottom + params.bottomMargin
-            val dividerBottom = dividerTop + mDivider.intrinsicHeight
+            val dividerBottom = dividerTop + divider.intrinsicHeight
 
-            mDivider.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
-            mDivider.draw(canvas)
+            divider.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom)
+            divider.draw(canvas)
         }
     }
 }

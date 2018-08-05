@@ -24,7 +24,7 @@ class SubFeedViewModel @Inject constructor(
     var loadingRemoteVideosComplete = false
         private set
 
-    fun loadData(accessToken: String, accountName: String, reloadAfterConnectionLoss: Boolean = false) {
+    fun loadData(accessToken: String, accountName: String, reloadAfterConnectionLoss: Boolean = false, onAfterAdd: (() -> Unit)? = null) {
         if (!loadingVideosInProgress || reloadAfterConnectionLoss) {
             loadingVideosInProgress = true
             disposables.add(loadUserSubscriptions
@@ -35,7 +35,7 @@ class SubFeedViewModel @Inject constructor(
                     .doOnComplete {
                         if (viewState.subscriptions.isNotEmpty()) {
                             updateDbSubscriptions(viewState.subscriptions, accountName)
-                            loadDbVideos()
+                            loadDbVideos(onAfterAdd)
                         } else {
                             viewState.noSubscriptions.set(true)
                         }
@@ -71,12 +71,15 @@ class SubFeedViewModel @Inject constructor(
         }
     }
 
-    private fun loadDbVideos() {
+    private fun loadDbVideos(onAfterAdd: (() -> Unit)? = null) {
         disposables.add(getSavedVideos.execute(viewState.subscriptions.map { it.channelId })
                 .subscribeOn(Schedulers.io())
                 .map { it.filter { !viewState.videos.contains(it) } }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ viewState.videos.addAll(it) }, {
+                .subscribe({
+                    viewState.videos.addAll(it)
+                    onAfterAdd?.invoke()
+                }, {
                     Log.e("ERR", it.message ?: "No saved videos.")
                 }))
     }

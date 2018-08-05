@@ -22,6 +22,7 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.VideoCategoriesAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.util.ext.expandMainAppBar
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -81,7 +82,8 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
     }
 
     override fun scrollToTop() {
-        home_items_recycler_view?.smoothScrollToPosition(0)
+        home_items_recycler_view?.scrollToPosition(0)
+        expandMainAppBar()
     }
 
     private val disposablesComponent = DisposablesComponent()
@@ -92,13 +94,17 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 viewModel.loadingGeneralHomeItemsComplete,
                 {
                     viewModel.clearDisposables()
-                    viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, false) {
-                        home_items_recycler_view?.scrollToPosition(0)
-                    }
+                    loadInitialHomeItems()
                     viewModel.loadVideoCategories()
                 },
                 R.id.main_view_pager
         )
+    }
+
+    private fun loadInitialHomeItems() {
+        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, false, onAfterAdd = {
+            home_items_recycler_view?.scrollToPosition(0)
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +113,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         lifecycle.addObserver(disposablesComponent)
         lifecycle.addObserver(connectivityComponent)
 
-        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
+        loadInitialHomeItems()
         viewModel.loadVideoCategories()
 
         disposablesComponent.add(videosAdapter.videoClicked.subscribe {
@@ -115,7 +121,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         })
 
         disposablesComponent.add(videoCategoriesAdapter.categoryClicked.subscribe {
-            video_categories_recycler_view?.smoothScrollToPosition(0)
+            video_categories_recycler_view?.scrollToPosition(0)
             viewModel.viewState.homeItems.clear()
             viewModel.viewState.currentVideoCategoryId = it
             onVideosScrollListener.mPreviousTotal = 0

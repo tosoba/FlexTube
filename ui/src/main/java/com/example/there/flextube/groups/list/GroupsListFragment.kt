@@ -104,6 +104,6 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
     }
 
     override fun scrollToTop() {
-        groups_recycler_view?.smoothScrollToPosition(0)
+        groups_recycler_view?.scrollToPosition(0)
     }
 }

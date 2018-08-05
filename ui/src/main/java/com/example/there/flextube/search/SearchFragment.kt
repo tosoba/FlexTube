@@ -17,6 +17,7 @@ import com.example.there.flextube.databinding.FragmentSearchBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.util.ext.expandMainAppBar
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -77,13 +78,9 @@ class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavi
         }.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
     override fun scrollToTop() {
-        found_videos_recycler_view?.smoothScrollToPosition(0)
+        found_videos_recycler_view?.scrollToPosition(0)
+        expandMainAppBar()
     }
 
     companion object {

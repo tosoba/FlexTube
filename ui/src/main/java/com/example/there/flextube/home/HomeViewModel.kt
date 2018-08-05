@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     var loadingGeneralHomeItemsComplete = false
         private set
 
-    fun loadGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false, onFinally: () -> Unit = {}) {
+    fun loadGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false, onFinally: () -> Unit = {}, onAfterAdd: (() -> Unit)? = null) {
         if (viewState.isLoadingInProgress.get() == false) {
             previousCategoryId = IYoutubeCache.CATEGORY_GENERAL
             if (shouldReturnAll) viewState.homeItems.clear()
@@ -38,7 +38,10 @@ class HomeViewModel @Inject constructor(
                         viewState.isLoadingInProgress.set(false)
                         onFinally()
                     }
-                    .subscribe({ viewState.homeItems.addAll(it) }, { Log.e("ERR", it.message) }))
+                    .subscribe({
+                        viewState.homeItems.addAll(it)
+                        onAfterAdd?.invoke()
+                    }, { Log.e("ERR", it.message) }))
         }
     }
 
