@@ -5,7 +5,7 @@ import com.example.there.domain.usecase.impl.DeleteGroup
 import com.example.there.domain.usecase.impl.GetSavedVideosWithUpdates
 import com.example.there.domain.usecase.impl.GetSubscriptionsFromGroup
 import com.example.there.domain.usecase.impl.LoadMoreVideos
-import com.example.there.flextube.base.BaseViewModel
+import com.example.there.flextube.base.vm.BaseViewModel
 import com.example.there.flextube.model.UiGroup
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -38,13 +38,14 @@ class GroupViewModel @Inject constructor(
                 .subscribe({ viewState.videos.addAll(it) }, { Log.e(javaClass.name, it.message) }))
     }
 
-    fun loadMoreVideos() {
+    fun loadMoreVideos(onFinally: () -> Unit) {
         if (!loadingInProgress) {
             loadingInProgress = true
             disposables.add(loadMoreVideos.execute(viewState.subscriptions.map { it.channelId })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnComplete { loadingInProgress = false }
+                    .doFinally(onFinally)
                     .subscribe({}, { Log.e(javaClass.name, it.message) }))
         }
     }

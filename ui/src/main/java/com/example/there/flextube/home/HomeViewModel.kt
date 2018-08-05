@@ -7,7 +7,7 @@ import com.example.there.domain.usecase.impl.GetGeneralHomeItems
 import com.example.there.domain.usecase.impl.GetHomeItemsByCategory
 import com.example.there.domain.usecase.impl.GetVideoCategories
 import com.example.there.flextube.R
-import com.example.there.flextube.base.BaseViewModel
+import com.example.there.flextube.base.vm.BaseViewModel
 import com.example.there.flextube.mapper.UiVideoCategoryMapper
 import com.example.there.flextube.model.UiVideoCategory
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     var loadingGeneralHomeItemsComplete = false
         private set
 
-    fun loadGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false) {
+    fun loadGeneralHomeItems(accessToken: String, shouldReturnAll: Boolean = false, onFinally: () -> Unit = {}) {
         if (viewState.isLoadingInProgress.get() == false) {
             previousCategoryId = IYoutubeCache.CATEGORY_GENERAL
             if (shouldReturnAll) viewState.homeItems.clear()
@@ -34,14 +34,17 @@ class HomeViewModel @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess { loadingGeneralHomeItemsComplete = true }
-                    .doFinally { viewState.isLoadingInProgress.set(false) }
+                    .doFinally {
+                        viewState.isLoadingInProgress.set(false)
+                        onFinally()
+                    }
                     .subscribe({ viewState.homeItems.addAll(it) }, { Log.e("ERR", it.message) }))
         }
     }
 
     private var previousCategoryId: String? = null
 
-    fun loadHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = true) {
+    fun loadHomeItemsByCategory(categoryId: String, shouldReturnAll: Boolean = true, onFinally: () -> Unit = {}) {
         fun load() {
             previousCategoryId = categoryId
 
@@ -51,10 +54,11 @@ class HomeViewModel @Inject constructor(
             disposables.add(getHomeItemsByCategory.execute(params = GetHomeItemsByCategory.Params(categoryId, shouldReturnAll))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doFinally { viewState.isLoadingInProgress.set(false) }
-                    .subscribe({
-                        viewState.homeItems.addAll(it)
-                    }, { Log.e("ERR", it.message) }))
+                    .doFinally {
+                        viewState.isLoadingInProgress.set(false)
+                        onFinally()
+                    }
+                    .subscribe({ viewState.homeItems.addAll(it) }, { Log.e("ERR", it.message) }))
         }
 
         if (previousCategoryId == null || previousCategoryId != categoryId) {
@@ -70,9 +74,14 @@ class HomeViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    viewState.videoCategories.add(UiVideoCategory(
-                            IYoutubeCache.CATEGORY_GENERAL, "General", R.drawable.home_white, ObservableField(true)))
+                    viewState.videoCategories.add(
+                            UiVideoCategory(
+                                    IYoutubeCache.CATEGORY_GENERAL,
+                                    "General",
+                                    R.drawable.home_white, ObservableField(true)
+                            )
+                    )
                     viewState.videoCategories.addAll(it.map(UiVideoCategoryMapper::toUi))
-                }, {}))
+                }, { Log.e("ERR", it.message) }))
     }
 }

@@ -17,7 +17,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.view.Menu
@@ -29,10 +28,10 @@ import android.widget.ImageButton
 import android.widget.RelativeLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
-import com.example.there.flextube.base.BaseHostFragment
-import com.example.there.flextube.base.HasBackNavigation
-import com.example.there.flextube.base.HasTitle
-import com.example.there.flextube.base.Scrollable
+import com.example.there.flextube.base.fragment.BaseHostFragment
+import com.example.there.flextube.base.fragment.HasBackNavigation
+import com.example.there.flextube.base.fragment.HasTitle
+import com.example.there.flextube.base.fragment.Scrollable
 import com.example.there.flextube.databinding.ActivityMainBinding
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.DisposablesComponent
@@ -42,6 +41,7 @@ import com.example.there.flextube.util.ext.resetTitle
 import com.example.there.flextube.util.ext.screenHeight
 import com.example.there.flextube.util.ext.screenOrientation
 import com.example.there.flextube.util.ext.toPx
+import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayer
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -69,18 +69,23 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     //region relatedVideosRecyclerView
-    private val relatedVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) { VideosAdapter(viewModel.viewState.relatedVideos, R.layout.video_item) }
+    private val relatedVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        VideosAdapter(viewModel.viewState.relatedVideos, R.layout.video_item, R.layout.loading_item)
+    }
 
     private val onRelatedVideosScrollListener: EndlessRecyclerOnScrollListener by lazy(LazyThreadSafetyMode.NONE) {
         object : EndlessRecyclerOnScrollListener() {
-            override fun onLoadMore() = viewModel.loadRelatedVideos(lastPlayedVideoId!!, false)
+            override fun onLoadMore() {
+                lastPlayedVideoId?.let {
+                    relatedVideosAdapter.loadingInProgress = true
+                    viewModel.loadRelatedVideos(it, false) { relatedVideosAdapter.loadingInProgress = false }
+                }
+            }
         }
     }
 
-    private val relatedVideosItemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
-        DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(ContextCompat.getDrawable(this@MainActivity, R.drawable.video_separator)!!)
-        }
+    private val relatedVideosItemDecoration: DividerItemDecorator by lazy(LazyThreadSafetyMode.NONE) {
+        DividerItemDecorator(ContextCompat.getDrawable(this, R.drawable.video_separator)!!)
     }
     //endregion
 

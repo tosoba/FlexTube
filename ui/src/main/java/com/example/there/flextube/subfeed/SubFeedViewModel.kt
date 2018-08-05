@@ -3,7 +3,7 @@ package com.example.there.flextube.subfeed
 import android.util.Log
 import com.example.there.domain.model.Subscription
 import com.example.there.domain.usecase.impl.*
-import com.example.there.flextube.base.BaseViewModel
+import com.example.there.flextube.base.vm.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -91,13 +91,14 @@ class SubFeedViewModel @Inject constructor(
                 }))
     }
 
-    fun loadMoreVideos() {
+    fun loadMoreVideos(onFinally: () -> Unit) {
         if (!loadingVideosInProgress) {
             loadingVideosInProgress = true
             disposables.add(loadMoreVideos.execute(viewState.subscriptions.map { it.channelId.trim() })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnComplete { loadingVideosInProgress = false }
+                    .doFinally(onFinally)
                     .subscribe())
         }
     }

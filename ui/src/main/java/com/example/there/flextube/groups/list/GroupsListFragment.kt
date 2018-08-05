@@ -16,8 +16,8 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.domain.model.Group
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
-import com.example.there.flextube.base.HasTitle
-import com.example.there.flextube.base.Scrollable
+import com.example.there.flextube.base.fragment.HasTitle
+import com.example.there.flextube.base.fragment.Scrollable
 import com.example.there.flextube.databinding.FragmentGroupsListBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory

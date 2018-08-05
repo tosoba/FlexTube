@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -14,19 +13,20 @@ import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
-import com.example.there.flextube.base.HasBackNavigation
-import com.example.there.flextube.base.HasTitle
-import com.example.there.flextube.base.Scrollable
+import com.example.there.flextube.base.fragment.HasBackNavigation
+import com.example.there.flextube.base.fragment.HasTitle
+import com.example.there.flextube.base.fragment.Scrollable
 import com.example.there.flextube.databinding.FragmentGroupBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.groups.GroupsHostFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
-import com.example.there.flextube.list.SortedVideosAdapter
+import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.model.UiGroup
 import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
 import com.example.there.flextube.util.ext.accountName
+import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_group.*
 import javax.inject.Inject
@@ -64,12 +64,15 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
-    private val videosAdapter: SortedVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
+    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        VideosAdapter(viewModel.viewState.videos, R.layout.video_item, R.layout.loading_item)
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
-        override fun onLoadMore() = viewModel.loadMoreVideos()
+        override fun onLoadMore() {
+            videosAdapter.loadingInProgress = true
+            viewModel.loadMoreVideos { videosAdapter.loadingInProgress = false }
+        }
     }
 
     private val onAddMoreSubsClickListener = View.OnClickListener {
@@ -84,9 +87,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         GroupView(
                 subscriptionsAdapter,
                 videosAdapter,
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-                },
+                DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
                 onVideosScrollListener,
                 onAddMoreSubsClickListener,
                 onDeleteGroupClickListener

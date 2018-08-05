@@ -2,8 +2,8 @@ package com.example.there.flextube.addgroup
 
 import android.widget.Filter
 import android.widget.Filterable
-import com.example.there.flextube.base.BaseBindingViewHolder
-import com.example.there.flextube.base.BaseObservableListAdapter
+import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
+import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.SubscriptionToChooseItemBinding
 import com.example.there.flextube.model.UiSubscriptionToChoose
 import com.example.there.flextube.util.view.ObservableSortedList

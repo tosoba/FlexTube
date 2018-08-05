@@ -1,4 +1,4 @@
-package com.example.there.flextube.base
+package com.example.there.flextube.base.fragment
 
 import android.support.v4.app.Fragment
 import com.example.there.flextube.search.SearchFragment

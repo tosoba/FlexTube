@@ -1,4 +1,4 @@
-package com.example.there.flextube.base
+package com.example.there.flextube.base.vm
 
 import android.arch.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable

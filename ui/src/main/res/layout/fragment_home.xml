@@ -46,25 +46,13 @@
             android:adapter="@{homeView.videosAdapter}"
             android:focusable="false"
             android:focusableInTouchMode="true"
-            app:layout_constraintBottom_toTopOf="@id/loading_more_progress_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/video_categories_recycler_view"
             app:layout_constraintVertical_chainStyle="spread_inside" />
 
-        <ProgressBar
-            android:id="@+id/loading_more_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:visibility="@{(safeUnbox(homeView.state.homeItems.size()) > 0 &amp;&amp; safeUnbox(homeView.state.isLoadingInProgress)) ? View.VISIBLE : View.GONE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/home_items_recycler_view" />
-
     </android.support.constraint.ConstraintLayout>
-
 
 </layout>
 

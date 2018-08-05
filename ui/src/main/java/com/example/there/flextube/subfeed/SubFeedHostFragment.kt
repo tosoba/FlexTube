@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
-import com.example.there.flextube.base.BaseHostFragment
+import com.example.there.flextube.base.fragment.BaseHostFragment
 
 class SubFeedHostFragment : BaseHostFragment() {
     override val backStackLayoutId: Int

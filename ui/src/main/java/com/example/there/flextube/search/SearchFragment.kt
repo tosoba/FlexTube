@@ -5,19 +5,19 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
-import com.example.there.flextube.base.HasBackNavigation
-import com.example.there.flextube.base.HasTitle
-import com.example.there.flextube.base.Scrollable
+import com.example.there.flextube.base.fragment.HasBackNavigation
+import com.example.there.flextube.base.fragment.HasTitle
+import com.example.there.flextube.base.fragment.Scrollable
 import com.example.there.flextube.databinding.FragmentSearchBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_search.*
 import javax.inject.Inject
@@ -42,18 +42,21 @@ class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavi
         viewModel.searchVideos(query, true)
     }
 
-    private val foundVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) { VideosAdapter(viewModel.viewState.foundVideos, R.layout.video_item) }
+    private val foundVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        VideosAdapter(viewModel.viewState.foundVideos, R.layout.video_item, R.layout.loading_item)
+    }
 
     private val onFoundVideosScrollListener: EndlessRecyclerOnScrollListener by lazy(LazyThreadSafetyMode.NONE) {
         object : EndlessRecyclerOnScrollListener() {
-            override fun onLoadMore() = viewModel.searchVideos(query, false)
+            override fun onLoadMore() {
+                foundVideosAdapter.loadingInProgress = true
+                viewModel.searchVideos(query, false) { foundVideosAdapter.loadingInProgress = false }
+            }
         }
     }
 
-    private val foundVideosItemDecoration: DividerItemDecoration by lazy(LazyThreadSafetyMode.NONE) {
-        DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(ContextCompat.getDrawable(activity!!, R.drawable.video_separator)!!)
-        }
+    private val foundVideosItemDecoration: DividerItemDecorator by lazy(LazyThreadSafetyMode.NONE) {
+        DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
     }
 
     private val view: SearchView by lazy(LazyThreadSafetyMode.NONE) {

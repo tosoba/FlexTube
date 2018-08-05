@@ -1,8 +1,8 @@
 package com.example.there.flextube.list
 
 import com.example.there.domain.model.Group
-import com.example.there.flextube.base.BaseBindingViewHolder
-import com.example.there.flextube.base.BaseObservableListAdapter
+import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
+import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.GroupItemBinding
 import com.example.there.flextube.util.view.ObservableSortedList
 import io.reactivex.subjects.PublishSubject

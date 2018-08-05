@@ -5,7 +5,7 @@ import com.example.there.domain.usecase.impl.AddSubscriptionsToGroup
 import com.example.there.domain.usecase.impl.GetSavedSubscriptions
 import com.example.there.domain.usecase.impl.GetSubscriptionsNotAddedToGroup
 import com.example.there.domain.usecase.impl.InsertSubscriptionGroup
-import com.example.there.flextube.base.BaseViewModel
+import com.example.there.flextube.base.vm.BaseViewModel
 import com.example.there.flextube.model.UiSubscriptionToChoose
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

@@ -3,7 +3,7 @@ package com.example.there.flextube.groups.list
 import android.util.Log
 import com.example.there.domain.usecase.impl.GetGroup
 import com.example.there.domain.usecase.impl.GetUserGroups
-import com.example.there.flextube.base.BaseViewModel
+import com.example.there.flextube.base.vm.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject

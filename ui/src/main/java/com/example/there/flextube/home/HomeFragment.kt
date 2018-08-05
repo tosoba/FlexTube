@@ -6,15 +6,14 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.data.repo.store.IYoutubeCache
 import com.example.there.flextube.R
-import com.example.there.flextube.base.HasTitle
-import com.example.there.flextube.base.Scrollable
+import com.example.there.flextube.base.fragment.HasTitle
+import com.example.there.flextube.base.fragment.Scrollable
 import com.example.there.flextube.databinding.FragmentHomeBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
@@ -23,6 +22,7 @@ import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.VideoCategoriesAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
+import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
@@ -41,15 +41,17 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
     }
 
     private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item)
+        VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item, R.layout.loading_item)
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
         override fun onLoadMore() {
+            val onFinally: () -> Unit = { videosAdapter.loadingInProgress = false }
+            videosAdapter.loadingInProgress = true
             if (viewModel.viewState.currentVideoCategoryId == IYoutubeCache.CATEGORY_GENERAL) {
-                viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
+                viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, false, onFinally)
             } else {
-                viewModel.loadHomeItemsByCategory(viewModel.viewState.currentVideoCategoryId, shouldReturnAll = false)
+                viewModel.loadHomeItemsByCategory(viewModel.viewState.currentVideoCategoryId, false, onFinally)
             }
         }
     }
@@ -62,9 +64,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         HomeView(
                 viewModel.viewState,
                 videosAdapter,
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-                },
+                DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
                 onVideosScrollListener,
                 videoCategoriesAdapter
         )
@@ -92,7 +92,9 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 viewModel.loadingGeneralHomeItemsComplete,
                 {
                     viewModel.clearDisposables()
-                    viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken)
+                    viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, false) {
+                        home_items_recycler_view?.scrollToPosition(0)
+                    }
                     viewModel.loadVideoCategories()
                 },
                 R.id.main_view_pager

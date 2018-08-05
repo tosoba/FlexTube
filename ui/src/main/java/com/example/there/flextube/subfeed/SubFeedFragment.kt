@@ -7,22 +7,22 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.there.flextube.R
-import com.example.there.flextube.base.HasTitle
-import com.example.there.flextube.base.Scrollable
+import com.example.there.flextube.base.fragment.HasTitle
+import com.example.there.flextube.base.fragment.Scrollable
 import com.example.there.flextube.databinding.FragmentSubFeedBinding
 import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.ConnectivityComponent
 import com.example.there.flextube.lifecycle.DisposablesComponent
-import com.example.there.flextube.list.SortedVideosAdapter
+import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.accountName
+import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_sub_feed.*
 import javax.inject.Inject
@@ -75,11 +75,14 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
-        override fun onLoadMore() = viewModel.loadMoreVideos()
+        override fun onLoadMore() {
+            videosAdapter.loadingInProgress = true
+            viewModel.loadMoreVideos { videosAdapter.loadingInProgress = false }
+        }
     }
 
-    private val videosAdapter: SortedVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SortedVideosAdapter(viewModel.viewState.videos, R.layout.video_item)
+    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        VideosAdapter(viewModel.viewState.videos, R.layout.video_item, R.layout.loading_item)
     }
 
     private val onSubFeedRefreshListener: SwipeRefreshLayout.OnRefreshListener by lazy(LazyThreadSafetyMode.NONE) {
@@ -95,9 +98,7 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 viewModel.viewState,
                 subscriptionsAdapter,
                 videosAdapter,
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-                },
+                DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
                 onVideosScrollListener,
                 onSubFeedRefreshListener
         )

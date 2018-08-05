@@ -1,4 +1,4 @@
-package com.example.there.flextube.base
+package com.example.there.flextube.base.list.viewholder
 
 import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView

@@ -1,8 +1,8 @@
 package com.example.there.flextube.list
 
 import android.databinding.ObservableArrayList
-import com.example.there.flextube.base.BaseBindingViewHolder
-import com.example.there.flextube.base.BaseObservableListAdapter
+import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
+import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.VideoCategoryItemBinding
 import com.example.there.flextube.model.UiVideoCategory
 import io.reactivex.subjects.PublishSubject

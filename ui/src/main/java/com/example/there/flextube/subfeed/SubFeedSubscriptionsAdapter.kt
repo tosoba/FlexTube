@@ -2,8 +2,8 @@ package com.example.there.flextube.subfeed
 
 import android.databinding.ObservableArrayList
 import com.example.there.domain.model.Subscription
-import com.example.there.flextube.base.BaseBindingViewHolder
-import com.example.there.flextube.base.BaseObservableListAdapter
+import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
+import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.SubscriptionItemBinding
 
 class SubFeedSubscriptionsAdapter(
