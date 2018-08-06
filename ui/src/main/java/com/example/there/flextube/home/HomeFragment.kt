@@ -25,6 +25,7 @@ import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.expandMainAppBar
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
+import com.otaliastudios.nestedscrollcoordinatorlayout.NestedScrollCoordinatorLayout
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
@@ -78,11 +79,13 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
             homeView = view
             homeItemsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             videoCategoriesRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+            homeCoordinatorLayout.setPassMode(NestedScrollCoordinatorLayout.PASS_MODE_PARENT_FIRST)
         }.root
     }
 
     override fun scrollToTop() {
         home_items_recycler_view?.scrollToPosition(0)
+        home_app_bar?.setExpanded(true, true)
         expandMainAppBar()
     }
 
@@ -124,11 +127,12 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
             video_categories_recycler_view?.scrollToPosition(0)
             viewModel.viewState.homeItems.clear()
             viewModel.viewState.currentVideoCategoryId = it
-            onVideosScrollListener.mPreviousTotal = 0
             if (it == IYoutubeCache.CATEGORY_GENERAL) {
-                viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, shouldReturnAll = true)
+                viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, shouldReturnAll = true) {
+                    scrollToTop()
+                }
             } else {
-                viewModel.loadHomeItemsByCategory(it)
+                viewModel.loadHomeItemsByCategory(it, onAfterAdd = { scrollToTop() })
             }
         })
     }

@@ -98,6 +98,8 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         }
 
         main_view_pager.currentItem = itemIds.indexOf(item.itemId)
+        main_app_bar_layout?.setExpanded(true, true)
+
         return@OnNavigationItemSelectedListener true
     }
     //endregion
@@ -112,6 +114,7 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
         override fun onPageSelected(position: Int) {
             main_bottom_navigation_view?.menu?.findItem(itemIds[position])?.isChecked = true
+            main_app_bar_layout?.setExpanded(true, true)
         }
     }
     //endregion

@@ -63,6 +63,7 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
     override fun scrollToTop() {
         videos_recycler_view?.scrollToPosition(0)
+        sub_feed_app_bar?.setExpanded(true, true)
         expandMainAppBar()
     }
 

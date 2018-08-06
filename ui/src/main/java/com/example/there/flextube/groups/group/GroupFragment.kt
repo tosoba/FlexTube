@@ -52,6 +52,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
 
     override fun scrollToTop() {
         group_videos_recycler_view?.scrollToPosition(0)
+        group_app_bar?.setExpanded(true, true)
         expandMainAppBar()
     }
 

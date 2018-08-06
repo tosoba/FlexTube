@@ -113,6 +113,7 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
     implementation 'com.github.pwittchen:reactivenetwork-rx2:2.0.0'
     implementation 'com.github.clans:fab:1.6.4'
+    implementation 'com.otaliastudios:nestedscrollcoordinatorlayout:1.0.3'
 
     compileOnly uiDependencies.mockito
 
