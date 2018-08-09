@@ -1,5 +1,6 @@
 package com.example.there.flextube.groups.group
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -61,7 +62,16 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         lifecycle.addObserver(disposablesComponent)
 
         viewModel.loadData(group) { if (!videosAdapter.userHasScrolled) scrollToTop() }
-        disposablesComponent.add(videosAdapter.videoClicked.subscribe { (activity as MainActivity).loadVideo(it) })
+        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
+            closeGroupMenu(false)
+            (activity as MainActivity).loadVideo(it)
+        })
+    }
+
+    private fun closeGroupMenu(animate: Boolean) {
+        if (group_menu?.isOpened == true) {
+            group_menu?.close(animate)
+        }
     }
 
     private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
@@ -98,11 +108,19 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentGroupBinding>(inflater, R.layout.fragment_group, container, false)
         return binding.apply {
             groupView = view
 
+            groupCoordinatorLayout.setOnTouchListener(View.OnTouchListener { _, _ ->
+                if (group_menu?.isOpened == true) {
+                    closeGroupMenu(true)
+                    return@OnTouchListener true
+                }
+                false
+            })
             groupSubButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             groupVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             groupVideosRecyclerView.addOnInitialUserScrollListener()

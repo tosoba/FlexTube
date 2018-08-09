@@ -40,7 +40,7 @@ class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.searchVideos(query, true)
+        viewModel.searchVideos(query, true, onAfterAdd = { scrollToTop() })
     }
 
     private val foundVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {

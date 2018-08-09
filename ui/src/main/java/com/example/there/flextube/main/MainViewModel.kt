@@ -15,7 +15,7 @@ class MainViewModel @Inject constructor(
 
     private var previousVideoId: String? = null
 
-    fun loadRelatedVideos(videoId: String, shouldReturnAll: Boolean, onFinally: () -> Unit = {}) {
+    fun loadRelatedVideos(videoId: String, shouldReturnAll: Boolean, onFinally: (() -> Unit)? = null, onAfterAdd: (() -> Unit)? = null) {
         fun load() {
             if (shouldReturnAll || videoId != previousVideoId)
                 viewState.relatedVideos.clear()
@@ -28,9 +28,12 @@ class MainViewModel @Inject constructor(
                     .observeOn(AndroidSchedulers.mainThread())
                     .doFinally {
                         viewState.loadingInProgress.set(false)
-                        onFinally()
+                        onFinally?.invoke()
                     }
-                    .subscribe({ viewState.relatedVideos.addAll(it) }, {
+                    .subscribe({
+                        viewState.relatedVideos.addAll(it)
+                        onAfterAdd?.invoke()
+                    }, {
                         Log.e(javaClass.name, it.message ?: "getRelatedVideos error")
                     }))
         }

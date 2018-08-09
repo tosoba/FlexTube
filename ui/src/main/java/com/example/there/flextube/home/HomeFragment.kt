@@ -100,7 +100,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
                     loadInitialHomeItems()
                     viewModel.loadVideoCategories()
                 },
-                R.id.main_view_pager
+                activity!!.findViewById(R.id.scroll_to_top_fab)
         )
     }
 
@@ -114,7 +114,6 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         super.onCreate(savedInstanceState)
 
         lifecycle.addObserver(disposablesComponent)
-        lifecycle.addObserver(connectivityComponent)
 
         loadInitialHomeItems()
         viewModel.loadVideoCategories()
@@ -135,5 +134,10 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 viewModel.loadHomeItemsByCategory(it, onAfterAdd = { scrollToTop() })
             }
         })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycle.addObserver(connectivityComponent)
     }
 }

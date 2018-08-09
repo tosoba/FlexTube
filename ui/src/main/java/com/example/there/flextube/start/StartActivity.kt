@@ -26,6 +26,7 @@ import com.google.api.services.youtube.YouTubeScopes
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_start.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -43,7 +44,7 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES).setBackOff(ExponentialBackOff())
                     checkAuthAndLoadData()
                 },
-                R.id.start_activity_root_layout
+                start_activity_root_layout
         )
     }
 

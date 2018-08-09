@@ -78,7 +78,9 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
             override fun onLoadMore() {
                 lastPlayedVideoId?.let {
                     relatedVideosAdapter.loadingInProgress = true
-                    viewModel.loadRelatedVideos(it, false) { relatedVideosAdapter.loadingInProgress = false }
+                    viewModel.loadRelatedVideos(it, false, onFinally = {
+                        relatedVideosAdapter.loadingInProgress = false
+                    })
                 }
             }
         }
@@ -335,7 +337,9 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         else
             youTubePlayer?.cueVideo(videoId, 0f)
 
-        viewModel.loadRelatedVideos(videoId, true)
+        viewModel.loadRelatedVideos(videoId, true, onAfterAdd = {
+            related_videos_recycler_view?.scrollToPosition(0)
+        })
     }
 
     //region player controls

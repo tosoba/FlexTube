@@ -69,18 +69,17 @@
                     android:background="@drawable/main_background"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-            </android.support.design.widget.CoordinatorLayout>
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/scroll_to_top_fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:onClick="@{mainView.onScrollToTopClicked}"
+                    android:src="@drawable/scroll_to_top" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/scroll_to_top_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginRight="10dp"
-                android:onClick="@{mainView.onScrollToTopClicked}"
-                android:src="@drawable/scroll_to_top"
-                app:layout_constraintBottom_toTopOf="@id/main_bottom_navigation_view"
-                app:layout_constraintRight_toRightOf="parent" />
+            </android.support.design.widget.CoordinatorLayout>
 
             <android.support.design.widget.BottomNavigationView
                 android:id="@+id/main_bottom_navigation_view"

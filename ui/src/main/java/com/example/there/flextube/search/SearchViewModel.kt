@@ -15,7 +15,7 @@ class SearchViewModel @Inject constructor(
 
     private var loadingInProgress = false
 
-    fun searchVideos(query: String, shouldReturnAll: Boolean, onFinally: () -> Unit = {}) {
+    fun searchVideos(query: String, shouldReturnAll: Boolean, onFinally: (() -> Unit)? = null, onAfterAdd: (() -> Unit)? = null) {
         if (!loadingInProgress) {
             loadingInProgress = true
             disposables.add(searchForVideos.execute(SearchForVideos.Params(query, shouldReturnAll))
@@ -23,9 +23,12 @@ class SearchViewModel @Inject constructor(
                     .observeOn(AndroidSchedulers.mainThread())
                     .doFinally {
                         loadingInProgress = false
-                        onFinally()
+                        onFinally?.invoke()
                     }
-                    .subscribe({ viewState.foundVideos.addAll(it) }, {
+                    .subscribe({
+                        viewState.foundVideos.addAll(it)
+                        onAfterAdd?.invoke()
+                    }, {
                         Log.e("ERR", it.message ?: "searchVideos")
                     }))
         }

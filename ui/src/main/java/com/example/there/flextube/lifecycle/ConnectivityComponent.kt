@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.provider.Settings
 import android.support.design.widget.Snackbar
+import android.view.View
 import android.widget.TextView
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,7 +20,7 @@ class ConnectivityComponent(
         private val activity: Activity,
         private val isDataLoaded: Boolean,
         private val reloadData: () -> Unit,
-        private val snackBarParentId: Int
+        private val parentView: View
 ) : LifecycleObserver {
 
     private var internetDisposable: Disposable? = null
@@ -78,7 +79,7 @@ class ConnectivityComponent(
 
     private fun showNoConnectionDialog() {
         snackbar = Snackbar
-                .make(activity.findViewById(snackBarParentId), "No internet connection.", Snackbar.LENGTH_LONG)
+                .make(parentView, "No internet connection.", Snackbar.LENGTH_LONG)
                 .setAction("SETTINGS") {
                     val settingsIntent = Intent(Settings.ACTION_SETTINGS)
                     activity.startActivity(settingsIntent)

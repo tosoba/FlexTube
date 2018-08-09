@@ -51,7 +51,7 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
                     viewModel.clearDisposables()
                     loadData(true)
                 },
-                R.id.main_view_pager
+                activity!!.findViewById(R.id.scroll_to_top_fab)
         )
     }
 
@@ -71,7 +71,6 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         super.onCreate(savedInstanceState)
 
         lifecycle.addObserver(disposablesComponent)
-        lifecycle.addObserver(connectivityComponent)
 
         loadData(false)
 
@@ -123,5 +122,10 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             videosRecyclerView.addOnInitialUserScrollListener()
         }.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycle.addObserver(connectivityComponent)
     }
 }
