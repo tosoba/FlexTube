@@ -33,6 +33,18 @@ ext {
     glassfishAnnotationVersion = '10.0-b28'
     constraintLayoutVersion = '1.1.2'
 
+    slidingUpPanelVersion = '3.4.0'
+    androidYoutubePlayerVersion = '8.0.1'
+    playServicesAuthVersion = '15.0.1'
+    easyPermissionsVersion = '0.3.0'
+    googleApiClientVersion = '1.23.0'
+    googleApiServicesYoutube = 'v3-rev198-1.23.0'
+    circleImageViewVersion = '2.2.0'
+    materialDialogsVersion = '0.9.6.0'
+    reactiveNetworkVersion = '2.0.0'
+    fabMenuVersion = '1.6.4'
+    nestedScrollCoordinatorLayoutVersion = '1.0.3'
+
     //Testing
     robolectricVersion = '3.4.2'
     jUnitVersion = '4.12'
@@ -164,6 +176,17 @@ ext {
             archRuntime:        "android.arch.lifecycle:runtime:${roomVersion}",
             archExtensions:     "android.arch.lifecycle:extensions:${roomVersion}",
             archCompiler:       "android.arch.lifecycle:compiler:${roomVersion}",
+            slidingUpPanel:     "com.sothree.slidinguppanel:library:${slidingUpPanelVersion}",
+            androidYoutubePlayer: "com.pierfrancescosoffritti.androidyoutubeplayer:core:${androidYoutubePlayerVersion}",
+            playServicesAuth: "com.google.android.gms:play-services-auth:${playServicesAuthVersion}",
+            easyPermissions: "pub.devrel:easypermissions:${easyPermissionsVersion}",
+            googleApiClient: "com.google.api-client:google-api-client-android:${googleApiClientVersion}",
+            googleApiServicesYoutube: "com.google.apis:google-api-services-youtube:${googleApiServicesYoutube}",
+            circleImageView: "de.hdodenhof:circleimageview:${circleImageViewVersion}",
+            materialDialogs: "com.afollestad.material-dialogs:core:${materialDialogsVersion}",
+            reactiveNetwork: "com.github.pwittchen:reactivenetwork-rx2:${reactiveNetworkVersion}",
+            fabMenu: "com.github.clans:fab:${fabMenuVersion}",
+            nestedScrollCoordinatorLayout: "com.otaliastudios:nestedscrollcoordinatorlayout:${nestedScrollCoordinatorLayoutVersion}"
     ]
 
     mobileUiTestDependencies = [

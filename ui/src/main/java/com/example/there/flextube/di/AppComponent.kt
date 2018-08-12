@@ -15,7 +15,6 @@ import javax.inject.Singleton
     CacheModule::class,
     RemoteModule::class,
     DataModule::class,
-    DomainModule::class,
     UiModule::class
 ])
 interface AppComponent {

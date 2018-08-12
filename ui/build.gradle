@@ -90,30 +90,28 @@ dependencies {
     implementation uiDependencies.dagger
     implementation uiDependencies.daggerSupport
     implementation uiDependencies.constraintLayout
-    implementation 'com.android.support:support-v4:26.1.0'
 
     implementation uiDependencies.archRuntime
     implementation uiDependencies.archExtensions
-    implementation "android.arch.persistence.room:rxjava2:1.1.1"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation uiDependencies.roomRxJava
+    implementation uiDependencies.constraintLayout
     kapt uiDependencies.archCompiler
 
-    implementation 'com.sothree.slidinguppanel:library:3.4.0'
-    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:8.0.1'
-    implementation 'com.google.android.gms:play-services-auth:15.0.1'
-    implementation 'pub.devrel:easypermissions:0.3.0'
-    implementation('com.google.api-client:google-api-client-android:1.23.0') {
+    implementation uiDependencies.slidingUpPanel
+    implementation uiDependencies.androidYoutubePlayer
+    implementation uiDependencies.playServicesAuth
+    implementation uiDependencies.easyPermissions
+    implementation(uiDependencies.googleApiClient){
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation('com.google.apis:google-api-services-youtube:v3-rev198-1.23.0') {
+    implementation(uiDependencies.googleApiServicesYoutube) {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation 'org.greenrobot:eventbus:3.1.1'
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
-    implementation 'com.github.pwittchen:reactivenetwork-rx2:2.0.0'
-    implementation 'com.github.clans:fab:1.6.4'
-    implementation 'com.otaliastudios:nestedscrollcoordinatorlayout:1.0.3'
+    implementation uiDependencies.circleImageView
+    implementation uiDependencies.materialDialogs
+    implementation uiDependencies.reactiveNetwork
+    implementation uiDependencies.fabMenu
+    implementation uiDependencies.nestedScrollCoordinatorLayout
 
     compileOnly uiDependencies.mockito
 

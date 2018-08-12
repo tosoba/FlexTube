@@ -18,7 +18,7 @@ abstract class CacheModule {
     companion object {
         @Provides
         @JvmStatic
-        fun provideBufferoosDatabase(application: Application): FlexTubeDb = Room.databaseBuilder(
+        fun flexTubeDB(application: Application): FlexTubeDb = Room.databaseBuilder(
                 application.applicationContext,
                 FlexTubeDb::class.java, "flextube.db"
         ).build()
