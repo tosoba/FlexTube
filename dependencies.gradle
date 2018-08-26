@@ -186,7 +186,7 @@ ext {
             materialDialogs: "com.afollestad.material-dialogs:core:${materialDialogsVersion}",
             reactiveNetwork: "com.github.pwittchen:reactivenetwork-rx2:${reactiveNetworkVersion}",
             fabMenu: "com.github.clans:fab:${fabMenuVersion}",
-            nestedScrollCoordinatorLayout: "com.otaliastudios:nestedscrollcoordinatorlayout:${nestedScrollCoordinatorLayoutVersion}"
+            cardView: "com.android.support:cardview-v7:27.1.1"
     ]
 
     mobileUiTestDependencies = [

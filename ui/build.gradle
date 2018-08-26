@@ -90,6 +90,7 @@ dependencies {
     implementation uiDependencies.dagger
     implementation uiDependencies.daggerSupport
     implementation uiDependencies.constraintLayout
+    implementation uiDependencies.cardView
 
     implementation uiDependencies.archRuntime
     implementation uiDependencies.archExtensions
@@ -111,7 +112,6 @@ dependencies {
     implementation uiDependencies.materialDialogs
     implementation uiDependencies.reactiveNetwork
     implementation uiDependencies.fabMenu
-    implementation uiDependencies.nestedScrollCoordinatorLayout
 
     compileOnly uiDependencies.mockito
 
