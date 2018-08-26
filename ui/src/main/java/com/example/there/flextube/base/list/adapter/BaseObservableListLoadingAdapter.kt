@@ -7,10 +7,11 @@ import com.example.there.flextube.util.ext.bindToItems
 abstract class BaseObservableListLoadingAdapter<I, B>(
         items: ObservableList<I>,
         itemLayoutId: Int,
-        loadingItemLayoutId: Int
+        loadingItemLayoutId: Int,
+        itemsOffset: Int = 0
 ) : BaseBindingLoadingAdapter<I, B>(items, itemLayoutId, loadingItemLayoutId) where B : ViewDataBinding {
 
     init {
-        bindToItems(items)
+        bindToItems(items, itemsOffset)
     }
 }

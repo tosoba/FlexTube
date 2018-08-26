@@ -19,6 +19,7 @@ import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.ConnectivityComponent
 import com.example.there.flextube.lifecycle.DisposablesComponent
+import com.example.there.flextube.list.SubscriptionsAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.accountName
@@ -79,8 +80,8 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         })
     }
 
-    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
+    private val subscriptionsAdapter: SubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        SubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {

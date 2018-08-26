@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.there.domain.model.Subscription
 import com.example.there.domain.usecase.impl.*
 import com.example.there.flextube.base.vm.BaseViewModel
+import com.example.there.flextube.mapper.UiSubscriptionMapper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -31,10 +32,10 @@ class SubFeedViewModel @Inject constructor(
                     .execute(LoadUserSubscriptions.Params(accessToken, accountName))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext { viewState.subscriptions.addAll(it) }
+                    .doOnNext { viewState.subscriptions.addAll(it.map(UiSubscriptionMapper::toUi)) }
                     .doOnComplete {
                         if (viewState.subscriptions.isNotEmpty()) {
-                            updateDbSubscriptions(viewState.subscriptions, accountName)
+                            updateDbSubscriptions(viewState.subscriptions.map(UiSubscriptionMapper::toDomain), accountName)
                             loadDbVideos(onAfterAdd)
                         } else {
                             viewState.noSubscriptions.set(true)

@@ -21,7 +21,7 @@ abstract class BaseBindingLoadingAdapter<I, B>(
 
     override fun getItemViewType(
             position: Int
-    ): Int = if (loadingInProgress && position == items.size) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
+    ): Int = if (position == items.size) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent?.context)

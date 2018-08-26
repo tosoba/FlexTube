@@ -8,7 +8,7 @@ import com.example.there.flextube.R
 import com.example.there.flextube.base.fragment.BaseHostFragment
 import com.example.there.flextube.groups.group.GroupFragment
 import com.example.there.flextube.groups.list.GroupsListFragment
-import com.example.there.flextube.model.UiGroup
+import com.example.there.flextube.model.UiGroupWithSubscriptions
 import com.example.there.flextube.util.ext.mainActivity
 import com.example.there.flextube.util.ext.mainToolbar
 import com.example.there.flextube.util.ext.resetTitle
@@ -36,7 +36,7 @@ class GroupsHostFragment : BaseHostFragment() {
                 .commit()
     }
 
-    fun showGroupFragment(group: UiGroup) {
+    fun showGroupFragment(group: UiGroupWithSubscriptions) {
         val groupFragment = GroupFragment.newInstance(group)
         mainToolbar?.resetTitle(groupFragment.title)
 

@@ -46,6 +46,7 @@
             android:layout_margin="10dp"
             android:onClick="@{groupsListView.onNewGroupBtnClickListener}"
             android:src="@drawable/add"
+            app:fab_elevationCompat="5dp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

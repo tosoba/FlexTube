@@ -22,13 +22,11 @@ import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.groups.GroupsHostFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
+import com.example.there.flextube.list.SubscriptionsAdapter
 import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
-import com.example.there.flextube.model.UiGroup
-import com.example.there.flextube.subfeed.SubFeedSubscriptionsAdapter
-import com.example.there.flextube.util.ext.accountName
-import com.example.there.flextube.util.ext.addOnInitialUserScrollListener
-import com.example.there.flextube.util.ext.expandMainAppBar
+import com.example.there.flextube.model.UiGroupWithSubscriptions
+import com.example.there.flextube.util.ext.*
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_group.*
@@ -47,7 +45,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         ViewModelProviders.of(this, factory).get(GroupViewModel::class.java)
     }
 
-    private val group: UiGroup by lazy(LazyThreadSafetyMode.NONE) { arguments!!.getParcelable<UiGroup>(ARG_GROUP) }
+    private val group: UiGroupWithSubscriptions by lazy(LazyThreadSafetyMode.NONE) { arguments!!.getParcelable<UiGroupWithSubscriptions>(ARG_GROUP) }
 
     private val disposablesComponent = DisposablesComponent()
 
@@ -74,8 +72,8 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         }
     }
 
-    private val subscriptionsAdapter: SubFeedSubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SubFeedSubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
+    private val subscriptionsAdapter: SubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        SubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
     }
 
     private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
@@ -136,6 +134,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
             .title(getString(R.string.want_to_delete_group, group.name))
             .onPositive { _, _ ->
                 viewModel.deleteGroup(group) {
+                    mainToolbar?.resetTitle(getString(R.string.your_groups))
                     (parentFragment as? GroupsHostFragment)?.childFragmentManager?.popBackStack()
                 }
             }
@@ -147,7 +146,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
     companion object {
         private const val ARG_GROUP = "ARG_GROUP"
 
-        fun newInstance(group: UiGroup) = GroupFragment().apply {
+        fun newInstance(group: UiGroupWithSubscriptions) = GroupFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(ARG_GROUP, group)
             }

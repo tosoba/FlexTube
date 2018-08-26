@@ -1,15 +1,15 @@
-package com.example.there.flextube.subfeed
+package com.example.there.flextube.list
 
 import android.databinding.ObservableArrayList
-import com.example.there.domain.model.Subscription
 import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
 import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.SubscriptionItemBinding
+import com.example.there.flextube.model.UiSubscription
 
-class SubFeedSubscriptionsAdapter(
-        items: ObservableArrayList<Subscription>,
+class SubscriptionsAdapter(
+        items: ObservableArrayList<UiSubscription>,
         itemLayoutId: Int
-) : BaseObservableListAdapter<Subscription, SubscriptionItemBinding>(items, itemLayoutId) {
+) : BaseObservableListAdapter<UiSubscription, SubscriptionItemBinding>(items, itemLayoutId) {
 
     override fun onBindViewHolder(holder: BaseBindingViewHolder<SubscriptionItemBinding>?, position: Int) {
         holder?.binding?.subscription = items[position]

@@ -1,16 +1,23 @@
 package com.example.there.flextube.groups.list
 
+import android.databinding.ObservableArrayList
 import android.util.Log
+import com.example.there.domain.model.Group
 import com.example.there.domain.usecase.impl.GetGroup
+import com.example.there.domain.usecase.impl.GetSubscriptionsFromGroup
 import com.example.there.domain.usecase.impl.GetUserGroups
 import com.example.there.flextube.base.vm.BaseViewModel
+import com.example.there.flextube.mapper.UiSubscriptionMapper
+import com.example.there.flextube.model.UiGroupWithSubscriptions
+import com.example.there.flextube.model.UiSubscription
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class GroupsListViewModel @Inject constructor(
         private val getUserGroups: GetUserGroups,
-        private val getGroup: GetGroup
+        private val getGroup: GetGroup,
+        private val getSubscriptionsFromGroup: GetSubscriptionsFromGroup
 ) : BaseViewModel() {
 
     val viewState = GroupsListViewState()
@@ -19,9 +26,25 @@ class GroupsListViewModel @Inject constructor(
         disposables.add(getUserGroups.execute(accountName)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ newGroups ->
-                    viewState.groups.removeAll { !newGroups.contains(it) }
-                    viewState.groups.addAll(newGroups)
+                .doAfterNext { newGroups ->
+                    viewState.groups.removeAll { !newGroups.contains(Group(it.name, it.accountName)) }
+                }
+                .observeOn(Schedulers.io())
+                .flatMapIterable { it }
+                .flatMap { group ->
+                    getSubscriptionsFromGroup.execute(GetSubscriptionsFromGroup.Params(group.accountName, group.name))
+                            .map {
+                                UiGroupWithSubscriptions(
+                                        group.accountName,
+                                        group.name,
+                                        ObservableArrayList<UiSubscription>().apply {
+                                            addAll(it.map(UiSubscriptionMapper::toUi))
+                                        })
+                            }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ group ->
+                    if (group.subscriptions.isNotEmpty()) viewState.groups.add(group)
                 }, { Log.e(this.javaClass.name, it.message) }))
     }
 

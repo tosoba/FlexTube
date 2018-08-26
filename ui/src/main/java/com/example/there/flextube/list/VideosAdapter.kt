@@ -12,8 +12,10 @@ import io.reactivex.subjects.PublishSubject
 open class VideosAdapter(
         items: ObservableList<PlaylistItem>,
         itemLayoutId: Int,
-        loadingItemLayoutId: Int
-) : BaseObservableListLoadingAdapter<PlaylistItem, VideoItemBinding>(items, itemLayoutId, loadingItemLayoutId), TracksInitialScroll {
+        loadingItemLayoutId: Int,
+        itemsOffset: Int = 0
+) : BaseObservableListLoadingAdapter<PlaylistItem, VideoItemBinding>(items, itemLayoutId, loadingItemLayoutId, itemsOffset),
+        TracksInitialScroll {
 
     override var userHasScrolled: Boolean = false
 

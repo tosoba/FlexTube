@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
-import com.example.there.domain.model.Group
 import com.example.there.flextube.R
 import com.example.there.flextube.addgroup.AddGroupActivity
 import com.example.there.flextube.base.fragment.HasTitle
@@ -24,7 +23,7 @@ import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.groups.GroupsHostFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
 import com.example.there.flextube.list.SortedGroupsAdapter
-import com.example.there.flextube.model.UiGroup
+import com.example.there.flextube.model.UiGroupWithSubscriptions
 import com.example.there.flextube.util.ext.accountName
 import kotlinx.android.synthetic.main.fragment_groups_list.*
 import javax.inject.Inject
@@ -59,8 +58,8 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
         SortedGroupsAdapter(viewModel.viewState.groups, R.layout.group_item)
     }
 
-    private fun showGroupFragment(group: Group) {
-        (parentFragment as? GroupsHostFragment)?.showGroupFragment(UiGroup(group.accountName, group.name))
+    private fun showGroupFragment(group: UiGroupWithSubscriptions) {
+        (parentFragment as? GroupsHostFragment)?.showGroupFragment(group)
     }
 
     private val view: GroupsListView by lazy(LazyThreadSafetyMode.NONE) {
