@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="@{(safeUnbox(homeView.state.homeItems.size())) ? View.GONE : View.VISIBLE}" />
+            android:visibility="@{(safeUnbox(homeView.state.homeItems.size() > 0)) ? View.GONE : View.VISIBLE}" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/home_items_recycler_view"

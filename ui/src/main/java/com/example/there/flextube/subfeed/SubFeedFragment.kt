@@ -33,7 +33,7 @@ import javax.inject.Inject
 class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
     override val title: String
-        get() = getString(R.string.app_name)
+        get() = "FlexTube"
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -78,7 +78,7 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         })
     }
 
-    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 2) {
         override fun onLoadMore() {
             videosAdapter.loadingInProgress = true
             viewModel.loadMoreVideos { videosAdapter.loadingInProgress = false }

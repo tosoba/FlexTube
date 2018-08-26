@@ -51,7 +51,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         )
     }
 
-    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 2) {
         override fun onLoadMore() {
             val onFinally: () -> Unit = { videosAdapter.loadingInProgress = false }
             videosAdapter.loadingInProgress = true

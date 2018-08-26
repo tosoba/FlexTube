@@ -2,13 +2,13 @@ package com.example.there.flextube.base.list.adapter
 
 import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import com.example.there.flextube.R
 import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.base.list.viewholder.BaseViewHolder
+import com.example.there.flextube.databinding.LoadingItemBinding
 import com.example.there.flextube.util.ext.makeBinding
 
 abstract class BaseBindingLoadingAdapter<I, B>(
@@ -23,13 +23,10 @@ abstract class BaseBindingLoadingAdapter<I, B>(
             position: Int
     ): Int = if (position == items.size) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent?.context)
-        return when (viewType) {
-            VIEW_TYPE_LOADING -> BaseViewHolder(inflater.inflate(loadingItemLayoutId, parent, false))
-            VIEW_TYPE_ITEM -> BaseBindingViewHolder<B>(parent!!.makeBinding(itemLayoutId))
-            else -> throw IllegalStateException("${javaClass.name}: Unknown viewType: $viewType")
-        }
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
+        VIEW_TYPE_LOADING -> BaseBindingViewHolder<LoadingItemBinding>(parent!!.makeBinding(loadingItemLayoutId))
+        VIEW_TYPE_ITEM -> BaseBindingViewHolder<B>(parent!!.makeBinding(itemLayoutId))
+        else -> throw IllegalStateException("${javaClass.name}: Unknown viewType: $viewType")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {

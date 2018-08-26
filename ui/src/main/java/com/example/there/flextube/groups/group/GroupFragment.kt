@@ -81,7 +81,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         )
     }
 
-    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 2) {
         override fun onLoadMore() {
             videosAdapter.loadingInProgress = true
             viewModel.loadMoreVideos { videosAdapter.loadingInProgress = false }

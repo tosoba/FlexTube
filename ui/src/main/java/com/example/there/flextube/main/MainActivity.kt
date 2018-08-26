@@ -74,12 +74,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
     }
 
     private val onRelatedVideosScrollListener: EndlessRecyclerOnScrollListener by lazy(LazyThreadSafetyMode.NONE) {
-        object : EndlessRecyclerOnScrollListener() {
+        object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 1) {
             override fun onLoadMore() {
                 lastPlayedVideoId?.let {
-                    relatedVideosAdapter.loadingInProgress = true
+                    relatedVideosAdapter.loadingInProgress.set(true)
                     viewModel.loadRelatedVideos(it, false, onFinally = {
-                        relatedVideosAdapter.loadingInProgress = false
+                        relatedVideosAdapter.loadingInProgress.set(false)
                     })
                 }
             }

@@ -2,10 +2,12 @@ package com.example.there.flextube.util.view
 
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.example.there.flextube.base.list.adapter.BaseBindingLoadingAdapter
 
 
-abstract class EndlessRecyclerOnScrollListener(private val visibleThreshold: Int = 5) : RecyclerView.OnScrollListener() {
+abstract class EndlessRecyclerOnScrollListener(
+        private val visibleThreshold: Int = 5,
+        private val returnFromOnScrolledItemCount: Int = 0
+) : RecyclerView.OnScrollListener() {
     /**
      * The total number of items in the dataset after the last load
      */
@@ -23,7 +25,7 @@ abstract class EndlessRecyclerOnScrollListener(private val visibleThreshold: Int
             val totalItemCount = recyclerView.layoutManager.itemCount
             val firstVisibleItem = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
 
-            if (totalItemCount == 0 || (recyclerView.adapter is BaseBindingLoadingAdapter<*, *> && totalItemCount == 1))
+            if (totalItemCount == returnFromOnScrolledItemCount)
                 return@let
 
             if (mLoading) {

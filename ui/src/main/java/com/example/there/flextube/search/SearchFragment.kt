@@ -48,10 +48,10 @@ class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavi
     }
 
     private val onFoundVideosScrollListener: EndlessRecyclerOnScrollListener by lazy(LazyThreadSafetyMode.NONE) {
-        object : EndlessRecyclerOnScrollListener() {
+        object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 1) {
             override fun onLoadMore() {
-                foundVideosAdapter.loadingInProgress = true
-                viewModel.searchVideos(query, false) { foundVideosAdapter.loadingInProgress = false }
+                foundVideosAdapter.loadingInProgress.set(true)
+                viewModel.searchVideos(query, false) { foundVideosAdapter.loadingInProgress.set(false) }
             }
         }
     }
