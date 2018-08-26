@@ -19,6 +19,7 @@ open class VideosAdapter(
 
     override var userHasScrolled: Boolean = false
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         super.onBindViewHolder(holder, position)
         val itemViewHolder = holder as? BaseBindingViewHolder<VideoItemBinding>
@@ -26,7 +27,7 @@ open class VideosAdapter(
             if (position < items.size) {
                 val video = items[position]
                 it.binding.video = video
-                it.binding.root.setOnClickListener {
+                it.binding.root.setOnClickListener { _ ->
                     videoClicked.onNext(video.videoId)
                 }
             }

@@ -8,39 +8,20 @@
             type="com.example.there.flextube.groups.group.GroupView" />
     </data>
 
-    <com.otaliastudios.nestedscrollcoordinatorlayout.NestedScrollCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/group_root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/group_coordinator_layout"
         tools:context=".groups.group.GroupFragment">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/group_app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/group_sub_buttons_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adapter="@{groupView.subscriptionsAdapter}"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_scrollFlags="scroll|enterAlways" />
-
-        </android.support.design.widget.AppBarLayout>
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/group_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
             android:layout_marginRight="5dp"
-            app:layout_anchor="@id/group_app_bar"
-            app:layout_anchorGravity="right|bottom"
             app:menu_animationDelayPerItem="50"
             app:menu_backgroundColor="@android:color/transparent"
             app:menu_buttonSpacing="0dp"
@@ -102,14 +83,8 @@
             onScrollListener="@{groupView.onVideosScrollListener}"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:adapter="@{groupView.videosAdapter}"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/group_sub_buttons_recycler_view" />
+            android:adapter="@{groupView.videosAdapter}" />
 
-    </com.otaliastudios.nestedscrollcoordinatorlayout.NestedScrollCoordinatorLayout>
-
+    </FrameLayout>
 </layout>
 

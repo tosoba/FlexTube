@@ -1,6 +1,7 @@
 package com.example.there.flextube.list
 
-import android.databinding.ObservableArrayList
+import android.databinding.ObservableList
+import android.support.v7.widget.RecyclerView
 import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
 import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.VideoCategoryItemBinding
@@ -8,11 +9,22 @@ import com.example.there.flextube.model.UiVideoCategory
 import io.reactivex.subjects.PublishSubject
 
 class VideoCategoriesAdapter(
-        items: ObservableArrayList<UiVideoCategory>,
+        items: ObservableList<UiVideoCategory>,
         itemLayoutId: Int
 ) : BaseObservableListAdapter<UiVideoCategory, VideoCategoryItemBinding>(items, itemLayoutId) {
 
     val categoryClicked: PublishSubject<String> = PublishSubject.create()
+
+    private var recyclerView: RecyclerView? = null
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
+    fun scrollToTop() {
+        recyclerView?.scrollToPosition(0)
+    }
 
     override fun onBindViewHolder(holder: BaseBindingViewHolder<VideoCategoryItemBinding>?, position: Int) {
         val category = items[position]

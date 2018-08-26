@@ -19,8 +19,7 @@ import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.ConnectivityComponent
 import com.example.there.flextube.lifecycle.DisposablesComponent
-import com.example.there.flextube.list.SubscriptionsAdapter
-import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.list.SubscriptionsVideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.accountName
 import com.example.there.flextube.util.ext.addOnInitialUserScrollListener
@@ -64,7 +63,6 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
     override fun scrollToTop() {
         videos_recycler_view?.scrollToPosition(0)
-        sub_feed_app_bar?.setExpanded(true, true)
         expandMainAppBar()
     }
 
@@ -80,10 +78,6 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         })
     }
 
-    private val subscriptionsAdapter: SubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
-    }
-
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
         override fun onLoadMore() {
             videosAdapter.loadingInProgress = true
@@ -91,8 +85,15 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         }
     }
 
-    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        VideosAdapter(viewModel.viewState.videos, R.layout.video_item, R.layout.loading_item)
+    private val videosAdapter: SubscriptionsVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        SubscriptionsVideosAdapter(
+                viewModel.viewState.videos,
+                viewModel.viewState.subscriptions,
+                R.layout.video_item,
+                R.layout.subscription_list_item,
+                R.layout.subscription_item,
+                R.layout.loading_item
+        )
     }
 
     private val onSubFeedRefreshListener: SwipeRefreshLayout.OnRefreshListener by lazy(LazyThreadSafetyMode.NONE) {
@@ -106,7 +107,6 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
     private val view: SubFeedView by lazy(LazyThreadSafetyMode.NONE) {
         SubFeedView(
                 viewModel.viewState,
-                subscriptionsAdapter,
                 videosAdapter,
                 DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
                 onVideosScrollListener,
@@ -119,7 +119,6 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
         return binding.apply {
             subFeedView = view
-            subButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             videosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             videosRecyclerView.addOnInitialUserScrollListener()
         }.root

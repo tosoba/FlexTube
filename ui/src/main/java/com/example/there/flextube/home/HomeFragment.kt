@@ -19,13 +19,12 @@ import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.lifecycle.ConnectivityComponent
 import com.example.there.flextube.lifecycle.DisposablesComponent
+import com.example.there.flextube.list.CategoryVideosAdapter
 import com.example.there.flextube.list.VideoCategoriesAdapter
-import com.example.there.flextube.list.VideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.util.ext.expandMainAppBar
 import com.example.there.flextube.util.view.DividerItemDecorator
 import com.example.there.flextube.util.view.EndlessRecyclerOnScrollListener
-import com.otaliastudios.nestedscrollcoordinatorlayout.NestedScrollCoordinatorLayout
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
@@ -42,8 +41,14 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         ViewModelProviders.of(this, factory).get(HomeViewModel::class.java)
     }
 
-    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        VideosAdapter(viewModel.viewState.homeItems, R.layout.video_item, R.layout.loading_item)
+    private val videosAdapter: CategoryVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        CategoryVideosAdapter(
+                viewModel.viewState.homeItems,
+                videoCategoriesAdapter,
+                R.layout.video_item,
+                R.layout.category_list_item,
+                R.layout.loading_item
+        )
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
@@ -67,8 +72,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 viewModel.viewState,
                 videosAdapter,
                 DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
-                onVideosScrollListener,
-                videoCategoriesAdapter
+                onVideosScrollListener
         )
     }
 
@@ -78,14 +82,11 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         return binding.apply {
             homeView = view
             homeItemsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-            videoCategoriesRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
-            homeCoordinatorLayout.setPassMode(NestedScrollCoordinatorLayout.PASS_MODE_PARENT_FIRST)
         }.root
     }
 
     override fun scrollToTop() {
         home_items_recycler_view?.scrollToPosition(0)
-        home_app_bar?.setExpanded(true, true)
         expandMainAppBar()
     }
 
@@ -123,7 +124,7 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         })
 
         disposablesComponent.add(videoCategoriesAdapter.categoryClicked.subscribe {
-            video_categories_recycler_view?.scrollToPosition(0)
+            videoCategoriesAdapter.scrollToTop()
             viewModel.viewState.homeItems.clear()
             viewModel.viewState.currentVideoCategoryId = it
             if (it == IYoutubeCache.CATEGORY_GENERAL) {

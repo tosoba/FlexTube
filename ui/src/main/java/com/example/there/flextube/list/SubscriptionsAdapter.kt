@@ -1,13 +1,13 @@
 package com.example.there.flextube.list
 
-import android.databinding.ObservableArrayList
+import android.databinding.ObservableList
 import com.example.there.flextube.base.list.adapter.BaseObservableListAdapter
 import com.example.there.flextube.base.list.viewholder.BaseBindingViewHolder
 import com.example.there.flextube.databinding.SubscriptionItemBinding
 import com.example.there.flextube.model.UiSubscription
 
 class SubscriptionsAdapter(
-        items: ObservableArrayList<UiSubscription>,
+        items: ObservableList<UiSubscription>,
         itemLayoutId: Int
 ) : BaseObservableListAdapter<UiSubscription, SubscriptionItemBinding>(items, itemLayoutId) {
 

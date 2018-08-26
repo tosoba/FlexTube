@@ -10,28 +10,12 @@
             type="com.example.there.flextube.subfeed.SubFeedView" />
     </data>
 
-    <com.otaliastudios.nestedscrollcoordinatorlayout.NestedScrollCoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/sub_feed_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".subfeed.SubFeedFragment">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/sub_feed_app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/sub_buttons_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adapter="@{subFeedView.subscriptionsAdapter}"
-                app:layout_scrollFlags="scroll|enterAlways" />
-
-        </android.support.design.widget.AppBarLayout>
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -66,6 +50,6 @@
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
-    </com.otaliastudios.nestedscrollcoordinatorlayout.NestedScrollCoordinatorLayout>
+    </FrameLayout>
 </layout>
 

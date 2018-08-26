@@ -22,8 +22,7 @@ import com.example.there.flextube.di.Injectable
 import com.example.there.flextube.di.vm.ViewModelFactory
 import com.example.there.flextube.groups.GroupsHostFragment
 import com.example.there.flextube.lifecycle.DisposablesComponent
-import com.example.there.flextube.list.SubscriptionsAdapter
-import com.example.there.flextube.list.VideosAdapter
+import com.example.there.flextube.list.SubscriptionsVideosAdapter
 import com.example.there.flextube.main.MainActivity
 import com.example.there.flextube.model.UiGroupWithSubscriptions
 import com.example.there.flextube.util.ext.*
@@ -51,7 +50,6 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
 
     override fun scrollToTop() {
         group_videos_recycler_view?.scrollToPosition(0)
-        group_app_bar?.setExpanded(true, true)
         expandMainAppBar()
     }
 
@@ -72,12 +70,15 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         }
     }
 
-    private val subscriptionsAdapter: SubscriptionsAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SubscriptionsAdapter(viewModel.viewState.subscriptions, R.layout.subscription_item)
-    }
-
-    private val videosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        VideosAdapter(viewModel.viewState.videos, R.layout.video_item, R.layout.loading_item)
+    private val videosAdapter: SubscriptionsVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        SubscriptionsVideosAdapter(
+                viewModel.viewState.videos,
+                viewModel.viewState.subscriptions,
+                R.layout.video_item,
+                R.layout.subscription_list_item,
+                R.layout.subscription_item,
+                R.layout.loading_item
+        )
     }
 
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener() {
@@ -97,7 +98,6 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
 
     private val view: GroupView by lazy(LazyThreadSafetyMode.NONE) {
         GroupView(
-                subscriptionsAdapter,
                 videosAdapter,
                 DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
                 onVideosScrollListener,
@@ -112,14 +112,13 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         return binding.apply {
             groupView = view
 
-            groupCoordinatorLayout.setOnTouchListener(View.OnTouchListener { _, _ ->
+            groupRootLayout.setOnTouchListener(View.OnTouchListener { _, _ ->
                 if (group_menu?.isOpened == true) {
                     closeGroupMenu(true)
                     return@OnTouchListener true
                 }
                 false
             })
-            groupSubButtonsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
             groupVideosRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
             groupVideosRecyclerView.addOnInitialUserScrollListener()
         }.root
