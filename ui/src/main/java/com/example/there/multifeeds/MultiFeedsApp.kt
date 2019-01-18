@@ -3,17 +3,14 @@ package com.example.there.multifeeds
 import android.app.Activity
 import android.app.Application
 import com.example.there.multifeeds.di.AppInjector
-import dagger.android.AndroidInjector
+import com.example.there.multifeeds.util.di.HasActivityDispatchingAndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
 import javax.inject.Inject
 
-class MultiFeedsApp : Application(), HasActivityInjector {
+class MultiFeedsApp : Application(), HasActivityDispatchingAndroidInjector {
 
     @Inject
-    lateinit var activityDispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
-
-    override fun activityInjector(): AndroidInjector<Activity> = activityDispatchingAndroidInjector
+    override lateinit var activityDispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
 
     override fun onCreate() {
         super.onCreate()

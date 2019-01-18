@@ -13,17 +13,13 @@ class VideoCategoriesAdapter(
         itemLayoutId: Int
 ) : BaseObservableListAdapter<UiVideoCategory, VideoCategoryItemBinding>(items, itemLayoutId) {
 
-    val categoryClicked: PublishSubject<String> = PublishSubject.create()
-
     private var recyclerView: RecyclerView? = null
+
+    val categoryClicked: PublishSubject<String> = PublishSubject.create()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-    }
-
-    fun scrollToTop() {
-        recyclerView?.scrollToPosition(0)
     }
 
     override fun onBindViewHolder(holder: BaseBindingViewHolder<VideoCategoryItemBinding>?, position: Int) {
@@ -39,5 +35,9 @@ class VideoCategoriesAdapter(
                 categoryClicked.onNext(category.id)
             }
         }
+    }
+
+    fun scrollToTop() {
+        recyclerView?.scrollToPosition(0)
     }
 }

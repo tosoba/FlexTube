@@ -230,15 +230,15 @@ class MainRepository @Inject constructor(
 
     private fun getPlaylistData(
             channelIds: List<String>
-    ): Single<List<PlaylistData>> = Single.zip(channelIds.map { youtubeCachedDataStore.getPlaylistByChannelId(it) }) {
-        it.map { it as PlaylistData }
+    ): Single<List<PlaylistData>> = Single.zip(channelIds.map { youtubeCachedDataStore.getPlaylistByChannelId(it) }) { playlists ->
+        playlists.map { it as PlaylistData }
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun getSavedVideosWithUpdates(
             channelIds: List<String>
-    ): Flowable<List<PlaylistItem>> = Flowable.zip(channelIds.map { youtubeCachedDataStore.getSavedVideosFlowable(it) }) {
-        (it.map { it as List<PlaylistItemData> }).toList().flatten()
+    ): Flowable<List<PlaylistItem>> = Flowable.zip(channelIds.map { youtubeCachedDataStore.getSavedVideosFlowable(it) }) { savedVideos ->
+        (savedVideos.map { it as List<PlaylistItemData> }).toList().flatten()
     }.map {
         it.map(PlaylistItemMapper::toDomain)
     }
@@ -246,8 +246,8 @@ class MainRepository @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun getSavedVideos(
             channelIds: List<String>
-    ): Single<List<PlaylistItem>> = Single.zip(channelIds.map { youtubeCachedDataStore.getSavedVideos(it) }) {
-        (it.map { it as List<PlaylistItemData> }).toList().flatten()
+    ): Single<List<PlaylistItem>> = Single.zip(channelIds.map { youtubeCachedDataStore.getSavedVideos(it) }) { savedVideos ->
+        (savedVideos.map { it as List<PlaylistItemData> }).toList().flatten()
     }.map {
         it.map(PlaylistItemMapper::toDomain)
     }

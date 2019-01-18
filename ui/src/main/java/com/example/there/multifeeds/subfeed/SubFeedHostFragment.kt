@@ -8,6 +8,7 @@ import com.example.there.multifeeds.R
 import com.example.there.multifeeds.base.fragment.BaseHostFragment
 
 class SubFeedHostFragment : BaseHostFragment() {
+
     override val backStackLayoutId: Int
         get() = R.id.sub_feed_back_stack_layout
 

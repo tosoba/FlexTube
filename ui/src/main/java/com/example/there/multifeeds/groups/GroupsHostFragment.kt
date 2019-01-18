@@ -28,14 +28,6 @@ class GroupsHostFragment : BaseHostFragment() {
         showGroupListFragment()
     }
 
-    private fun showGroupListFragment() {
-        val groupsListFragment = GroupsListFragment()
-        mainToolbar?.resetTitle(groupsListFragment.title)
-        childFragmentManager.beginTransaction()
-                .replace(R.id.groups_back_stack_layout, groupsListFragment)
-                .commit()
-    }
-
     fun showGroupFragment(group: UiGroupWithSubscriptions) {
         val groupFragment = GroupFragment.newInstance(group)
         mainToolbar?.resetTitle(groupFragment.title)
@@ -45,6 +37,14 @@ class GroupsHostFragment : BaseHostFragment() {
         childFragmentManager.beginTransaction()
                 .replace(R.id.groups_back_stack_layout, groupFragment)
                 .addToBackStack(null)
+                .commit()
+    }
+
+    private fun showGroupListFragment() {
+        val groupsListFragment = GroupsListFragment()
+        mainToolbar?.resetTitle(groupsListFragment.title)
+        childFragmentManager.beginTransaction()
+                .replace(R.id.groups_back_stack_layout, groupsListFragment)
                 .commit()
     }
 }

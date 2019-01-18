@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.there.multifeeds.list.SubscriptionsVideosAdapter
 
-data class GroupView(
+class GroupView(
         val videosAdapter: SubscriptionsVideosAdapter,
         val itemDecoration: RecyclerView.ItemDecoration,
         val onVideosScrollListener: RecyclerView.OnScrollListener,

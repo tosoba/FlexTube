@@ -38,11 +38,6 @@ class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavi
 
     private val query: String by lazy { arguments!!.getString(ARG_QUERY).trim() }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.searchVideos(query, true, onAfterAdd = { scrollToTop() })
-    }
-
     private val foundVideosAdapter: VideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
         VideosAdapter(viewModel.viewState.foundVideos, R.layout.video_item, R.layout.loading_item)
     }
@@ -67,6 +62,11 @@ class SearchFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavi
                 onFoundVideosScroll = onFoundVideosScrollListener,
                 itemDecoration = foundVideosItemDecoration
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.searchVideos(query, true, onAfterAdd = { scrollToTop() })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

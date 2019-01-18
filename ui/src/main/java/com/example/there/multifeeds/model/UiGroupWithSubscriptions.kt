@@ -11,9 +11,10 @@ data class UiGroupWithSubscriptions(
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-            parcel.readString(),
-            parcel.readString(),
-            ObservableArrayList<UiSubscription>()) {
+            parcel.readString()!!,
+            parcel.readString()!!,
+            ObservableArrayList<UiSubscription>()
+    ) {
         val saved: List<UiSubscription> = ArrayList()
         parcel.readList(saved, UiSubscription::class.java.classLoader)
         subscriptions.addAll(saved)

@@ -26,8 +26,8 @@ fun bindVideoThumbnailUrl(view: ImageView, url: String?) {
                 .load(url)
                 .apply(RequestOptions()
                         .centerCrop()
-                        .placeholder(R.mipmap.ic_launcher_round)
-                        .error(R.mipmap.ic_launcher_round))
+                        .placeholder(R.drawable.video_thumbnail_placeholder)
+                        .error(R.drawable.video_thumbnail_placeholder))
                 .into(view)
     }
 }
@@ -39,8 +39,8 @@ fun bindSubscriptionThumbnailUrl(view: ImageView, url: String?) {
                 .load(url)
                 .apply(RequestOptions()
                         .circleCrop()
-                        .placeholder(R.mipmap.ic_launcher_round)
-                        .error(R.mipmap.ic_launcher_round))
+                        .placeholder(R.drawable.subscription_thumbnail_placeholder)
+                        .error(R.drawable.subscription_thumbnail_placeholder))
                 .into(view)
     }
 }

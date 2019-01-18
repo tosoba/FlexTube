@@ -59,29 +59,6 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
     @Inject
     lateinit var appPreferences: AppPreferences
 
-    private fun loadData(reloadAfterConnectionLoss: Boolean) {
-        viewModel.loadData((activity as MainActivity).accessToken, appPreferences.accountName!!, reloadAfterConnectionLoss) {
-            if (!videosAdapter.userHasScrolled) scrollToTop()
-        }
-    }
-
-    override fun scrollToTop() {
-        videos_recycler_view?.scrollToPosition(0)
-        expandMainAppBar()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        lifecycle.addObserver(disposablesComponent)
-
-        loadData(false)
-
-        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
-            (activity as MainActivity).loadVideo(it)
-        })
-    }
-
     private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 2) {
         override fun onLoadMore() {
             videosAdapter.loadingInProgress = true
@@ -118,6 +95,18 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
         )
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        lifecycle.addObserver(disposablesComponent)
+
+        loadData(false)
+
+        disposablesComponent.add(videosAdapter.videoClicked.subscribe {
+            (activity as MainActivity).loadVideo(it)
+        })
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentSubFeedBinding>(inflater, R.layout.fragment_sub_feed, container, false)
 
@@ -131,5 +120,16 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycle.addObserver(connectivityComponent)
+    }
+
+    override fun scrollToTop() {
+        videos_recycler_view?.scrollToPosition(0)
+        expandMainAppBar()
+    }
+
+    private fun loadData(reloadAfterConnectionLoss: Boolean) {
+        viewModel.loadData((activity as MainActivity).accessToken, appPreferences.accountName!!, reloadAfterConnectionLoss) {
+            if (!videosAdapter.userHasScrolled) scrollToTop()
+        }
     }
 }

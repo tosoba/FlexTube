@@ -48,6 +48,42 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         ViewModelProviders.of(this, factory).get(GroupViewModel::class.java)
     }
 
+    private val videosAdapter: SubscriptionsVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        SubscriptionsVideosAdapter(
+                viewModel.viewState.videos,
+                viewModel.viewState.subscriptions,
+                R.layout.video_item,
+                R.layout.subscription_list_item,
+                R.layout.subscription_item,
+                R.layout.loading_item
+        )
+    }
+
+    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 2) {
+        override fun onLoadMore() {
+            videosAdapter.loadingInProgress = true
+            viewModel.loadMoreVideos { videosAdapter.loadingInProgress = false }
+        }
+    }
+
+    private val onAddMoreSubsClickListener = View.OnClickListener {
+        AddGroupActivity.start(activity!!, appPreferences.accountName!!, group.name, AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING_GROUP)
+    }
+
+    private val onDeleteGroupClickListener = View.OnClickListener {
+        showDeleteGroupDialog()
+    }
+
+    private val view: GroupView by lazy(LazyThreadSafetyMode.NONE) {
+        GroupView(
+                videosAdapter,
+                DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
+                onVideosScrollListener,
+                onAddMoreSubsClickListener,
+                onDeleteGroupClickListener
+        )
+    }
+
     private val group: UiGroupWithSubscriptions by lazy(LazyThreadSafetyMode.NONE) { arguments!!.getParcelable<UiGroupWithSubscriptions>(ARG_GROUP) }
 
     private val disposablesComponent = DisposablesComponent()
@@ -71,48 +107,6 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
         })
     }
 
-    private fun closeGroupMenu(animate: Boolean) {
-        if (group_menu?.isOpened == true) {
-            group_menu?.close(animate)
-        }
-    }
-
-    private val videosAdapter: SubscriptionsVideosAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        SubscriptionsVideosAdapter(
-                viewModel.viewState.videos,
-                viewModel.viewState.subscriptions,
-                R.layout.video_item,
-                R.layout.subscription_list_item,
-                R.layout.subscription_item,
-                R.layout.loading_item
-        )
-    }
-
-    private val onVideosScrollListener = object : EndlessRecyclerOnScrollListener(returnFromOnScrolledItemCount = 2) {
-        override fun onLoadMore() {
-            videosAdapter.loadingInProgress = true
-            viewModel.loadMoreVideos { videosAdapter.loadingInProgress = false }
-        }
-    }
-
-    private val onAddMoreSubsClickListener = View.OnClickListener {
-        AddGroupActivity.start(activity!!, appPreferences.accountName!!, group.name, AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING)
-    }
-
-    private val onDeleteGroupClickListener = View.OnClickListener {
-        showDeleteGroupDialog()
-    }
-
-    private val view: GroupView by lazy(LazyThreadSafetyMode.NONE) {
-        GroupView(
-                videosAdapter,
-                DividerItemDecorator(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!),
-                onVideosScrollListener,
-                onAddMoreSubsClickListener,
-                onDeleteGroupClickListener
-        )
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FragmentGroupBinding>(inflater, R.layout.fragment_group, container, false)
@@ -134,6 +128,12 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ViewCompat.setTranslationZ(group_menu, 1000f)
+    }
+
+    private fun closeGroupMenu(animate: Boolean) {
+        if (group_menu?.isOpened == true) {
+            group_menu?.close(animate)
+        }
     }
 
     private fun showDeleteGroupDialog() = MaterialDialog.Builder(activity!!)

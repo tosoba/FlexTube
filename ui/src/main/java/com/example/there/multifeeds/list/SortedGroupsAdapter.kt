@@ -17,6 +17,8 @@ class SortedGroupsAdapter(
         itemsOffset: Int = 0
 ) : BaseObservableListAdapter<UiGroupWithSubscriptions, GroupItemBinding>(items, itemLayoutId, itemsOffset) {
 
+    val groupClicked: PublishSubject<UiGroupWithSubscriptions> = PublishSubject.create()
+
     override fun onBindViewHolder(holder: BaseBindingViewHolder<GroupItemBinding>?, position: Int) {
         val group = items[position]
         holder?.binding?.groupItemView =
@@ -25,6 +27,4 @@ class SortedGroupsAdapter(
                 LinearLayoutManager(holder?.binding?.root?.context, LinearLayoutManager.HORIZONTAL, false)
         holder?.binding?.root?.setOnClickListener { groupClicked.onNext(group) }
     }
-
-    val groupClicked: PublishSubject<UiGroupWithSubscriptions> = PublishSubject.create()
 }

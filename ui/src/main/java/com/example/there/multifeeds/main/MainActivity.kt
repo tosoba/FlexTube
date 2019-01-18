@@ -213,6 +213,8 @@ class MainActivity : AppCompatActivity(), HasFragmentDispatchingAndroidInjector 
     @Inject
     override lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
+    private var searchViewMenuItem: MenuItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -318,8 +320,6 @@ class MainActivity : AppCompatActivity(), HasFragmentDispatchingAndroidInjector 
             related_videos_recycler_view?.scrollToPosition(0)
         })
     }
-
-    private var searchViewMenuItem: MenuItem? = null
 
     private fun initVideoSearch(menu: Menu?) {
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager

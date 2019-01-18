@@ -14,12 +14,13 @@ data class UiSubscription(
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-            parcel.readString(),
+            parcel.readString()!!,
             Date(parcel.readLong()),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString(),
-            parcel.readString())
+            parcel.readString()!!,
+            parcel.readString()!!,
+            parcel.readString()!!,
+            parcel.readString()!!
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)

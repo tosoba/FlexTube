@@ -12,4 +12,5 @@ val Fragment.mainActivity: MainActivity?
 val Fragment.mainToolbar: Toolbar?
     get() = mainActivity?.findViewById(R.id.main_toolbar)
 
-fun Fragment.expandMainAppBar() = mainActivity?.findViewById<AppBarLayout>(R.id.main_app_bar_layout)?.setExpanded(true, true)
+fun Fragment.expandMainAppBar() = mainActivity?.findViewById<AppBarLayout>(R.id.main_app_bar_layout)
+        ?.setExpanded(true, true)

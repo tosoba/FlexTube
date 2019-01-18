@@ -26,6 +26,10 @@ class VideosAdapter(
 
     val loadingInProgress: ObservableField<Boolean> = ObservableField(false)
 
+    val videoClicked: PublishSubject<String> = PublishSubject.create()
+
+    override var userHasScrolled: Boolean = false
+
     override fun getItemViewType(
             position: Int
     ): Int = if (position == items.size) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
@@ -39,8 +43,6 @@ class VideosAdapter(
     }
 
     override fun getItemCount(): Int = items.size + 1
-
-    override var userHasScrolled: Boolean = false
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
@@ -60,8 +62,6 @@ class VideosAdapter(
         }
 
     }
-
-    val videoClicked: PublishSubject<String> = PublishSubject.create()
 
     companion object {
         private const val VIEW_TYPE_LOADING = 0

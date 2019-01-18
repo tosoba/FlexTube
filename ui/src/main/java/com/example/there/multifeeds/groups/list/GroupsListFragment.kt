@@ -42,27 +42,8 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
     private val disposablesComponent = DisposablesComponent()
 
-    @Inject
-    lateinit var appPreferences: AppPreferences
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        lifecycle.addObserver(disposablesComponent)
-
-        viewModel.loadGroups(appPreferences.accountName!!)
-
-        disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
-            showGroupFragment(it)
-        })
-    }
-
     private val groupsAdapter: SortedGroupsAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SortedGroupsAdapter(viewModel.viewState.groups, R.layout.group_item)
-    }
-
-    private fun showGroupFragment(group: UiGroupWithSubscriptions) {
-        (parentFragment as? GroupsHostFragment)?.showGroupFragment(group)
     }
 
     private val view: GroupsListView by lazy(LazyThreadSafetyMode.NONE) {
@@ -80,6 +61,38 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
         )
     }
 
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        lifecycle.addObserver(disposablesComponent)
+
+        viewModel.loadGroups(appPreferences.accountName!!)
+
+        disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
+            showGroupFragment(it)
+        })
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DataBindingUtil.inflate<FragmentGroupsListBinding>(inflater, R.layout.fragment_groups_list, container, false)
+
+        return binding.apply {
+            groupsListView = view
+            groupsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        }.root
+    }
+
+    override fun scrollToTop() {
+        groups_recycler_view?.scrollToPosition(0)
+    }
+
+    private fun showGroupFragment(group: UiGroupWithSubscriptions) {
+        (parentFragment as? GroupsHostFragment)?.showGroupFragment(group)
+    }
+
     private fun showNewGroupDialog() {
         MaterialDialog.Builder(activity!!)
                 .title(getString(R.string.new_group))
@@ -94,18 +107,5 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 .positiveText(getString(R.string.confirm))
                 .build()
                 .apply { show() }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentGroupsListBinding>(inflater, R.layout.fragment_groups_list, container, false)
-
-        return binding.apply {
-            groupsListView = view
-            groupsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        }.root
-    }
-
-    override fun scrollToTop() {
-        groups_recycler_view?.scrollToPosition(0)
     }
 }

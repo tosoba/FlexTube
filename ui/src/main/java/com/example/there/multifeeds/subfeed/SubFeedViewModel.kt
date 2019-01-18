@@ -51,7 +51,7 @@ class SubFeedViewModel @Inject constructor(
                         }
                     }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map { it.filter { !viewState.videos.contains(it) } }
+                    .map { loadedVideos -> loadedVideos.filter { !viewState.videos.contains(it) } }
                     .subscribe({ viewState.videos.addAll(it) }, { Log.e("ERR", it.message) }))
         }
     }

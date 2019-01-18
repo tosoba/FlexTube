@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.View
 
-data class AddGroupView(
+class AddGroupView(
         val state: AddGroupViewState,
         val adapter: AddGroupSubscriptionsAdapter,
         val itemDecoration: RecyclerView.ItemDecoration,

@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit
 
 object YoutubeServiceFactory {
 
+    private const val baseUrl = "https://www.googleapis.com/youtube/v3/"
+
     fun makeYoutubeService(isDebug: Boolean): YoutubeService = makeYoutubeService(
             okHttpClient = makeOkHttpClient(makeLoggingInterceptor(isDebug)),
             gson = makeGson()
     )
-
-    private const val baseUrl = "https://www.googleapis.com/youtube/v3/"
 
     private fun makeYoutubeService(okHttpClient: OkHttpClient, gson: Gson): YoutubeService = Retrofit.Builder()
             .baseUrl(baseUrl)

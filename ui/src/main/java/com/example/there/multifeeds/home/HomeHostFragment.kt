@@ -9,6 +9,7 @@ import com.example.there.multifeeds.base.fragment.BaseHostFragment
 
 
 class HomeHostFragment : BaseHostFragment() {
+
     override val backStackLayoutId: Int
         get() = R.id.home_back_stack_layout
 

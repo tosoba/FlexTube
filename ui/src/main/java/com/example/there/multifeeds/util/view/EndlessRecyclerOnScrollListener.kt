@@ -8,10 +8,12 @@ abstract class EndlessRecyclerOnScrollListener(
         private val visibleThreshold: Int = 5,
         private val returnFromOnScrolledItemCount: Int = 0
 ) : RecyclerView.OnScrollListener() {
+
     /**
      * The total number of items in the dataset after the last load
      */
     var mPreviousTotal = 0
+
     /**
      * True if we are still waiting for the last set of data to load.
      */

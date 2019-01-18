@@ -76,20 +76,6 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentHomeBinding>(inflater, R.layout.fragment_home, container, false)
-
-        return binding.apply {
-            homeView = view
-            homeItemsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        }.root
-    }
-
-    override fun scrollToTop() {
-        home_items_recycler_view?.scrollToPosition(0)
-        expandMainAppBar()
-    }
-
     private val disposablesComponent = DisposablesComponent()
 
     private val connectivityComponent: ConnectivityComponent by lazy(LazyThreadSafetyMode.NONE) {
@@ -104,12 +90,6 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
                         parentView = activity!!.findViewById(R.id.scroll_to_top_fab)
                 )
         )
-    }
-
-    private fun loadInitialHomeItems() {
-        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, false, onAfterAdd = {
-            home_items_recycler_view?.scrollToPosition(0)
-        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,8 +118,28 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
         })
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DataBindingUtil.inflate<FragmentHomeBinding>(inflater, R.layout.fragment_home, container, false)
+
+        return binding.apply {
+            homeView = view
+            homeItemsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        }.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lifecycle.addObserver(connectivityComponent)
+    }
+
+    override fun scrollToTop() {
+        home_items_recycler_view?.scrollToPosition(0)
+        expandMainAppBar()
+    }
+
+    private fun loadInitialHomeItems() {
+        viewModel.loadGeneralHomeItems((activity as MainActivity).accessToken, false, onAfterAdd = {
+            home_items_recycler_view?.scrollToPosition(0)
+        })
     }
 }

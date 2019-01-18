@@ -13,14 +13,15 @@ import com.example.there.multifeeds.util.ext.mainActivity
 class MainViewPagerAdapter(
         fm: FragmentManager
 ) : FragmentStatePagerAdapter(fm) {
+
     private val fragments = arrayOf(HomeHostFragment(), SubFeedHostFragment(), GroupsHostFragment())
+
+    var currentFragment: Fragment? = null
+        private set
 
     override fun getItem(position: Int): Fragment = fragments[position]
 
     override fun getCount(): Int = fragments.size
-
-    var currentFragment: Fragment? = null
-        private set
 
     override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
         currentFragment = `object` as? Fragment

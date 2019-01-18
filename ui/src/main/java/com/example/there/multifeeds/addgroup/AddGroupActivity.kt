@@ -14,23 +14,20 @@ import android.support.v7.widget.SearchView
 import android.view.View
 import android.widget.Toast
 import com.example.there.multifeeds.R
-import com.example.there.multifeeds.addgroup.AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING
+import com.example.there.multifeeds.addgroup.AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING_GROUP
 import com.example.there.multifeeds.addgroup.AddGroupActivity.Mode.NEW_GROUP
 import com.example.there.multifeeds.databinding.ActivityAddGroupBinding
 import com.example.there.multifeeds.di.vm.ViewModelFactory
-import dagger.android.AndroidInjector
+import com.example.there.multifeeds.util.di.HasFragmentDispatchingAndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_add_group.*
 import javax.inject.Inject
 
 
-class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
+class AddGroupActivity : AppCompatActivity(), HasFragmentDispatchingAndroidInjector {
 
     @Inject
-    lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-
-    override fun supportFragmentInjector(): AndroidInjector<Fragment> = fragmentDispatchingAndroidInjector
+    override lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -61,18 +58,6 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
                 })
     }
 
-    private fun insertGroup() {
-        if (viewModel.viewState.subscriptions.any { it.isChosen.get() == true }) {
-            when (mode) {
-                NEW_GROUP -> viewModel.insertSubscriptionGroup(groupName, accountName)
-                ADD_SUBS_TO_EXISTING -> viewModel.addSubscriptionsToGroup(groupName, accountName)
-            }
-            finish()
-        } else {
-            Toast.makeText(this@AddGroupActivity, "No subscriptions chosen.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private val accountName: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_ACCOUNT_NAME) }
     private val groupName: String by lazy(LazyThreadSafetyMode.NONE) { intent.getStringExtra(EXTRA_GROUP_NAME) }
     private val mode: AddGroupActivity.Mode by lazy(LazyThreadSafetyMode.NONE) { intent.getSerializableExtra(EXTRA_MODE) as Mode }
@@ -86,7 +71,7 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
         when (mode) {
             NEW_GROUP -> viewModel.loadSubscriptions(accountName)
-            ADD_SUBS_TO_EXISTING -> {
+            ADD_SUBS_TO_EXISTING_GROUP -> {
                 viewModel.loadNotAddedSubscriptions(accountName, groupName)
                 binding.addGroupButton.text = getString(R.string.add_subscriptions)
             }
@@ -99,8 +84,20 @@ class AddGroupActivity : AppCompatActivity(), HasSupportFragmentInjector {
         subscriptions_search_view?.clearFocus()
     }
 
+    private fun insertGroup() {
+        if (viewModel.viewState.subscriptions.any { it.isChosen.get() == true }) {
+            when (mode) {
+                NEW_GROUP -> viewModel.insertSubscriptionGroup(groupName, accountName)
+                ADD_SUBS_TO_EXISTING_GROUP -> viewModel.addSubscriptionsToGroup(groupName, accountName)
+            }
+            finish()
+        } else {
+            Toast.makeText(this@AddGroupActivity, "No subscriptions chosen.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     enum class Mode {
-        NEW_GROUP, ADD_SUBS_TO_EXISTING
+        NEW_GROUP, ADD_SUBS_TO_EXISTING_GROUP
     }
 
     companion object {

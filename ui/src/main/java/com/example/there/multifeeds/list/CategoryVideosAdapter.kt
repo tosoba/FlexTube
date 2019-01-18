@@ -33,6 +33,8 @@ class CategoryVideosAdapter(
 
     var loadingInProgress: Boolean = false
 
+    val videoClicked: PublishSubject<String> = PublishSubject.create()
+
     override var userHasScrolled: Boolean = false
 
     override fun getItemViewType(position: Int): Int = when (position) {
@@ -57,8 +59,6 @@ class CategoryVideosAdapter(
     }
 
     override fun getItemCount(): Int = videos.size + 2
-
-    val videoClicked: PublishSubject<String> = PublishSubject.create()
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
