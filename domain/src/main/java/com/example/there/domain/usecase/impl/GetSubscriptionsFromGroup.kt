@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class GetSubscriptionsFromGroup @Inject constructor(
         private val repository: IMainRepository
-): UseCase<GetSubscriptionsFromGroup.Params, Flowable<List<Subscription>>> {
+) : UseCase<GetSubscriptionsFromGroup.Params, Flowable<List<Subscription>>> {
     override fun execute(params: Params?): Flowable<List<Subscription>> = repository.getSubscriptionsFromGroup(
             accountName = params!!.accountName,
             groupName = params.groupName

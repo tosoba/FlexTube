@@ -5,7 +5,7 @@
 
         <variable
             name="category"
-            type="com.example.there.flextube.model.UiVideoCategory" />
+            type="com.example.there.multifeeds.model.UiVideoCategory" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

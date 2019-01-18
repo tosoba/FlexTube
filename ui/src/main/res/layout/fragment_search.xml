@@ -5,7 +5,7 @@
 
         <variable
             name="searchView"
-            type="com.example.there.flextube.search.SearchView" />
+            type="com.example.there.multifeeds.search.SearchView" />
 
         <import type="android.view.View" />
     </data>

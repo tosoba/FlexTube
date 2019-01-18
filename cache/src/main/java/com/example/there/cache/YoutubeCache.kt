@@ -1,6 +1,6 @@
 package com.example.there.cache
 
-import com.example.there.cache.db.FlexTubeDb
+import com.example.there.cache.db.MultiFeedsDb
 import com.example.there.cache.model.*
 import com.example.there.cache.util.toCache
 import com.example.there.cache.util.toData
@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class YoutubeCache @Inject constructor(db: FlexTubeDb) : IYoutubeCache {
+class YoutubeCache @Inject constructor(db: MultiFeedsDb) : IYoutubeCache {
     private val accountDao = db.accountDao()
 
     private val subscriptionDao = db.subscriptionDao()

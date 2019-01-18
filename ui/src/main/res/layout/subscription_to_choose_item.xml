@@ -5,7 +5,7 @@
 
         <variable
             name="chosenSubscription"
-            type="com.example.there.flextube.model.UiSubscriptionToChoose" />
+            type="com.example.there.multifeeds.model.UiSubscriptionToChoose" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

@@ -5,7 +5,7 @@
 
         <variable
             name="groupView"
-            type="com.example.there.flextube.groups.group.GroupView" />
+            type="com.example.there.multifeeds.groups.group.GroupView" />
     </data>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"

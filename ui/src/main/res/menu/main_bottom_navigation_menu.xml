@@ -3,18 +3,15 @@
     <item
         android:id="@+id/action_home"
         android:title="@string/home"
-        android:icon="@drawable/home"
-        />
+        android:icon="@drawable/home" />
 
     <item
         android:id="@+id/action_sub_feed"
         android:title="@string/subfeed"
-        android:icon="@drawable/feed"
-        />
+        android:icon="@drawable/feed" />
 
     <item
         android:id="@+id/action_groups"
         android:title="@string/groups"
-        android:icon="@drawable/groups"
-        />
+        android:icon="@drawable/groups" />
 </menu>

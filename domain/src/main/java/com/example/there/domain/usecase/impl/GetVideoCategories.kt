@@ -8,6 +8,6 @@ import javax.inject.Inject
 
 class GetVideoCategories @Inject constructor(
         private val repository: IMainRepository
-): UseCase<Unit, Single<List<VideoCategory>>> {
+) : UseCase<Unit, Single<List<VideoCategory>>> {
     override fun execute(params: Unit?): Single<List<VideoCategory>> = repository.getVideoCategories()
 }

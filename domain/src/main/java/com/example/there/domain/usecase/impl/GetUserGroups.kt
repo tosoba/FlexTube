@@ -8,6 +8,6 @@ import javax.inject.Inject
 
 class GetUserGroups @Inject constructor(
         private val repository: IMainRepository
-): UseCase<String, Flowable<List<Group>>> {
+) : UseCase<String, Flowable<List<Group>>> {
     override fun execute(params: String?): Flowable<List<Group>> = repository.getGroups(accountName = params!!)
 }

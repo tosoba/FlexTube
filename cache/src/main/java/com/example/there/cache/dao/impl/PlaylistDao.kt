@@ -8,7 +8,7 @@ import com.example.there.cache.model.CachedPlaylist
 import io.reactivex.Single
 
 @Dao
-interface PlaylistDao: InsertReplaceDao<CachedPlaylist> {
+interface PlaylistDao : InsertReplaceDao<CachedPlaylist> {
     @Query("SELECT * FROM ${Tables.PLAYLISTS} WHERE id = :id")
     fun getById(id: String): Single<CachedPlaylist>
 

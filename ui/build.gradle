@@ -51,7 +51,7 @@ android {
         enabled = true
     }
 
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
 }
 
 kapt {
@@ -102,7 +102,7 @@ dependencies {
     implementation uiDependencies.androidYoutubePlayer
     implementation uiDependencies.playServicesAuth
     implementation uiDependencies.easyPermissions
-    implementation(uiDependencies.googleApiClient){
+    implementation(uiDependencies.googleApiClient) {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation(uiDependencies.googleApiServicesYoutube) {

@@ -5,7 +5,7 @@
 
         <variable
             name="startView"
-            type="com.example.there.flextube.start.StartView" />
+            type="com.example.there.multifeeds.start.StartView" />
 
         <import type="android.view.View" />
     </data>

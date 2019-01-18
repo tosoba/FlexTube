@@ -7,7 +7,7 @@
 
         <variable
             name="viewState"
-            type="com.example.there.flextube.list.LoadingItemViewState" />
+            type="com.example.there.multifeeds.list.LoadingItemViewState" />
 
 
     </data>

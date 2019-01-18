@@ -5,7 +5,7 @@
 
         <variable
             name="mainView"
-            type="com.example.there.flextube.main.MainActivityView" />
+            type="com.example.there.multifeeds.main.MainActivityView" />
     </data>
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"

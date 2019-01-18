@@ -3,7 +3,7 @@ package com.example.there.data.mapper
 import com.example.there.data.model.PlaylistItemData
 import com.example.there.domain.model.PlaylistItem
 
-object PlaylistItemMapper: TwoWayDataMapper<PlaylistItemData, PlaylistItem> {
+object PlaylistItemMapper : TwoWayDataMapper<PlaylistItemData, PlaylistItem> {
     override fun toDomain(data: PlaylistItemData): PlaylistItem = PlaylistItem(
             channelId = data.channelId,
             thumbnailUrl = data.thumbnailUrl,

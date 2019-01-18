@@ -7,7 +7,7 @@
 
         <variable
             name="subFeedView"
-            type="com.example.there.flextube.subfeed.SubFeedView" />
+            type="com.example.there.multifeeds.subfeed.SubFeedView" />
     </data>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"

@@ -7,7 +7,7 @@
 
         <variable
             name="groupsListView"
-            type="com.example.there.flextube.groups.list.GroupsListView" />
+            type="com.example.there.multifeeds.groups.list.GroupsListView" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

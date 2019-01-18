@@ -3,7 +3,7 @@ package com.example.there.remote.mapper
 import com.example.there.data.model.PlaylistItemData
 import com.example.there.remote.model.ApiPlaylistItem
 
-object ApiPlaylistItemMapper: ApiMapper<ApiPlaylistItem, PlaylistItemData> {
+object ApiPlaylistItemMapper : ApiMapper<ApiPlaylistItem, PlaylistItemData> {
     override fun toData(api: ApiPlaylistItem): PlaylistItemData = PlaylistItemData(
             channelId = api.snippet.channelId,
             thumbnailUrl = api.snippet.thumbnails.high.url,

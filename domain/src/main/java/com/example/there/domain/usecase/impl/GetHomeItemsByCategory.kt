@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class GetHomeItemsByCategory @Inject constructor(
         private val repository: IMainRepository
-): UseCase<GetHomeItemsByCategory.Params, Single<List<PlaylistItem>>> {
+) : UseCase<GetHomeItemsByCategory.Params, Single<List<PlaylistItem>>> {
     override fun execute(params: Params?): Single<List<PlaylistItem>> = repository.getHomeItemsByCategory(
             categoryId = params!!.categoryId,
             shouldReturnAll = params.shouldReturnAll

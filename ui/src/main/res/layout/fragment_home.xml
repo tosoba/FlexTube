@@ -8,7 +8,7 @@
 
         <variable
             name="homeView"
-            type="com.example.there.flextube.home.HomeView" />
+            type="com.example.there.multifeeds.home.HomeView" />
     </data>
 
     <FrameLayout
