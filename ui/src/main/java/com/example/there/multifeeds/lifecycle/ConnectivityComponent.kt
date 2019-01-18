@@ -1,15 +1,13 @@
 package com.example.there.multifeeds.lifecycle
 
-import android.app.Activity
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
-import android.content.Intent
 import android.graphics.Color
-import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.view.View
-import android.widget.TextView
+import com.example.there.multifeeds.util.ext.safelyDispose
+import com.example.there.multifeeds.util.ext.setTextColor
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -17,14 +15,24 @@ import io.reactivex.schedulers.Schedulers
 
 
 class ConnectivityComponent(
-        private val activity: Activity,
         private val isDataLoaded: Boolean,
-        private val reloadData: () -> Unit,
-        private val parentView: View
+        private val reloadDataOnConnected: () -> Unit,
+        private val snackbarParameters: SnackbarParameters
 ) : LifecycleObserver {
 
+    class SnackbarParameters(
+            val parentView: View,
+            val text: String,
+            val actionBtnText: String,
+            val onActionBtnPressed: View.OnClickListener
+    )
+
     private var internetDisposable: Disposable? = null
-    private var connectionInterrupted = false
+    private var connectionWasInterrupted = false
+    private var lastConnectionStatus: Boolean? = null
+
+    private var isSnackbarShowing = false
+    private var snackbar: Snackbar? = null
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun observeInternetConnectivity() {
@@ -34,38 +42,26 @@ class ConnectivityComponent(
                 .subscribe { isConnectedToInternet ->
                     if (lastConnectionStatus != isConnectedToInternet) {
                         lastConnectionStatus = isConnectedToInternet
-                        handleConnectionStatus(isConnectedToInternet)
+                        onConnectionStatusChanged(isConnectedToInternet)
                     }
                 }
     }
-
-    private var lastConnectionStatus: Boolean? = null
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun clear() {
         snackbar?.dismiss()
         snackbar = null
-        safelyDispose(internetDisposable)
+        internetDisposable?.safelyDispose()
     }
 
-    private fun safelyDispose(disposable: Disposable?) {
-        if (disposable != null && !disposable.isDisposed) {
-            disposable.dispose()
-        }
-    }
-
-    private fun handleConnectionStatus(isConnectedToInternet: Boolean) {
-        if (!isConnectedToInternet) {
-            connectionInterrupted = true
-            if (!isSnackbarShowing) {
-                showNoConnectionDialog()
-            }
+    private fun onConnectionStatusChanged(isConnected: Boolean) {
+        if (!isConnected) {
+            connectionWasInterrupted = true
+            if (!isSnackbarShowing) showNoConnectionSnackbar()
         } else {
-            if (connectionInterrupted) {
-                connectionInterrupted = false
-                if (!isDataLoaded) {
-                    reloadData()
-                }
+            if (connectionWasInterrupted) {
+                connectionWasInterrupted = false
+                if (!isDataLoaded) reloadDataOnConnected()
             }
 
             isSnackbarShowing = false
@@ -73,28 +69,18 @@ class ConnectivityComponent(
         }
     }
 
-    private var isSnackbarShowing = false
-
-    private var snackbar: Snackbar? = null
-
-    private fun showNoConnectionDialog() {
-        snackbar = Snackbar
-                .make(parentView, "No internet connection.", Snackbar.LENGTH_LONG)
-                .setAction("SETTINGS") {
-                    val settingsIntent = Intent(Settings.ACTION_SETTINGS)
-                    activity.startActivity(settingsIntent)
-                }
+    private fun showNoConnectionSnackbar() {
+        snackbar = Snackbar.make(snackbarParameters.parentView, snackbarParameters.text, Snackbar.LENGTH_LONG)
+                .setAction(snackbarParameters.actionBtnText, snackbarParameters.onActionBtnPressed)
                 .setCallback(object : Snackbar.Callback() {
                     override fun onDismissed(snackbar: Snackbar, event: Int) {
-                        if (event == DISMISS_EVENT_SWIPE) {
-                            showNoConnectionDialog()
-                        }
+                        if (event == DISMISS_EVENT_SWIPE) showNoConnectionSnackbar()
                     }
                 })
-
-        val textView = snackbar?.view?.findViewById(android.support.design.R.id.snackbar_text) as? TextView
-        textView?.setTextColor(Color.RED)
-        snackbar?.duration = Snackbar.LENGTH_INDEFINITE
-        snackbar?.show()
+                .apply {
+                    setTextColor(Color.RED)
+                    duration = Snackbar.LENGTH_INDEFINITE
+                    show()
+                }
     }
 }

@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
+import com.example.there.cache.preferences.AppPreferences
 import com.example.there.multifeeds.R
 import com.example.there.multifeeds.addgroup.AddGroupActivity
 import com.example.there.multifeeds.base.fragment.HasTitle
@@ -24,7 +25,6 @@ import com.example.there.multifeeds.groups.GroupsHostFragment
 import com.example.there.multifeeds.lifecycle.DisposablesComponent
 import com.example.there.multifeeds.list.SortedGroupsAdapter
 import com.example.there.multifeeds.model.UiGroupWithSubscriptions
-import com.example.there.multifeeds.util.ext.accountName
 import kotlinx.android.synthetic.main.fragment_groups_list.*
 import javax.inject.Inject
 
@@ -42,12 +42,15 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
     private val disposablesComponent = DisposablesComponent()
 
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         lifecycle.addObserver(disposablesComponent)
 
-        viewModel.loadGroups(accountName)
+        viewModel.loadGroups(appPreferences.accountName!!)
 
         disposablesComponent.add(groupsAdapter.groupClicked.subscribe {
             showGroupFragment(it)
@@ -82,10 +85,10 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
                 .title(getString(R.string.new_group))
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input(getString(R.string.group_name), "") { _, input ->
-                    viewModel.checkIfGroupExists(accountName, input.trim().toString(), ifExists = {
+                    viewModel.checkIfGroupExists(appPreferences.accountName!!, input.trim().toString(), ifExists = {
                         Toast.makeText(activity!!, "Group named ${input.trim()} already exists.", Toast.LENGTH_SHORT).show()
                     }, ifNotExists = {
-                        AddGroupActivity.start(activity!!, accountName, input.trim().toString())
+                        AddGroupActivity.start(activity!!, appPreferences.accountName!!, input.trim().toString())
                     })
                 }
                 .positiveText(getString(R.string.confirm))

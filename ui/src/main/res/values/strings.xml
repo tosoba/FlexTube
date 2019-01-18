@@ -26,4 +26,8 @@
     <string name="no_subscriptions">Currently, you are not subscribed to any youtube channels.</string>
     <string name="add_subscriptions">Add subscriptions</string>
     <string name="your_groups">Your groups</string>
+    <string name="no_internet_connection">No internet connection.</string>
+    <string name="settings">SETTINGS</string>
+    <string name="access_to_google_account_needed">This app needs to access your Google account (via Contacts).</string>
+    <string name="install_google_play_services">This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.</string>
 </resources>

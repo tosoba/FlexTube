@@ -16,6 +16,7 @@ import com.example.there.multifeeds.main.MainActivity
 import com.example.there.multifeeds.main.MainViewModel
 import com.example.there.multifeeds.search.SearchFragment
 import com.example.there.multifeeds.search.SearchViewModel
+import com.example.there.multifeeds.start.StartActivity
 import com.example.there.multifeeds.subfeed.SubFeedFragment
 import com.example.there.multifeeds.subfeed.SubFeedViewModel
 import dagger.Binds
@@ -62,6 +63,9 @@ abstract class UiModule {
 
     @Binds
     abstract fun viewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+
+    @ContributesAndroidInjector
+    abstract fun startActivity(): StartActivity
 
     @ContributesAndroidInjector
     abstract fun mainActivity(): MainActivity

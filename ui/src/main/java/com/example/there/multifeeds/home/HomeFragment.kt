@@ -1,6 +1,5 @@
 package com.example.there.multifeeds.home
 
-import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -22,6 +21,7 @@ import com.example.there.multifeeds.lifecycle.DisposablesComponent
 import com.example.there.multifeeds.list.CategoryVideosAdapter
 import com.example.there.multifeeds.list.VideoCategoriesAdapter
 import com.example.there.multifeeds.main.MainActivity
+import com.example.there.multifeeds.util.ext.defaultConnectivityComponentSnackbarParams
 import com.example.there.multifeeds.util.ext.expandMainAppBar
 import com.example.there.multifeeds.util.view.DividerItemDecorator
 import com.example.there.multifeeds.util.view.EndlessRecyclerOnScrollListener
@@ -94,14 +94,15 @@ class HomeFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
     private val connectivityComponent: ConnectivityComponent by lazy(LazyThreadSafetyMode.NONE) {
         ConnectivityComponent(
-                activity as Activity,
-                viewModel.loadingGeneralHomeItemsComplete,
-                {
+                isDataLoaded = viewModel.loadingGeneralHomeItemsComplete,
+                reloadDataOnConnected = {
                     viewModel.clearDisposables()
                     loadInitialHomeItems()
                     viewModel.loadVideoCategories()
                 },
-                activity!!.findViewById(R.id.scroll_to_top_fab)
+                snackbarParameters = activity!!.defaultConnectivityComponentSnackbarParams(
+                        parentView = activity!!.findViewById(R.id.scroll_to_top_fab)
+                )
         )
     }
 

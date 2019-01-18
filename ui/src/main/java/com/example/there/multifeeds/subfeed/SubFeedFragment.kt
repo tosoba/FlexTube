@@ -1,6 +1,5 @@
 package com.example.there.multifeeds.subfeed
 
-import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.there.cache.preferences.AppPreferences
 import com.example.there.multifeeds.R
 import com.example.there.multifeeds.base.fragment.HasTitle
 import com.example.there.multifeeds.base.fragment.Scrollable
@@ -21,8 +21,8 @@ import com.example.there.multifeeds.lifecycle.ConnectivityComponent
 import com.example.there.multifeeds.lifecycle.DisposablesComponent
 import com.example.there.multifeeds.list.SubscriptionsVideosAdapter
 import com.example.there.multifeeds.main.MainActivity
-import com.example.there.multifeeds.util.ext.accountName
 import com.example.there.multifeeds.util.ext.addOnInitialUserScrollListener
+import com.example.there.multifeeds.util.ext.defaultConnectivityComponentSnackbarParams
 import com.example.there.multifeeds.util.ext.expandMainAppBar
 import com.example.there.multifeeds.util.view.DividerItemDecorator
 import com.example.there.multifeeds.util.view.EndlessRecyclerOnScrollListener
@@ -45,18 +45,22 @@ class SubFeedFragment : Fragment(), Injectable, Scrollable, HasTitle {
     private val disposablesComponent = DisposablesComponent()
     private val connectivityComponent: ConnectivityComponent by lazy(LazyThreadSafetyMode.NONE) {
         ConnectivityComponent(
-                activity as Activity,
-                viewModel.loadingRemoteVideosComplete,
-                {
+                isDataLoaded = viewModel.loadingRemoteVideosComplete,
+                reloadDataOnConnected = {
                     viewModel.clearDisposables()
                     loadData(true)
                 },
-                activity!!.findViewById(R.id.scroll_to_top_fab)
+                snackbarParameters = activity!!.defaultConnectivityComponentSnackbarParams(
+                        parentView = activity!!.findViewById(R.id.scroll_to_top_fab)
+                )
         )
     }
 
+    @Inject
+    lateinit var appPreferences: AppPreferences
+
     private fun loadData(reloadAfterConnectionLoss: Boolean) {
-        viewModel.loadData((activity as MainActivity).accessToken, accountName, reloadAfterConnectionLoss) {
+        viewModel.loadData((activity as MainActivity).accessToken, appPreferences.accountName!!, reloadAfterConnectionLoss) {
             if (!videosAdapter.userHasScrolled) scrollToTop()
         }
     }

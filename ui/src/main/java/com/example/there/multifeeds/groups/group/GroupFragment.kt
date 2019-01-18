@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
+import com.example.there.cache.preferences.AppPreferences
 import com.example.there.multifeeds.R
 import com.example.there.multifeeds.addgroup.AddGroupActivity
 import com.example.there.multifeeds.base.fragment.HasBackNavigation
@@ -25,7 +26,10 @@ import com.example.there.multifeeds.lifecycle.DisposablesComponent
 import com.example.there.multifeeds.list.SubscriptionsVideosAdapter
 import com.example.there.multifeeds.main.MainActivity
 import com.example.there.multifeeds.model.UiGroupWithSubscriptions
-import com.example.there.multifeeds.util.ext.*
+import com.example.there.multifeeds.util.ext.addOnInitialUserScrollListener
+import com.example.there.multifeeds.util.ext.expandMainAppBar
+import com.example.there.multifeeds.util.ext.mainToolbar
+import com.example.there.multifeeds.util.ext.resetTitle
 import com.example.there.multifeeds.util.view.DividerItemDecorator
 import com.example.there.multifeeds.util.view.EndlessRecyclerOnScrollListener
 import kotlinx.android.synthetic.main.fragment_group.*
@@ -47,6 +51,9 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
     private val group: UiGroupWithSubscriptions by lazy(LazyThreadSafetyMode.NONE) { arguments!!.getParcelable<UiGroupWithSubscriptions>(ARG_GROUP) }
 
     private val disposablesComponent = DisposablesComponent()
+
+    @Inject
+    lateinit var appPreferences: AppPreferences
 
     override fun scrollToTop() {
         group_videos_recycler_view?.scrollToPosition(0)
@@ -89,7 +96,7 @@ class GroupFragment : Fragment(), Injectable, Scrollable, HasTitle, HasBackNavig
     }
 
     private val onAddMoreSubsClickListener = View.OnClickListener {
-        AddGroupActivity.start(activity!!, accountName, group.name, AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING)
+        AddGroupActivity.start(activity!!, appPreferences.accountName!!, group.name, AddGroupActivity.Mode.ADD_SUBS_TO_EXISTING)
     }
 
     private val onDeleteGroupClickListener = View.OnClickListener {

@@ -3,48 +3,55 @@ package com.example.there.multifeeds.start
 import android.Manifest
 import android.accounts.AccountManager
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
-import android.net.ConnectivityManager
 import android.os.Bundle
-import android.preference.PreferenceManager
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
+import com.example.there.cache.preferences.AppPreferences
 import com.example.there.multifeeds.R
 import com.example.there.multifeeds.databinding.ActivityStartBinding
 import com.example.there.multifeeds.lifecycle.ConnectivityComponent
 import com.example.there.multifeeds.lifecycle.DisposablesComponent
 import com.example.there.multifeeds.main.MainActivity
+import com.example.there.multifeeds.util.di.HasFragmentDispatchingAndroidInjector
+import com.example.there.multifeeds.util.ext.defaultConnectivityComponentSnackbarParams
+import com.example.there.multifeeds.util.ext.googlePlayServicesAvailable
+import com.example.there.multifeeds.util.ext.isConnectedToInternet
 import com.google.android.gms.auth.UserRecoverableAuthException
-import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.youtube.YouTubeScopes
+import dagger.android.DispatchingAndroidInjector
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_start.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import javax.inject.Inject
 
-class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks, HasFragmentDispatchingAndroidInjector {
+
+    @Inject
+    override lateinit var fragmentDispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
 
     private var credential: GoogleAccountCredential? = null
 
     private val disposablesComponent = DisposablesComponent()
     private val connectivityComponent: ConnectivityComponent by lazy(LazyThreadSafetyMode.NONE) {
         ConnectivityComponent(
-                this,
-                false,
-                {
+                isDataLoaded = false,
+                reloadDataOnConnected = {
                     if (credential == null)
-                        credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES).setBackOff(ExponentialBackOff())
+                        credential = GoogleAccountCredential.usingOAuth2(applicationContext, SCOPES)
+                                .setBackOff(ExponentialBackOff())
                     checkAuthAndLoadData()
                 },
-                start_activity_root_layout
+                snackbarParameters = defaultConnectivityComponentSnackbarParams(start_activity_root_layout)
         )
     }
 
@@ -53,6 +60,9 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private val startView: StartView by lazy(LazyThreadSafetyMode.NONE) {
         StartView(startViewState, View.OnClickListener { chooseAccount() })
     }
+
+    @Inject
+    lateinit var appPreferences: AppPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,65 +82,6 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         startViewState.authInProgress.set(false)
     }
 
-    private fun checkAuthAndLoadData() {
-        if (!isGooglePlayServicesAvailable()) {
-            acquireGooglePlayServices()
-        } else if (credential!!.selectedAccountName == null) {
-            chooseAccount()
-        } else if (!isDeviceOnline()) {
-            Toast.makeText(this, "No network connection available.", Toast.LENGTH_SHORT).show()
-        } else {
-            loadAccessTokenAndLoadData()
-        }
-    }
-
-    private fun loadAccessTokenAndLoadData() {
-        startViewState.authInProgress.set(true)
-        disposablesComponent.add(Single.fromCallable { credential!!.token }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError { startViewState.authInProgress.set(false) }
-                .subscribe({ token ->
-                    MainActivity.start(this, token)
-                }, { e ->
-                    if (e is UserRecoverableAuthException) {
-                        startActivityForResult(e.intent, REQUEST_AUTHORIZATION)
-                    }
-                }))
-    }
-
-
-    /**
-     * Attempts to set the account used with the API credentials. If an account
-     * name was previously saved it will use that one otherwise an account
-     * picker dialog will be shown to the user. Note that the setting the
-     * account to use with the credentials object requires the app to have the
-     * GET_ACCOUNTS permission, which is requested here if it is not already
-     * present. The AfterPermissionGranted annotation indicates that this
-     * function will be rerun automatically whenever the GET_ACCOUNTS permission
-     * is granted.
-     */
-    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
-    private fun chooseAccount() {
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
-            val accountName = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_ACCOUNT_NAME, null)
-            if (accountName != null) {
-                credential!!.selectedAccountName = accountName
-                checkAuthAndLoadData()
-            } else {
-                // Start a dialog from which the user can choose an account
-                startActivityForResult(credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
-            }
-        } else {
-            // Request the GET_ACCOUNTS permission via a user dialog
-            EasyPermissions.requestPermissions(
-                    this,
-                    "This app needs to access your Google account (via Contacts).",
-                    REQUEST_PERMISSION_GET_ACCOUNTS,
-                    Manifest.permission.GET_ACCOUNTS)
-        }
-    }
-
     /**
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
@@ -145,20 +96,15 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
-                Toast.makeText(this,
-                        "This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.",
-                        Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.install_google_play_services), Toast.LENGTH_SHORT).show()
             } else {
                 checkAuthAndLoadData()
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null && data.extras != null) {
                 val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
-                    val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-                    val editor = preferences.edit()
-                    editor.putString(PREF_ACCOUNT_NAME, accountName)
-                    editor.apply()
-                    credential!!.selectedAccountName = accountName
+                    appPreferences.accountName = accountName
+                    credential?.selectedAccountName = accountName
                     checkAuthAndLoadData()
                 }
             }
@@ -166,11 +112,8 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 checkAuthAndLoadData()
             }
             REQUEST_MAIN_ACTIVITY -> {
-                val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-                val editor = preferences.edit()
-                editor.remove(PREF_ACCOUNT_NAME)
-                editor.apply()
-                credential!!.selectedAccountName = null
+                appPreferences.accountName = null
+                credential?.selectedAccountName = null
                 startViewState.splashOnly.set(false)
             }
         }
@@ -208,26 +151,68 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsDenied(requestCode: Int, list: List<String>) = Toast.makeText(
             this,
             "The following permissions need to be granted: ${list.joinToString(separator = ", ")}",
-            Toast.LENGTH_SHORT)
-            .show()
+            Toast.LENGTH_SHORT
+    ).show()
 
-    /**
-     * Checks whether the device currently has a network connection.
-     * @return true if the device has a network connection, false otherwise.
-     */
-    private fun isDeviceOnline(): Boolean {
-        val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connMgr.activeNetworkInfo
-        return networkInfo != null && networkInfo.isConnected
+    private fun checkAuthAndLoadData() {
+        if (!googlePlayServicesAvailable)
+            acquireGooglePlayServices()
+        else if (credential!!.selectedAccountName == null)
+            chooseAccount()
+        else if (!isConnectedToInternet)
+            Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT).show()
+        else
+            loadAccessTokenAndLoadData()
+    }
+
+
+    private fun loadAccessTokenAndLoadData() {
+        startViewState.authInProgress.set(true)
+        disposablesComponent.add(Single.fromCallable { credential!!.token }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError { startViewState.authInProgress.set(false) }
+                .subscribe({ token ->
+                    if (appPreferences.accountName == null) {
+                        appPreferences.accountName = credential!!.selectedAccountName
+                    }
+                    MainActivity.start(this, token)
+                }, { e ->
+                    if (e is UserRecoverableAuthException) {
+                        startActivityForResult(e.intent, REQUEST_AUTHORIZATION)
+                    }
+                }))
     }
 
     /**
-     * Check that Google Play services APK is installed and up to date.
-     * @return true if Google Play Services is available and up to
-     * date on this device false otherwise.
+     * Attempts to set the account used with the API credentials. If an account
+     * name was previously saved it will use that one otherwise an account
+     * picker dialog will be shown to the user. Note that the setting the
+     * account to use with the credentials object requires the app to have the
+     * GET_ACCOUNTS permission, which is requested here if it is not already
+     * present. The AfterPermissionGranted annotation indicates that this
+     * function will be rerun automatically whenever the GET_ACCOUNTS permission
+     * is granted.
      */
-    private fun isGooglePlayServicesAvailable(): Boolean =
-            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) == ConnectionResult.SUCCESS
+    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
+    private fun chooseAccount() {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
+            val accountName = appPreferences.accountName
+            if (accountName != null) {
+                credential!!.selectedAccountName = accountName
+                checkAuthAndLoadData()
+            } else {
+                startActivityForResult(credential!!.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
+            }
+        } else {
+            EasyPermissions.requestPermissions(
+                    this,
+                    getString(R.string.access_to_google_account_needed),
+                    REQUEST_PERMISSION_GET_ACCOUNTS,
+                    Manifest.permission.GET_ACCOUNTS
+            )
+        }
+    }
 
     /**
      * Attempt to resolve a missing, out-of-date, invalid or disabled Google
@@ -247,8 +232,9 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
      * @param connectionStatusCode code describing the presence (or lack of)
      * Google Play Services on this device.
      */
-    private fun showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode: Int) = GoogleApiAvailability
-            .getInstance()
+    private fun showGooglePlayServicesAvailabilityErrorDialog(
+            connectionStatusCode: Int
+    ) = GoogleApiAvailability.getInstance()
             .getErrorDialog(this@StartActivity, connectionStatusCode, REQUEST_GOOGLE_PLAY_SERVICES)
             .apply { show() }
 
@@ -259,7 +245,6 @@ class StartActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         private const val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
         const val REQUEST_MAIN_ACTIVITY = 1004
 
-        const val PREF_ACCOUNT_NAME = "accountName"
         private val SCOPES = YouTubeScopes.all().toList()
     }
 }
