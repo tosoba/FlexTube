@@ -1,5 +1,7 @@
 package com.example.there.multifeeds.addgroup
 
+import android.support.v7.util.DiffUtil
+import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import com.example.there.multifeeds.base.list.adapter.BaseObservableListAdapter
@@ -16,12 +18,21 @@ class AddGroupSubscriptionsAdapter(
 
     private var filteredItems = items
 
+    override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+    ): BaseBindingViewHolder<SubscriptionToChooseItemBinding> = super.onCreateViewHolder(
+            parent,
+            viewType
+    ).apply {
+        binding.chosenSubscriptionCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            binding.chosenSubscription?.isChosen?.set(isChecked)
+        }
+    }
+
     override fun onBindViewHolder(holder: BaseBindingViewHolder<SubscriptionToChooseItemBinding>?, position: Int) {
         val subscription = filteredItems[position]
         holder?.binding?.chosenSubscription = subscription
-        holder?.binding?.chosenSubscriptionCheckbox?.setOnCheckedChangeListener { _, isChecked ->
-            subscription.isChosen.set(isChecked)
-        }
     }
 
     override fun getItemCount(): Int = filteredItems.size
@@ -48,9 +59,35 @@ class AddGroupSubscriptionsAdapter(
         @Suppress("UNCHECKED_CAST")
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             results?.values?.let {
-                filteredItems = it as ObservableSortedList<UiSubscriptionToChoose>
-                notifyDataSetChanged()
+                val newItems = it as ObservableSortedList<UiSubscriptionToChoose>
+                val diffResult = DiffUtil.calculateDiff(DiffUtilCallback(newItems, filteredItems))
+                diffResult.dispatchUpdatesTo(this@AddGroupSubscriptionsAdapter)
+                filteredItems = it
             }
+        }
+    }
+
+    class DiffUtilCallback(
+            private val newItems: List<UiSubscriptionToChoose>,
+            private val oldItems: List<UiSubscriptionToChoose>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldItems.size
+
+        override fun getNewListSize(): Int = newItems.size
+
+        override fun areItemsTheSame(
+                oldItemPosition: Int,
+                newItemPosition: Int
+        ): Boolean = oldItems[oldItemPosition].subscription.id == newItems[newItemPosition].subscription.id
+
+        override fun areContentsTheSame(
+                oldItemPosition: Int,
+                newItemPosition: Int
+        ): Boolean {
+            val oldItem = oldItems[oldItemPosition]
+            val newItem = newItems[newItemPosition]
+            return oldItem.subscription.id == newItem.subscription.id && oldItem.isChosen.get() == newItem.isChosen.get()
         }
     }
 }

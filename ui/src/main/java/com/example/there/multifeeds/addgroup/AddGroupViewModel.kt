@@ -23,7 +23,6 @@ class AddGroupViewModel @Inject constructor(
     fun loadSubscriptions(accountName: String) {
         disposables.add(getSavedSubscriptions.execute(accountName)
                 .subscribeOn(Schedulers.io())
-                .map { it.filter { !viewState.subscriptions.map { it.subscription }.contains(it) } }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (it.isNotEmpty()) {
