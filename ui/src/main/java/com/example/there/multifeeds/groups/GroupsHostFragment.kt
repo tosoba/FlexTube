@@ -35,6 +35,7 @@ class GroupsHostFragment : BaseHostFragment() {
         mainActivity?.addBackNavigationToToolbar()
 
         childFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.abc_grow_fade_in_from_bottom, R.anim.abc_shrink_fade_out_from_bottom)
                 .replace(R.id.groups_back_stack_layout, groupFragment)
                 .addToBackStack(null)
                 .commit()

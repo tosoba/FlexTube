@@ -1,12 +1,11 @@
 package com.example.there.multifeeds.groups.list
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +24,7 @@ import com.example.there.multifeeds.groups.GroupsHostFragment
 import com.example.there.multifeeds.lifecycle.DisposablesComponent
 import com.example.there.multifeeds.list.SortedGroupsAdapter
 import com.example.there.multifeeds.model.UiGroupWithSubscriptions
+import com.example.there.multifeeds.util.ext.screenOrientation
 import kotlinx.android.synthetic.main.fragment_groups_list.*
 import javax.inject.Inject
 
@@ -50,9 +50,6 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
         GroupsListView(
                 viewModel.viewState,
                 groupsAdapter,
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    setDrawable(ContextCompat.getDrawable(context!!, R.drawable.video_separator)!!)
-                },
                 View.OnClickListener {
                     activity?.let {
                         showNewGroupDialog()
@@ -81,7 +78,11 @@ class GroupsListFragment : Fragment(), Injectable, Scrollable, HasTitle {
 
         return binding.apply {
             groupsListView = view
-            groupsRecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            groupsRecyclerView.layoutManager = if (context?.screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+            } else {
+                GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)
+            }
         }.root
     }
 

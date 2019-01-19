@@ -1,6 +1,7 @@
 package com.example.there.multifeeds.list
 
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
+import android.view.ViewGroup
 import com.example.there.multifeeds.R
 import com.example.there.multifeeds.base.list.adapter.BaseObservableListAdapter
 import com.example.there.multifeeds.base.list.viewholder.BaseBindingViewHolder
@@ -19,12 +20,22 @@ class SortedGroupsAdapter(
 
     val groupClicked: PublishSubject<UiGroupWithSubscriptions> = PublishSubject.create()
 
+    override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+    ): BaseBindingViewHolder<GroupItemBinding> = super.onCreateViewHolder(parent, viewType).apply {
+        binding.groupSubscriptionsRecyclerView.layoutManager = GridLayoutManager(
+                binding.root.context,
+                2,
+                GridLayoutManager.HORIZONTAL,
+                false
+        )
+    }
+
     override fun onBindViewHolder(holder: BaseBindingViewHolder<GroupItemBinding>?, position: Int) {
         val group = items[position]
         holder?.binding?.groupItemView =
                 GroupItemView(GroupItemViewState(group), SubscriptionsAdapter(group.subscriptions, R.layout.subscription_item))
-        holder?.binding?.groupSubscriptionsRecyclerView?.layoutManager =
-                LinearLayoutManager(holder?.binding?.root?.context, LinearLayoutManager.HORIZONTAL, false)
         holder?.binding?.root?.setOnClickListener { groupClicked.onNext(group) }
     }
 }
